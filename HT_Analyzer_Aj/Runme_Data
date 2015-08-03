@@ -1,0 +1,55 @@
+export wdir=/home/htrauger/JetTrack2015/HT_Analyzer_All_Aj
+
+cd $wdir
+source ./clustercompile.sh && echo "Compiled."
+
+echo "cd $wdir; ./HT_Analyzer_All_Aj.out 0 0" | qsub -q all.1.q -o $wdir/tmp00.log -e $wdir/tmp00.err
+
+sleep 100
+
+echo "cd $wdir; ./HT_Analyzer_All_Aj.out 0 1" | qsub -q all.1.q -o $wdir/tmp01.log -e $wdir/tmp01.err
+
+sleep 100
+
+echo "cd $wdir; ./HT_Analyzer_All_Aj.out 0 2" | qsub -q all.1.q -o $wdir/tmp02.log -e $wdir/tmp02.err
+
+sleep 100
+
+echo "cd $wdir; ./HT_Analyzer_All_Aj.out 0 3" | qsub -q all.1.q -o $wdir/tmp03.log -e $wdir/tmp03.err
+
+sleep 100
+
+echo "cd $wdir; ./HT_Analyzer_All_Aj.out 0 4" | qsub -q all.1.q -o $wdir/tmp04.log -e $wdir/tmp04.err
+
+sleep 100
+
+echo "cd $wdir; ./HT_Analyzer_All_Aj.out 0 5" | qsub -q all.1.q -o $wdir/tmp05.log -e $wdir/tmp05.err
+
+sleep 100
+
+echo "cd $wdir; ./HT_Analyzer_All_Aj.out 0 6" | qsub -q all.1.q -o $wdir/tmp06.log -e $wdir/tmp06.err
+
+sleep 100
+
+echo "cd $wdir; ./HT_Analyzer_All_Aj.out 0 7" | qsub -q all.1.q -o $wdir/tmp07.log -e $wdir/tmp07.err
+
+sleep 100
+
+echo "cd $wdir; ./HT_Analyzer_All_Aj.out 0 8" | qsub -q all.1.q -o $wdir/tmp08.log -e $wdir/tmp08.err
+
+sleep 100
+
+echo "cd $wdir; ./HT_Analyzer_All_Aj.out 0 9" | qsub -q all.1.q -o $wdir/tmp09.log -e $wdir/tmp09.err
+
+sleep 100
+
+echo "cd $wdir; ./HT_Analyzer_All_Aj.out 0 10" | qsub -q all.1.q -o $wdir/tmp010.log -e $wdir/tmp010.err
+
+sleep 100
+
+echo "cd $wdir; ./HT_Analyzer_All_Aj.out 0 11" | qsub -q all.1.q -o $wdir/tmp011.log -e $wdir/tmp011.err
+
+sleep 100
+
+echo "cd $wdir; ./HT_Analyzer_All_Aj.out 0 12" | qsub -q all.1.q -o $wdir/tmp012.log -e $wdir/tmp012.err
+

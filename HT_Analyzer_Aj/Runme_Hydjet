@@ -1,0 +1,27 @@
+export wdir=/home/htrauger/JetTrack2015/HT_Analyzer_All_Aj
+
+cd $wdir
+source ./clustercompile.sh && echo "Compiled."
+
+echo "cd $wdir; ./HT_Analyzer_All_Aj.out 4 0" | qsub -q all.1.q -o $wdir/tmp40.log -e $wdir/tmp40.err
+echo "cd $wdir; ./HT_Analyzer_All_Aj.out 4 1" | qsub -q all.1.q -o $wdir/tmp41.log -e $wdir/tmp41.err
+echo "cd $wdir; ./HT_Analyzer_All_Aj.out 4 2" | qsub -q all.1.q -o $wdir/tmp42.log -e $wdir/tmp42.err
+echo "cd $wdir; ./HT_Analyzer_All_Aj.out 4 3" | qsub -q all.1.q -o $wdir/tmp43.log -e $wdir/tmp43.err
+echo "cd $wdir; ./HT_Analyzer_All_Aj.out 5 0" | qsub -q all.1.q -o $wdir/tmp50.log -e $wdir/tmp50.err
+echo "cd $wdir; ./HT_Analyzer_All_Aj.out 5 1" | qsub -q all.1.q -o $wdir/tmp51.log -e $wdir/tmp51.err
+echo "cd $wdir; ./HT_Analyzer_All_Aj.out 5 2" | qsub -q all.1.q -o $wdir/tmp52.log -e $wdir/tmp52.err
+echo "cd $wdir; ./HT_Analyzer_All_Aj.out 5 3" | qsub -q all.1.q -o $wdir/tmp53.log -e $wdir/tmp53.err
+echo "cd $wdir; ./HT_Analyzer_All_Aj.out 5 4" | qsub -q all.1.q -o $wdir/tmp54.log -e $wdir/tmp54.err
+echo "cd $wdir; ./HT_Analyzer_All_Aj.out 6 0" | qsub -q all.1.q -o $wdir/tmp60.log -e $wdir/tmp60.err
+echo "cd $wdir; ./HT_Analyzer_All_Aj.out 6 1" | qsub -q all.1.q -o $wdir/tmp61.log -e $wdir/tmp61.err
+echo "cd $wdir; ./HT_Analyzer_All_Aj.out 6 2" | qsub -q all.1.q -o $wdir/tmp62.log -e $wdir/tmp62.err
+echo "cd $wdir; ./HT_Analyzer_All_Aj.out 6 3" | qsub -q all.1.q -o $wdir/tmp63.log -e $wdir/tmp63.err
+echo "cd $wdir; ./HT_Analyzer_All_Aj.out 7 0" | qsub -q all.1.q -o $wdir/tmp70.log -e $wdir/tmp70.err
+echo "cd $wdir; ./HT_Analyzer_All_Aj.out 7 1" | qsub -q all.1.q -o $wdir/tmp71.log -e $wdir/tmp71.err
+echo "cd $wdir; ./HT_Analyzer_All_Aj.out 7 2" | qsub -q all.1.q -o $wdir/tmp72.log -e $wdir/tmp72.err
+echo "cd $wdir; ./HT_Analyzer_All_Aj.out 7 3" | qsub -q all.1.q -o $wdir/tmp73.log -e $wdir/tmp73.err
+echo "cd $wdir; ./HT_Analyzer_All_Aj.out 8 0" | qsub -q all.1.q -o $wdir/tmp80.log -e $wdir/tmp80.err
+echo "cd $wdir; ./HT_Analyzer_All_Aj.out 8 1" | qsub -q all.1.q -o $wdir/tmp81.log -e $wdir/tmp81.err
+echo "cd $wdir; ./HT_Analyzer_All_Aj.out 9 0" | qsub -q all.1.q -o $wdir/tmp9.log -e $wdir/tmp9.err
+
+

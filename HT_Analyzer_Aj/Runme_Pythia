@@ -1,0 +1,18 @@
+export wdir=/home/htrauger/JetTrack2015/HT_Analyzer_All_Aj
+
+cd $wdir
+
+
+echo "cd $wdir; ./HT_Analyzer_All_Aj.out 13 0" | qsub -q all.1.q -o $wdir/tmp130.log -e $wdir/tmp130.err
+echo "cd $wdir; ./HT_Analyzer_All_Aj.out 13 1" | qsub -q all.1.q -o $wdir/tmp131.log -e $wdir/tmp131.err
+
+
+echo "cd $wdir; ./HT_Analyzer_All_Aj.out 14 0" | qsub -q all.1.q -o $wdir/tmp140.log -e $wdir/tmp140.err
+echo "cd $wdir; ./HT_Analyzer_All_Aj.out 14 1" | qsub -q all.1.q -o $wdir/tmp141.log -e $wdir/tmp141.err
+
+echo "cd $wdir; ./HT_Analyzer_All_Aj.out 15 0" | qsub -q all.1.q -o $wdir/tmp150.log -e $wdir/tmp150.err
+
+echo "cd $wdir; ./HT_Analyzer_All_Aj.out 16 0" | qsub -q all.1.q -o $wdir/tmp160.log -e $wdir/tmp160.err
+
+
+

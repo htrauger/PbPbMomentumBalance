@@ -1,0 +1,13 @@
+/data/htrauger/PbPb_6_12/Data2011_p0.root
+/data/htrauger/PbPb_6_12/Data2011_p1.root
+/data/htrauger/PbPb_6_12/Data2011_p2.root
+/data/htrauger/PbPb_6_12/Data2011_p3.root
+/data/htrauger/PbPb_6_12/Data2011_p4.root
+/data/htrauger/PbPb_6_12/Data2011_p5.root
+/data/htrauger/PbPb_6_12/Data2011_p6.root
+/data/htrauger/PbPb_6_12/Data2011_p7.root
+/data/htrauger/PbPb_6_12/Data2011_p8.root
+/data/htrauger/PbPb_6_12/Data2011_p9.root
+/data/htrauger/PbPb_6_12/Data2011_p10.root
+/data/htrauger/PbPb_6_12/Data2011_p11.root
+/data/htrauger/PbPb_6_12/Data2011_p12.root

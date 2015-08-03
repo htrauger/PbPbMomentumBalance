@@ -1,0 +1,15 @@
+export wdir=/home/htrauger/HIN14016/HT_Analyzer_All
+
+cd $wdir
+source ./clustercompile.sh && echo "Compiled."
+
+echo "cd $wdir; ./HT_Analyzer_All.out 5 0" | qsub -o $wdir/tmp50.log -e $wdir/tmp50.err
+
+echo "cd $wdir; ./HT_Analyzer_All.out 5 1" | qsub -o $wdir/tmp51.log -e $wdir/tmp51.err
+
+echo "cd $wdir; ./HT_Analyzer_All.out 5 2" | qsub -o $wdir/tmp52.log -e $wdir/tmp52.err
+
+echo "cd $wdir; ./HT_Analyzer_All.out 5 3" | qsub -o $wdir/tmp53.log -e $wdir/tmp53.err
+
+
+
