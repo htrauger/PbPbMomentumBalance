@@ -38,7 +38,7 @@ Int_t study_yield_mc(bool use_highpT_bin = kFALSE){
   gStyle->SetHatchesLineWidth(2);
 
   gStyle->SetPadBottomMargin(0.15);
-  gStyle->SetPadTopMargin   (0.05);
+  gStyle->SetPadTopMargin   (0.25);
   gStyle->SetPadLeftMargin  (0.15);
   gStyle->SetPadRightMargin (0.05);
     
@@ -74,7 +74,9 @@ Int_t study_yield_mc(bool use_highpT_bin = kFALSE){
 
   TFile *fin[12][n_data_mc_types];
   TFile *fout[12][n_data_mc_types];
-  
+  TFile *f_in_syst = new TFile("../final_plots/Systematic_Error.root");  
+
+
   TFile *f_spillover = new TFile("../spill_over/Dijet_SpillOvers.root");
   TFile  *f_jff_reco = new TFile("../jff_residual/All_JFFResiduals_RecoReco.root");
   TFile  *f_jff_gen = new TFile("../jff_residual/All_JFFResiduals_RecoGen.root");
@@ -122,6 +124,10 @@ Int_t study_yield_mc(bool use_highpT_bin = kFALSE){
   TH1D *background_diff_noerr_up[12][6][4][5][n_data_mc_types];
   TH1D *background_diff_noerr_down[12][6][4][5][n_data_mc_types];
 
+
+  TH1D *signal_dPhi_syst[12][6][4][5];
+  TH1D *sub_lead_dPhi_syst[12][6][4][5];
+  TH1D *background_syst_rebin[12][6][4][5];
   
 
   THStack *dPhi_pTdist_up[12][4][3][n_data_mc_types];
@@ -176,6 +182,8 @@ Int_t study_yield_mc(bool use_highpT_bin = kFALSE){
 
   float njets[12]= {6689, 8891,3985,1371,5624,2410,729,12313,15382,6395,2100};
 
+ float bc_pbpb, bc_pp, err_change,new_err, old_err;
+
   for(int l = 1; l<6; l++){
 
     for(int g=gstart; g<gend; g++){
@@ -188,6 +196,8 @@ Int_t study_yield_mc(bool use_highpT_bin = kFALSE){
 	if(l<5)	fin[g][l] = new TFile(infile_name,"READ");
 
 	
+	//	if(g%2!=0&&l==4)infile_name = (TString)("../me_correct_mc/HydJet_GenJet_GenTrack_Sube0_Dijet_Correlations.root");
+
 	//----------------------------------------------------
 	//  Start of main i & j loops 
 	//-----------------------------------------------------
@@ -208,6 +218,9 @@ Int_t study_yield_mc(bool use_highpT_bin = kFALSE){
 
 	    if(l<5){
 	      raw[g][i][j][p][l] = (TH2D*)fin[g][l]->Get((TString)(name_stem+CBin_strs[3-j]+"_"+CBin_strs[4-j]+"_"+AjName_strs[p]+TrkPtBin_strs[i]+"_"+TrkPtBin_strs[i+1]))->Clone((TString)(name_stem+"_"+data_mc_type_strs[l]+"_"+CBin_strs[3-j]+"_"+CBin_strs[4-j]+"_"+AjName_strs[p]+TrkPtBin_strs[i]+"_"+TrkPtBin_strs[i+1]));
+
+	      
+
 	    }else{
 	      raw[g][i][j][p][l] = (TH2D*)raw[g][i][j][p][1]->Clone((TString)(name_stem+"_"+data_mc_type_strs[l]+"_"+CBin_strs[3-j]+"_"+CBin_strs[4-j]+"_"+AjName_strs[p]+TrkPtBin_strs[i]+"_"+TrkPtBin_strs[i+1]));
 	      //  if(g%2==0)      raw[g][i][j][p][l]->Add(raw[g+1][i][3][p][4] ,-1.);
@@ -240,9 +253,9 @@ Int_t study_yield_mc(bool use_highpT_bin = kFALSE){
 	    rlimiteta = result[g][i][j][p][l]->GetXaxis()->FindBin(-1.-0.0001);
 	    
 	    background_left[g][i][j][p][l] = (TH1D*)result[g][i][j][p][l]->ProjectionY(Form("LeftSideBackground%d%d%d%d",g,i,j,p),llimiteta,rlimiteta);
-	  
+	
 
-	    if(l==4&&(i==0||i==2)&&j>1){
+	    if(l>3&&(i==0||i==2)&&j>1){
 
 
 	    llimiteta = result[g][i][j][p][l]->GetXaxis()->FindBin(1.3+0.0001);
@@ -260,9 +273,9 @@ Int_t study_yield_mc(bool use_highpT_bin = kFALSE){
 
 
 	    }
+	    
 
-
-	    if(l==4&&(i==1)&&j>1){
+	    if(l>3&&(i==1)&&j>1){
 
 
 	      llimiteta = result[g][i][j][p][l]->GetXaxis()->FindBin(1.4+0.0001);
@@ -282,78 +295,18 @@ Int_t study_yield_mc(bool use_highpT_bin = kFALSE){
 	    }
 
 
-	    if(l==1&&p>0&&i==0&&j>1&&g==2){
+	    if(i>3&&l==4&&j<2&&g==4){
 
 	
-	      llimiteta = result[g][i][j][p][l]->GetXaxis()->FindBin(1.5+0.0001);
-	      rlimiteta = result[g][i][j][p][l]->GetXaxis()->FindBin(2.5-0.0001);
-	    
-	      background_proj[g][i][j][p][l] = (TH1D*)result[g][i][j][p][l]->ProjectionY(Form("ProjectedBackground%d%d%d%d",g,i,j,p),llimiteta,rlimiteta);
-
-
-
-	      llimiteta = result[g][i][j][p][l]->GetXaxis()->FindBin(-2.5+0.0001);
-	      rlimiteta = result[g][i][j][p][l]->GetXaxis()->FindBin(-1.5-0.0001);
-	    
-	      background_left[g][i][j][p][l] = (TH1D*)result[g][i][j][p][l]->ProjectionY(Form("LeftSideBackground%d%d%d%d",g,i,j,p),llimiteta,rlimiteta);
-	 
-
-
-	    }
-
-	    if(l==1&&i<2&&j>1&&g==4){
-
-	
-	      llimiteta = result[g][i][j][p][l]->GetXaxis()->FindBin(1.2+0.0001);
-	      rlimiteta = result[g][i][j][p][l]->GetXaxis()->FindBin(2.2-0.0001);
-	    
-	      background_proj[g][i][j][p][l] = (TH1D*)result[g][i][j][p][l]->ProjectionY(Form("ProjectedBackground%d%d%d%d",g,i,j,p),llimiteta,rlimiteta);
-
-
-
-	      llimiteta = result[g][i][j][p][l]->GetXaxis()->FindBin(-2.2+0.0001);
-	      rlimiteta = result[g][i][j][p][l]->GetXaxis()->FindBin(-1.2-0.0001);
-	    
-	      background_left[g][i][j][p][l] = (TH1D*)result[g][i][j][p][l]->ProjectionY(Form("LeftSideBackground%d%d%d%d",g,i,j,p),llimiteta,rlimiteta);
-	 
-
-
-	    }
-	  
-
-	    if(g==4&&i==5&&l==4&&j<2){
-
-	
-	      llimiteta = result[g][i][j][p][l]->GetXaxis()->FindBin(0.6+0.0001);
-	      rlimiteta = result[g][i][j][p][l]->GetXaxis()->FindBin(1.6-0.0001);
+	      llimiteta = result[g][i][j][p][l]->GetXaxis()->FindBin(0.8+0.0001);
+	      rlimiteta = result[g][i][j][p][l]->GetXaxis()->FindBin(1.8-0.0001);
 	    
 	      background_proj[g][i][j][p][l] = (TH1D*)result[g][i][j][p][l]->ProjectionY(Form("ProjectedBackground%d%d%d%d",g,i,j,p),llimiteta,rlimiteta);
 	      background_left[g][i][j][p][l] = (TH1D*)result[g][i][j][p][l]->ProjectionY(Form("LeftSideBackground%d%d%d%d",g,i,j,p),llimiteta,rlimiteta);
 	 
 	    }
 
-  
 
-	    if(g==4&&i==5&&l==1&&j<2){
-
-	
-	      llimiteta = result[g][i][j][p][l]->GetXaxis()->FindBin(0.9+0.0001);
-	      rlimiteta = result[g][i][j][p][l]->GetXaxis()->FindBin(1.9-0.0001);
-	    
-	      background_proj[g][i][j][p][l] = (TH1D*)result[g][i][j][p][l]->ProjectionY(Form("ProjectedBackground%d%d%d%d",g,i,j,p),llimiteta,rlimiteta);
-	      background_left[g][i][j][p][l] = (TH1D*)result[g][i][j][p][l]->ProjectionY(Form("LeftSideBackground%d%d%d%d",g,i,j,p),llimiteta,rlimiteta);
-	 
-
-
-	      llimiteta = result[g][i][j][p][l]->GetXaxis()->FindBin(-1.9+0.0001);
-	      rlimiteta = result[g][i][j][p][l]->GetXaxis()->FindBin(-0.9-0.0001);
-	    
-	      background_proj[g][i][j][p][l] = (TH1D*)result[g][i][j][p][l]->ProjectionY(Form("ProjectedBackground%d%d%d%d",g,i,j,p),llimiteta,rlimiteta);
-	   
-
-	    }
-
-	
 	    background_proj[g][i][j][p][l]->Add(background_left[g][i][j][p][l]);
 
 	    dx_phi =  background_proj[g][i][j][p][l]->GetBinWidth(1);
@@ -389,23 +342,41 @@ Int_t study_yield_mc(bool use_highpT_bin = kFALSE){
 	    }
 
 	    result[g][i][j][p][l]->Add(background[g][i][j][p][l],-1.);
+	  }
+	}
+      }
+    }
+  
+ 
+    for(int g=gstart; g<gend; g++){
 
+      for(int p=0; p<3; p++){
+ 
+
+	for(int i = 0; i<nTrkPtBins; i++){
+	  for(int j = 0; j<nCBins; j++){
+	    if(g%2!=0&&j<3)continue;
 
 	    if(l==5){
 
+	      TString result_string = "Result_";
+	      if(g<4)result_string+="SubLeading_";
+	      else result_string+="Leading_";
+	    
+	      if(g%2==0)result_string+="Hydjet_";
+	      else result_string+="Pythia_";
+   
 	      result[g][i][j][p][l] = (TH2D*)result[g][i][j][p][1]->Clone((TString)(result_string+data_mc_type_strs[l]+"_"+CBin_strs[3-j]+"_"+CBin_strs[4-j]+"_"+AjName_strs[p]+TrkPtBin_strs[i]+"_"+TrkPtBin_strs[i+1]));
 
-	      // if(g%2==0)	      result[g][i][j][p][l]->Add( result[g+1][i][3][p][4],-1.);
-	      //  else  
-		result[g][i][j][p][l]->Add( result[g][i][j][p][4],-1.);
+	      if(g%2==0) result[g][i][j][p][l]->Add( result[g+1][i][3][p][4],-1.);
+	      else 	result[g][i][j][p][l]->Add( result[g][i][j][p][4],-1.);
 
 
 	      background_proj_rebin[g][i][j][p][l] = (TH1D*)background_proj_rebin[g][i][j][p][1]->Clone((TString)("BkgProjRebin"+data_mc_type_strs[l]+"_"+CBin_strs[3-j]+"_"+CBin_strs[4-j]+"_"+AjName_strs[p]+TrkPtBin_strs[i]+"_"+TrkPtBin_strs[i+1]));
 
 
-	      //	      if(g%2==0)    background_proj_rebin[g][i][j][p][l]->Add( background_proj_rebin[g+1][i][3][p][4],-1.);
-	      //    else    
-	      background_proj_rebin[g][i][j][p][l]->Add( background_proj_rebin[g][i][j][p][4],-1.);
+	      if(g%2==0)    background_proj_rebin[g][i][j][p][l]->Add( background_proj_rebin[g+1][i][3][p][4],-1.);
+	      else    background_proj_rebin[g][i][j][p][l]->Add( background_proj_rebin[g][i][j][p][4],-1.);
 	    }
 
 	    //-------------------------------
@@ -588,7 +559,7 @@ Int_t study_yield_mc(bool use_highpT_bin = kFALSE){
 	  //Apply corrections
 	  //-------------------
 
-
+	
 	  if(g%2==0){
 	    TString spill_name = make_name("SpillOvers_Eta_pTweighted_",g+6,i,j,p,pTlabel,centlabel,Ajlabel);
 	    spill_name.ReplaceAll("Pt100_Pt300_","");
@@ -614,11 +585,11 @@ Int_t study_yield_mc(bool use_highpT_bin = kFALSE){
 	
 	  TString  jff_name = make_name("JFF_Residual_Eta_",g+6,i,j,p,pTlabel,centlabel,Ajlabel);
 
-	  if(g%2!=0||i>4) jff_residual_dEta[g][i][j][p] = (TH1D*)f_jff_reco->Get(jff_name)->Clone(jff_name);
+	  if(i>3) jff_residual_dEta[g][i][j][p] = (TH1D*)f_jff_reco->Get(jff_name)->Clone(jff_name);
 	  else	  jff_residual_dEta[g][i][j][p] = (TH1D*)f_jff_gen->Get(jff_name)->Clone(jff_name);
 	  
 	  jff_name.ReplaceAll("Eta","Phi");
-	  if(g%2!=0||i>4) jff_residual_dPhi[g][i][j][p] = (TH1D*)f_jff_reco->Get(jff_name)->Clone(jff_name);
+	  if(i>3) jff_residual_dPhi[g][i][j][p] = (TH1D*)f_jff_reco->Get(jff_name)->Clone(jff_name);
 	  else  jff_residual_dPhi[g][i][j][p] = (TH1D*)f_jff_gen->Get(jff_name)->Clone(jff_name);
 
 	  eta_proj_rebin[g][i][j][p][1]->Add(jff_residual_dEta[g][i][j][p],-1.);
@@ -634,7 +605,7 @@ Int_t study_yield_mc(bool use_highpT_bin = kFALSE){
 
 	  signal_dPhi_rebin[g][i][j][p][2]->Add(jff_residual_dPhi[g][i][j][p],-1.);
 
-	  
+
 	} //close j
       } // close i 
     
@@ -670,9 +641,292 @@ Int_t study_yield_mc(bool use_highpT_bin = kFALSE){
 	for(int j = 0; j<4; j++){
 
 
-	  for(int g = 0; g<2; g++){
+	  if(i==0&&mc_code==5&&j==0){
 
-	    if(j!=3&&g==1)continue;
+	    TString syst_name_pbpb = make_name("Syst_",0,4,0,l,pTlabel, centlabel, Ajlabel);  
+	    background_syst_rebin[0][0][0][l] = (TH1D*)f_in_syst->Get(syst_name_pbpb)->Clone(syst_name_pbpb);
+
+	    cout<<"here"<<endl;
+	    TString syst_name_pp = make_name("Syst_",1,4,3,l,pTlabel, centlabel, Ajlabel);  
+	    background_syst_rebin[1][0][3][l] = (TH1D*)f_in_syst->Get(syst_name_pp)->Clone(syst_name_pp);
+
+	    syst_name_pbpb.ReplaceAll("Syst","Syst_Diff");
+	    background_syst_rebin[7][0][0][l] = (TH1D*)background_syst_rebin[0][0][0][l]->Clone(syst_name_pbpb);
+	    background_syst_rebin[7][0][0][l]->Add(background_syst_rebin[1][0][3][l],-1.);
+
+
+	    syst_name_pbpb = make_name("Syst_",0,4,2,l,pTlabel, centlabel, Ajlabel);  
+	    background_syst_rebin[0][0][3][l] = (TH1D*)f_in_syst->Get(syst_name_pbpb)->Clone(syst_name_pbpb);
+
+	    syst_name_pbpb.ReplaceAll("Syst","Syst_Diff");
+	    background_syst_rebin[7][0][3][l] = (TH1D*)background_syst_rebin[0][0][0][l]->Clone(syst_name_pbpb);
+	    background_syst_rebin[7][0][3][l]->Add(background_syst_rebin[1][0][3][l],-1.);
+
+
+
+	
+	    cout<<"background done"<<endl;
+
+	    signal_dPhi_syst[2][0][0][l] = (TH1D*)f_in_syst->Get((TString)("SubLeading_dPhi_Syst_PbPb_"+AjName_strs[l]+"Cent50_Cent100"))->Clone((TString)("SubLeading_dPhi_Syst_PbPb_"+AjName_strs[l]+"Cent50_Cent100"));
+
+
+
+	    signal_dPhi_syst[4][0][0][l] = (TH1D*)f_in_syst->Get((TString)("Leading_dPhi_Syst_PbPb_"+AjName_strs[l]+"Cent50_Cent100"))->Clone((TString)("Leading_dPhi_Syst_PbPb_"+AjName_strs[l]+"Cent50_Cent100"));
+
+	    signal_dPhi_syst[2][0][3][l] = (TH1D*)f_in_syst->Get((TString)("SubLeading_dPhi_Syst_PbPb_"+AjName_strs[l]+"Cent10_Cent30"))->Clone((TString)("SubLeading_dPhi_Syst_PbPb_"+AjName_strs[l]+"Cent0_Cent10"));
+
+	    signal_dPhi_syst[4][0][3][l] = (TH1D*)f_in_syst->Get((TString)("Leading_dPhi_Syst_PbPb_"+AjName_strs[l]+"Cent10_Cent30"))->Clone((TString)("Leading_dPhi_Syst_PbPb_"+AjName_strs[l]+"Cent0_Cent10"));
+
+
+	    signal_dPhi_syst[3][0][3][l] = (TH1D*)f_in_syst->Get((TString)("SubLeading_dPhi_Syst_pp_"+AjName_strs[l]+"Cent0_Cent10"))->Clone((TString)("SubLeading_dPhi_Syst_pp_"+AjName_strs[l]+"Cent0_Cent10"));
+
+	    signal_dPhi_syst[5][0][3][l] = (TH1D*)f_in_syst->Get((TString)("Leading_dPhi_Syst_pp_"+AjName_strs[l]+"Cent0_Cent10"))->Clone((TString)("Leading_dPhi_Syst_pp_"+AjName_strs[l]+"Cent0_Cent10"));
+   
+	    cout<<"here"<<endl;
+
+	    sub_lead_dPhi_syst[2][0][0][l] = (TH1D*)f_in_syst->Get((TString)("Diff_NoBkgSub_dPhi_Syst_PbPb_"+AjName_strs[l]+"Cent50_Cent100"))->Clone((TString)("Diff_NoBkgSub_dPhi_Syst_PbPb_"+AjName_strs[l]+"Cent50_Cent100"));
+  
+	    sub_lead_dPhi_syst[2][0][3][l] = (TH1D*)f_in_syst->Get((TString)("Diff_NoBkgSub_dPhi_Syst_PbPb_"+AjName_strs[l]+"Cent10_Cent30"))->Clone((TString)("Diff_NoBkgSub_dPhi_Syst_PbPb_"+AjName_strs[l]+"Cent0_Cent10"));
+
+	    sub_lead_dPhi_syst[3][0][3][l] = (TH1D*)f_in_syst->Get((TString)("Diff_NoBkgSub_dPhi_Syst_pp_"+AjName_strs[l]+"Cent0_Cent10"))->Clone((TString)("Diff_NoBkgSub_dPhi_Syst_pp_"+AjName_strs[l]+"Cent0_Cent10"));
+
+	    cout<<"and here"<<endl;
+
+    
+	    in_name = make_name("PbPb_pp_WithErrors_Syst_",8,0,0,l,pTlabel,centlabel,Ajlabel);
+	    signal_dPhi_syst[8][0][0][l] = (TH1D*)signal_dPhi_syst[2][0][0][l]->Clone(in_name);
+	    signal_dPhi_syst[8][0][0][l]->Add( signal_dPhi_syst[3][0][3][l],-1.);
+
+	    in_name.ReplaceAll("SubLeading","Leading");
+	    signal_dPhi_syst[10][0][0][l] = (TH1D*)signal_dPhi_syst[4][0][0][l]->Clone(in_name);
+	    signal_dPhi_syst[10][0][0][l]->Add( signal_dPhi_syst[5][0][3][l],-1.);
+
+
+    
+   
+	    for(int k = 1; k< signal_dPhi_syst[8][0][0][l]->GetNbinsX()+1; k++){
+      
+	      bc_pbpb =  signal_dPhi_syst[2][0][0][l]->GetBinContent(k);
+	      bc_pp =  signal_dPhi_syst[3][0][3][l]->GetBinContent(k);
+	      err_change = TMath::Sqrt(0.04*0.04+0.05*0.05)*TMath::Abs(TMath::Sqrt(bc_pbpb*bc_pbpb+bc_pp*bc_pp)-TMath::Abs(bc_pbpb - bc_pp));
+	      old_err = signal_dPhi_syst[8][0][0][l]->GetBinError(k);
+	      new_err = TMath::Sqrt(old_err*old_err-err_change*err_change);
+     
+	      signal_dPhi_syst[8][0][0][l]->SetBinError(k,new_err);
+    
+	      bc_pbpb =  signal_dPhi_syst[4][0][0][l]->GetBinContent(k);
+	      bc_pp =  signal_dPhi_syst[5][0][3][l]->GetBinContent(k);
+	      err_change = TMath::Sqrt(0.04*0.04+0.05*0.05)*TMath::Abs(TMath::Sqrt(bc_pbpb*bc_pbpb+bc_pp*bc_pp)-TMath::Abs(bc_pbpb - bc_pp));
+	      old_err = signal_dPhi_syst[10][0][0][l]->GetBinError(k);
+	      new_err = TMath::Sqrt(old_err*old_err-err_change*err_change);
+	      signal_dPhi_syst[10][0][0][l]->SetBinError(k,new_err);
+
+    
+
+	    }
+
+
+
+
+	    in_name.ReplaceAll("SubLeading","DoubleDiff");
+	    signal_dPhi_syst[6][0][0][l] = (TH1D*)signal_dPhi_syst[8][0][0][l]->Clone(in_name);
+	    signal_dPhi_syst[6][0][0][l]->Add( signal_dPhi_syst[10][0][0][l]);
+
+
+
+   
+	    for(int k = 1; k< signal_dPhi_syst[8][0][0][l]->GetNbinsX()+1; k++){
+      
+	      bc_pbpb =  signal_dPhi_syst[2][0][0][l]->GetBinContent(k);
+	      bc_pp =  signal_dPhi_syst[4][0][0][l]->GetBinContent(k);
+	      err_change = TMath::Sqrt(0.04*.04+.05*0.05)*(bc_pbpb-TMath::Abs(signal_dPhi_syst[6][0][0][l]->GetBinContent(k)));
+
+ 
+	      old_err = signal_dPhi_syst[6][0][0][l]->GetBinError(k);
+	      new_err = TMath::Sqrt(old_err*old_err-err_change*err_change);
+	      signal_dPhi_syst[6][0][0][l]->SetBinError(k,new_err);
+
+	      cout<<k<<" "<<bc_pbpb<<" "<<bc_pp<<" "<<err_change<<" "<<old_err<<" "<<new_err<<endl;
+    
+	    }
+
+
+
+
+	    in_name = make_name("PbPb_pp_WithErrors_Syst_",8,0,0,l,pTlabel,centlabel,Ajlabel);
+	    signal_dPhi_syst[8][0][3][l] = (TH1D*)signal_dPhi_syst[2][0][3][l]->Clone(in_name);
+	    signal_dPhi_syst[8][0][3][l]->Add( signal_dPhi_syst[3][0][3][l],-1.);
+
+	    in_name.ReplaceAll("SubLeading","Leading");
+	    signal_dPhi_syst[10][0][3][l] = (TH1D*)signal_dPhi_syst[4][0][3][l]->Clone(in_name);
+	    signal_dPhi_syst[10][0][3][l]->Add( signal_dPhi_syst[5][0][3][l],-1.);
+
+
+    
+   
+	    for(int k = 1; k< signal_dPhi_syst[8][0][3][l]->GetNbinsX()+1; k++){
+      
+	      bc_pbpb =  signal_dPhi_syst[2][0][3][l]->GetBinContent(k);
+	      bc_pp =  signal_dPhi_syst[3][0][3][l]->GetBinContent(k);
+	      err_change = TMath::Sqrt(0.04*0.04+0.05*0.05)*TMath::Abs(TMath::Sqrt(bc_pbpb*bc_pbpb+bc_pp*bc_pp)-TMath::Abs(bc_pbpb - bc_pp));
+	      old_err = signal_dPhi_syst[8][0][3][l]->GetBinError(k);
+	      new_err = TMath::Sqrt(old_err*old_err-err_change*err_change);
+     
+	      signal_dPhi_syst[8][0][3][l]->SetBinError(k,new_err);
+    
+	      bc_pbpb =  signal_dPhi_syst[4][0][3][l]->GetBinContent(k);
+	      bc_pp =  signal_dPhi_syst[5][0][3][l]->GetBinContent(k);
+	      err_change = TMath::Sqrt(0.04*0.04+0.05*0.05)*TMath::Abs(TMath::Sqrt(bc_pbpb*bc_pbpb+bc_pp*bc_pp)-TMath::Abs(bc_pbpb - bc_pp));
+	      old_err = signal_dPhi_syst[10][0][3][l]->GetBinError(k);
+	      new_err = TMath::Sqrt(old_err*old_err-err_change*err_change);
+	      signal_dPhi_syst[10][0][3][l]->SetBinError(k,new_err);
+
+    
+
+	    }
+
+
+
+
+	    in_name.ReplaceAll("SubLeading","DoubleDiff");
+	    signal_dPhi_syst[6][0][3][l] = (TH1D*)signal_dPhi_syst[8][0][3][l]->Clone(in_name);
+	    signal_dPhi_syst[6][0][3][l]->Add( signal_dPhi_syst[10][0][3][l]);
+
+
+
+   
+	    for(int k = 1; k< signal_dPhi_syst[8][0][3][l]->GetNbinsX()+1; k++){
+      
+	      bc_pbpb =  signal_dPhi_syst[2][0][3][l]->GetBinContent(k);
+	      bc_pp =  signal_dPhi_syst[4][0][3][l]->GetBinContent(k);
+	      err_change = TMath::Sqrt(0.04*.04+.05*0.05)*(bc_pbpb-TMath::Abs(signal_dPhi_syst[6][0][3][l]->GetBinContent(k)));
+
+ 
+	      old_err = signal_dPhi_syst[6][0][3][l]->GetBinError(k);
+	      new_err = TMath::Sqrt(old_err*old_err-err_change*err_change);
+	      signal_dPhi_syst[6][0][3][l]->SetBinError(k,new_err);
+
+	      cout<<k<<" "<<bc_pbpb<<" "<<bc_pp<<" "<<err_change<<" "<<old_err<<" "<<new_err<<endl;
+    
+	    }
+
+
+
+
+
+	   
+	    cout<<"ready"<<endl;
+
+	    for(int k = 0; k< sub_lead_dPhi_syst[3][0][3][l]->GetNbinsX()+1; k++){
+
+	      background_syst_rebin[0][0][0][l]->SetBinContent(k,0.000000001);
+	      background_syst_rebin[7][0][0][l]->SetBinContent(k,0.000000001);
+	      background_syst_rebin[0][0][3][l]->SetBinContent(k,0.000000001);
+	      background_syst_rebin[1][0][3][l]->SetBinContent(k,0.000000001);
+	      background_syst_rebin[7][0][3][l]->SetBinContent(k,0.000000001);
+	      signal_dPhi_syst[2][0][0][l]->SetBinContent(k,0.000000001);
+	      signal_dPhi_syst[4][0][0][l]->SetBinContent(k,0.000000001);
+	      signal_dPhi_syst[2][0][3][l]->SetBinContent(k,0.000000001);
+	      signal_dPhi_syst[4][0][3][l]->SetBinContent(k,0.000000001);
+	      signal_dPhi_syst[6][0][0][l]->SetBinContent(k,0.000000001);
+	      signal_dPhi_syst[8][0][0][l]->SetBinContent(k,0.000000001);
+	      signal_dPhi_syst[10][0][0][l]->SetBinContent(k,0.000000001);
+	      signal_dPhi_syst[6][0][3][l]->SetBinContent(k,0.000000001);
+	      signal_dPhi_syst[8][0][3][l]->SetBinContent(k,0.000000001);
+	      signal_dPhi_syst[10][0][3][l]->SetBinContent(k,0.000000001);
+	      signal_dPhi_syst[3][0][3][l]->SetBinContent(k,0.000000001);
+	      signal_dPhi_syst[5][0][3][l]->SetBinContent(k,0.000000001);
+	      sub_lead_dPhi_syst[2][0][0][l]->SetBinContent(k,0.000000001);
+	      sub_lead_dPhi_syst[2][0][3][l]->SetBinContent(k,0.000000001);
+	      sub_lead_dPhi_syst[3][0][3][l]->SetBinContent(k,0.000000001);
+
+	    }
+
+	    cout<<"set zeros"<<endl;
+
+
+	    background_syst_rebin[0][0][0][l]->SetMarkerSize(0.05);
+	    background_syst_rebin[7][0][0][l]->SetMarkerSize(0.05);
+	    background_syst_rebin[0][0][3][l]->SetMarkerSize(0.05);
+	    background_syst_rebin[1][0][3][l]->SetMarkerSize(0.05);
+	    background_syst_rebin[7][0][3][l]->SetMarkerSize(0.05);
+	    signal_dPhi_syst[2][0][0][l]->SetMarkerSize(0.05);
+	    signal_dPhi_syst[4][0][0][l]->SetMarkerSize(0.05);
+	    signal_dPhi_syst[2][0][3][l]->SetMarkerSize(0.05);
+	    signal_dPhi_syst[6][0][0][l]->SetMarkerSize(0.05);
+	    signal_dPhi_syst[8][0][0][l]->SetMarkerSize(0.05);
+	    signal_dPhi_syst[10][0][0][l]->SetMarkerSize(0.05);
+	    signal_dPhi_syst[6][0][3][l]->SetMarkerSize(0.05);
+	    signal_dPhi_syst[8][0][3][l]->SetMarkerSize(0.05);
+	    signal_dPhi_syst[10][0][3][l]->SetMarkerSize(0.05);
+	    signal_dPhi_syst[3][0][3][l]->SetMarkerSize(0.05);
+	    signal_dPhi_syst[5][0][3][l]->SetMarkerSize(0.05);
+	    sub_lead_dPhi_syst[2][0][0][l]->SetMarkerSize(0.05);
+	    sub_lead_dPhi_syst[2][0][3][l]->SetMarkerSize(0.05);
+	    sub_lead_dPhi_syst[3][0][3][l]->SetMarkerSize(0.05);
+
+
+	    background_syst_rebin[0][0][0][l]->SetFillStyle(3004);
+	    background_syst_rebin[7][0][0][l]->SetFillStyle(3004);
+	    background_syst_rebin[0][0][3][l]->SetFillStyle(3004);
+	    background_syst_rebin[1][0][3][l]->SetFillStyle(3004);
+	    background_syst_rebin[7][0][3][l]->SetFillStyle(3004);
+	    signal_dPhi_syst[2][0][0][l]->SetFillStyle(3004);
+	    signal_dPhi_syst[4][0][0][l]->SetFillStyle(3004);
+	    signal_dPhi_syst[2][0][3][l]->SetFillStyle(3004);
+	    signal_dPhi_syst[6][0][0][l]->SetFillStyle(3004);
+	    signal_dPhi_syst[8][0][0][l]->SetFillStyle(3004);
+	    signal_dPhi_syst[10][0][0][l]->SetFillStyle(3004);
+	    signal_dPhi_syst[6][0][3][l]->SetFillStyle(3004);
+	    signal_dPhi_syst[8][0][3][l]->SetFillStyle(3004);
+	    signal_dPhi_syst[10][0][3][l]->SetFillStyle(3004);
+	    signal_dPhi_syst[3][0][3][l]->SetFillStyle(3004);
+	    signal_dPhi_syst[5][0][3][l]->SetFillStyle(3004);
+	    sub_lead_dPhi_syst[2][0][0][l]->SetFillStyle(3004);
+	    sub_lead_dPhi_syst[2][0][3][l]->SetFillStyle(3004);
+	    sub_lead_dPhi_syst[3][0][3][l]->SetFillStyle(3004);
+
+
+
+	    background_syst_rebin[0][0][0][l]->SetFillColor(kBlack);
+	    background_syst_rebin[7][0][0][l]->SetFillColor(kBlack);
+	    background_syst_rebin[0][0][3][l]->SetFillColor(kBlack);
+	    background_syst_rebin[1][0][3][l]->SetFillColor(kBlack);
+	    background_syst_rebin[7][0][3][l]->SetFillColor(kBlack);
+	    signal_dPhi_syst[2][0][0][l]->SetFillColor(kBlack);
+	    signal_dPhi_syst[4][0][0][l]->SetFillColor(kBlack);
+	    signal_dPhi_syst[2][0][3][l]->SetFillColor(kBlack);
+	    signal_dPhi_syst[6][0][0][l]->SetFillColor(kBlack);
+	    signal_dPhi_syst[8][0][0][l]->SetFillColor(kBlack);
+	    signal_dPhi_syst[10][0][0][l]->SetFillColor(kBlack);
+	    signal_dPhi_syst[6][0][3][l]->SetFillColor(kBlack);
+	    signal_dPhi_syst[8][0][3][l]->SetFillColor(kBlack);
+	    signal_dPhi_syst[10][0][3][l]->SetFillColor(kBlack);
+	    signal_dPhi_syst[3][0][3][l]->SetFillColor(kBlack);
+	    signal_dPhi_syst[5][0][3][l]->SetFillColor(kBlack);
+	    sub_lead_dPhi_syst[2][0][0][l]->SetFillColor(kBlack);
+	    sub_lead_dPhi_syst[2][0][3][l]->SetFillColor(kBlack);
+	    sub_lead_dPhi_syst[3][0][3][l]->SetFillColor(kBlack);
+
+
+
+
+
+
+	    in_name = make_name("Double_Diff_NoBkgSub_Syst_",6,0,0,l,pTlabel,centlabel,Ajlabel);
+	    sub_lead_dPhi_syst[6][0][0][l] = (TH1D*)sub_lead_dPhi_syst[2][0][0][l]->Clone(in_name);
+	    sub_lead_dPhi_syst[6][0][0][l]->Add( sub_lead_dPhi_syst[3][0][3][l],-1.);
+
+
+	    in_name = make_name("Double_Diff_NoBkgSub_Syst_",6,0,2,l,pTlabel,centlabel,Ajlabel);
+	    sub_lead_dPhi_syst[6][0][3][l] = (TH1D*) sub_lead_dPhi_syst[2][0][3][l]->Clone(in_name);
+	    sub_lead_dPhi_syst[6][0][3][l]->Add( sub_lead_dPhi_syst[3][0][3][l],-1.);
+
+	  }
+	  cout<<"and here"<<endl;  
+	    for(int g = 0; g<2; g++){
+
+	      if(j!=3&&g==1)continue;
 
 	    in_name = make_name("sub_lead_dPhi_NoErrUp_",g,i,j,l,pTlabel,centlabel,Ajlabel);
 	    sub_lead_dPhi_noerr_up[g][i][j][l][mc_code] = new TH1D(in_name,"",nbounds_phi-1,bin_bounds_phi);
@@ -702,6 +956,7 @@ Int_t study_yield_mc(bool use_highpT_bin = kFALSE){
 	    //------------------
 	    //Spill-over and JFF correct
 
+
 	    if(g%2==0&&(mc_code==1||mc_code==2||mc_code==5)){
 	      sub_lead_dPhi_rebin[g][i][j][l][mc_code]->Add(spill_over_dPhi[g+2][i][j][l],-1.);
 	      sub_lead_dPhi_rebin[g][i][j][l][mc_code]->Add(spill_over_dPhi[g+4][i][j][l],1.);
@@ -714,6 +969,7 @@ Int_t study_yield_mc(bool use_highpT_bin = kFALSE){
 	      sub_lead_dPhi_rebin[g][i][j][l][mc_code]->Add(jff_residual_dPhi[g+4][i][j][l]);
 	    }
 
+	
 	    cout<<"corrected"<<endl;
 
 	    //--------------------
@@ -771,38 +1027,6 @@ Int_t study_yield_mc(bool use_highpT_bin = kFALSE){
 	}
     
 	for(int j = 0; j<4; j++){
-	  /*
-	  if(j==1){
-	    continue;
-	  
-	  }else if(j==0){
-
-	    cout<<"adding..."<<i<<" "<<j<<" "<<l<<" "<<mc_code<<endl;
-	    //  THIS IS WRONG FOR j CENTRALITY COUNTING 
-
-	    signal_dPhi_rebin[2][i][j][l][mc_code]->Scale(njets[4*l+j]);
-	    signal_dPhi_rebin[4][i][j][l][mc_code]->Scale(njets[4*l+j]);
-	    background_diff_rebin[0][i][j][l][mc_code]->Scale(njets[4*l+j]);
-	    sub_lead_dPhi_rebin[0][i][j][l][mc_code]->Scale(njets[4*l+j]);
-	 
-
-
-	    signal_dPhi_rebin[2][i][j][l][mc_code]->Add( signal_dPhi_rebin[2][i][j+1][l][mc_code],njets[4*l+j+1]);
-	    signal_dPhi_rebin[4][i][j][l][mc_code]->Add( signal_dPhi_rebin[4][i][j+1][l][mc_code],njets[4*l+j+1]);
-	    background_diff_rebin[0][i][j][l][mc_code]->Add(background_diff_rebin[0][i][j+1][l][mc_code],njets[4*l+j+1]);
-	    sub_lead_dPhi_rebin[0][i][j][l][mc_code]->Add(sub_lead_dPhi_rebin[0][i][j+1][l][mc_code],njets[4*l+j+1]);
-	   
-
-	    signal_dPhi_rebin[2][i][j][l][mc_code]->Scale(1./(njets[4*l+j]+njets[4*l+j+1]));
-	    signal_dPhi_rebin[4][i][j][l][mc_code]->Scale(1./(njets[4*l+j]+njets[4*l+j+1]));
-	    background_diff_rebin[0][i][j][l][mc_code]->Scale(1./(njets[4*l+j]+njets[4*l+j+1]));
-	    sub_lead_dPhi_rebin[0][i][j][l][mc_code]->Scale(1./(njets[4*l+j]+njets[4*l+j+1]));
-	 
-	    cout<<"added"<<endl;
-	
- 
-	  }
-    */
 
 	  for(int g = 0; g<2; g++){
 	 
@@ -1049,12 +1273,12 @@ Int_t study_yield_mc(bool use_highpT_bin = kFALSE){
       signal_dPhi_tot[6][0][2][l][mc_code]->Add( signal_dPhi_tot[10][0][2][l][mc_code] );
 
 
-      tot_name = make_name("BackgroundDiff_PbPb_pp_",0,0,3,l,pTlabel,centlabel,Ajlabel);
+      tot_name = make_name("BackgroundDiff_PbPb_pp_",0,0,2,l,pTlabel,centlabel,Ajlabel);
       background_diff_tot[7][0][2][l][mc_code] = (TH1D*) background_diff_tot[0][0][2][l][mc_code]->Clone(tot_name);
       background_diff_tot[7][0][2][l][mc_code]->Add( background_diff_tot[1][0][3][l][mc_code],-1. );
 
    
-      tot_name = make_name("Sub_Lead_PbPb_pp_",2,0,3,l,pTlabel,centlabel,Ajlabel);
+      tot_name = make_name("Sub_Lead_PbPb_pp_",2,0,2,l,pTlabel,centlabel,Ajlabel);
       sub_lead_dPhi_tot[6][0][2][l][mc_code] = (TH1D*) sub_lead_dPhi_tot[0][0][2][l][mc_code]->Clone(tot_name);
       sub_lead_dPhi_tot[6][0][2][l][mc_code]->Add( sub_lead_dPhi_tot[1][0][3][l][mc_code],-1. );
 
@@ -1401,35 +1625,33 @@ Int_t study_yield_mc(bool use_highpT_bin = kFALSE){
 
 	  }
 	}
-      
-	signal_max = 135.;
-	signal_min = -135.;
-      
-
-	diff_max = 31.;
-	diff_min = -31.;
-      
-	double_diff_max = 31.;
-	double_diff_min = -31.; 
-      
-	no_bgsub_max = 51.;
-	no_bgsub_min = -51.;
-
-
-	if(use_highpT_bin){
-	  signal_max = 600.;
-	  signal_min = -600.;
+       signal_max = 104.;
+      signal_min = -104.;
       
 
-	  diff_max = 61.;
-	  diff_min = -61.;
+      diff_max = 16.;
+      diff_min = -16.;
       
-	  double_diff_max = 61.;
-	  double_diff_min = -61.; 
+      double_diff_max = 11.;
+      double_diff_min = -11.; 
       
-	  no_bgsub_max = 291.;
-	  no_bgsub_min = -291.;
-	}
+      no_bgsub_max = 25.;
+      no_bgsub_min = -25.;
+
+      if(use_highpT_bin){
+	signal_max = 440.;
+	signal_min = -440.;
+      
+
+	diff_max = 38.;
+	diff_min = -38.;
+      
+	double_diff_max = 38.;
+	double_diff_min = -38.; 
+      
+	no_bgsub_max = 191.;
+	no_bgsub_min = -191.;
+      }
 
 
 
@@ -1458,8 +1680,8 @@ Int_t study_yield_mc(bool use_highpT_bin = kFALSE){
 	dPhi_pTdist_up[7][j][l][mc_code]->SetMaximum(double_diff_max);
 	dPhi_pTdist_up[7][j][l][mc_code]->SetMinimum(double_diff_min);
 
-	dPhi_Sub_Lead_NoBkg_up[6][j][l][mc_code]->SetMaximum(no_bgsub_max);
-	dPhi_Sub_Lead_NoBkg_up[6][j][l][mc_code]->SetMinimum(no_bgsub_min);
+	dPhi_Sub_Lead_NoBkg_up[6][j][l][mc_code]->SetMaximum(double_diff_max);
+	dPhi_Sub_Lead_NoBkg_up[6][j][l][mc_code]->SetMinimum(double_diff_min);
 
 
 
@@ -1582,6 +1804,52 @@ Int_t study_yield_mc(bool use_highpT_bin = kFALSE){
     
       cout<<"Drawing now!"<<endl;
 
+      c_jet[l][mc_code]->cd(0);
+
+    TLatex *aj_tex = new TLatex(0.07,0.98,Ajlabel);
+    aj_tex->SetTextSize(0.025);
+    aj_tex->SetLineColor(kWhite);
+    aj_tex->SetNDC();
+    aj_tex->Draw();
+    
+    TLatex *type_tex = new TLatex(0.3,0.98,"Jet Peak, |#Delta#eta| < 2.5");
+    type_tex->SetTextSize(0.025);
+    type_tex->SetLineColor(kWhite);
+    type_tex->SetNDC();
+    type_tex->Draw();
+   
+    TLatex   *MC_tex = new TLatex(0.07,0.96,"PYTHIA 6.423 Tune Z2");
+    MC_tex->SetTextFont(43);
+    MC_tex->SetTextSizePixels(25);
+    MC_tex->SetLineColor(kWhite);
+    MC_tex->SetNDC();
+    MC_tex->Draw();
+
+    TLatex   *Hyd_tex = new TLatex(0.3,0.96,"HYDJET v1.8");
+    Hyd_tex->SetTextFont(43);
+    Hyd_tex->SetTextSizePixels(25);
+    Hyd_tex->SetLineColor(kWhite);
+    Hyd_tex->SetNDC();
+    Hyd_tex->Draw();
+   
+    TLatex   *jet_reco_tex = new TLatex(0.605,0.98,"anti-kT R = 0.3, |#eta_{jet}| < 1.6");
+    jet_reco_tex->SetTextFont(43);
+    jet_reco_tex->SetTextSizePixels(25);
+    jet_reco_tex->SetLineColor(kWhite);
+    jet_reco_tex->SetNDC();
+    jet_reco_tex->Draw();
+
+    TLatex   *jet_cut_tex = new TLatex(0.605,0.96,"120 < p_{T,1}< 300, p_{T,2}> 50 GeV/c, #Delta#phi_{1,2}> 5#pi/6");
+    jet_cut_tex->SetTextFont(43);
+    jet_cut_tex->SetTextSizePixels(25);
+    jet_cut_tex->SetLineColor(kWhite);
+    jet_cut_tex->SetNDC();
+    jet_cut_tex->Draw();
+    
+
+
+   
+
       c_jet[l][mc_code]->cd(4);
 
 
@@ -1591,23 +1859,12 @@ Int_t study_yield_mc(bool use_highpT_bin = kFALSE){
       legend->AddEntry(signal_dPhi_noerr_up[2][2][0][l][mc_code],"2<p_{T}^{assoc.}<3 GeV/c","f");
       legend->AddEntry(signal_dPhi_noerr_up[2][3][0][l][mc_code],"3<p_{T}^{assoc.}<4 GeV/c","f");
       legend->AddEntry(signal_dPhi_noerr_up[2][4][0][l][mc_code],"4<p_{T}^{assoc.}<8 GeV/c","f");
+      if(use_highpT_bin)      legend->AddEntry(signal_dPhi_noerr_up[2][5][0][l][mc_code],"p_{T}^{assoc.}>8 GeV/c","f");
       legend->SetTextSize(0.055);
       legend->SetLineColor(kWhite);
       legend->Draw();
 
-  
-      TLatex *aj_tex = new TLatex(0.05,0.2,Ajlabel);
-      aj_tex->SetTextSize(0.07);
-      aj_tex->SetLineColor(kWhite);
-      aj_tex->SetNDC();
-      aj_tex->Draw();
-    
-      TLatex *type_tex = new TLatex(0.05,0.1,"Jet Peak, |#Delta#eta|<2.5");
-      type_tex->SetTextSize(0.07);
-      type_tex->SetLineColor(kWhite);
-      type_tex->SetNDC();
-      type_tex->Draw();
-    
+
 
   
       c_jet[l][mc_code]->cd(1);
@@ -1626,9 +1883,13 @@ Int_t study_yield_mc(bool use_highpT_bin = kFALSE){
       dPhi_pTdist_down[5][3][l][mc_code]->Draw("same");
       dPhi_pTdist_down[3][3][l][mc_code]->Draw("same");
   
+  
+      if(mc_code==5) signal_dPhi_syst[3][0][3][l]->Draw("same e2");
+      if(mc_code==5) signal_dPhi_syst[5][0][3][l]->Draw("same e2");
       signal_dPhi_tot[3][0][3][l][mc_code]->Draw("same");
       signal_dPhi_tot[5][0][3][l][mc_code]->Draw("same");
  
+      cout<<"0"<<endl;
  
       label_pp = new TLatex(0.2,0.9,"PYTHIA");
       label_pp->SetTextSize(0.07);
@@ -1640,8 +1901,16 @@ Int_t study_yield_mc(bool use_highpT_bin = kFALSE){
       l_phi->SetLineStyle(2);
       l_phi->Draw();
 
+      TLatex *prelim_tex_dphi = new TLatex(0.35,0.05,"Preliminary Simulation");
+      prelim_tex_dphi->SetTextFont(53);
+      prelim_tex_dphi->SetTextSizePixels(25);
+      prelim_tex_dphi->SetLineColor(kWhite);
+      prelim_tex_dphi->SetNDC();
+      prelim_tex_dphi->Draw(); 
+  
+  
 
-      TLatex *cms_tex_dphi = new TLatex(0.2,0.05,"CMS Preliminary");
+      TLatex *cms_tex_dphi = new TLatex(0.2,0.05,"CMS");
       cms_tex_dphi->SetTextSize(0.07);
       cms_tex_dphi->SetLineColor(kWhite);
       cms_tex_dphi->SetNDC();
@@ -1660,6 +1929,11 @@ Int_t study_yield_mc(bool use_highpT_bin = kFALSE){
       signal_dPhi_tot[2][0][0][l][mc_code]->Draw("same");
       signal_dPhi_tot[4][0][0][l][mc_code]->Draw("same");
  
+      if(mc_code==5)    signal_dPhi_syst[2][0][0][l]->Draw("same e2");
+      if(mc_code==5)    signal_dPhi_syst[4][0][0][l]->Draw("same e2");
+ 
+   
+
       label_per = new TLatex(0.05,0.9,"P+H Cent. 50-100%");
       label_per->SetTextSize(0.07);
       label_per->SetLineColor(kWhite);
@@ -1674,6 +1948,13 @@ Int_t study_yield_mc(bool use_highpT_bin = kFALSE){
       dPhi_pTdist_up[4][2][l][mc_code]->Draw("same");
       dPhi_pTdist_down[4][2][l][mc_code]->Draw("same");
       dPhi_pTdist_down[2][2][l][mc_code]->Draw("same");
+
+    
+
+      if(mc_code==5)   signal_dPhi_syst[2][0][3][l]->Draw("same e2");
+      if(mc_code==5)  signal_dPhi_syst[4][0][3][l]->Draw("same e2");
+ 
+      cout<<"1"<<endl;
 
       signal_dPhi_tot[2][0][2][l][mc_code]->Draw("same");
       signal_dPhi_tot[4][0][2][l][mc_code]->Draw("same");
@@ -1706,8 +1987,11 @@ Int_t study_yield_mc(bool use_highpT_bin = kFALSE){
       dPhi_pTdist_down[8][0][l][mc_code]->Draw("same");
 
 
+      if(mc_code==5)  signal_dPhi_syst[8][0][0][l]->Draw("same e2");
       signal_dPhi_tot[8][0][0][l][mc_code]->Draw("same");
     
+      cout<<"2"<<endl;
+
       TLatex *label = new TLatex(0.05,0.9,"Subleading (P+H)-PYTHIA");
       label->SetTextSize(0.07);
       label->SetLineColor(kWhite);
@@ -1724,6 +2008,9 @@ Int_t study_yield_mc(bool use_highpT_bin = kFALSE){
       l_phi->Draw();
       dPhi_pTdist_down[8][2][l][mc_code]->Draw("same");
 
+      if(mc_code==5)     signal_dPhi_syst[8][0][3][l]->Draw("same e2");
+
+
       signal_dPhi_tot[8][0][2][l][mc_code]->Draw("same");
 
    
@@ -1737,8 +2024,9 @@ Int_t study_yield_mc(bool use_highpT_bin = kFALSE){
       dPhi_pTdist_up[10][0][l][mc_code]->GetYaxis()->CenterTitle();
       dPhi_pTdist_down[10][0][l][mc_code]->Draw("same");
 
+      if(mc_code==5)    signal_dPhi_syst[10][0][0][l]->Draw("same e2");
       signal_dPhi_tot[10][0][0][l][mc_code]->Draw("same");
- 
+      cout<<"3"<<endl;
  
  
       label = new TLatex(0.05,0.9,"Leading (P+H)-PYTHIA (#times -1)");
@@ -1755,9 +2043,10 @@ Int_t study_yield_mc(bool use_highpT_bin = kFALSE){
       dPhi_pTdist_down[10][2][l][mc_code]->Draw("same");
       //  orientation->Draw();
 
+      if(mc_code==5)  signal_dPhi_syst[10][0][3][l]->Draw("same e2");
       signal_dPhi_tot[10][0][2][l][mc_code]->Draw("same");
  
- 
+      cout<<"4"<<endl;
 
       l_phi->Draw();
 
@@ -1776,6 +2065,7 @@ Int_t study_yield_mc(bool use_highpT_bin = kFALSE){
       dPhi_pTdist_up[6][0][l][mc_code]->GetXaxis()->SetLabelSize(0.07); 
       dPhi_pTdist_down[6][0][l][mc_code]->Draw("same");
 
+      if(mc_code==5)    signal_dPhi_syst[6][0][3][l]->Draw("same e2");
       signal_dPhi_tot[6][0][0][l][mc_code]->Draw("same");
  
  
@@ -1802,25 +2092,64 @@ Int_t study_yield_mc(bool use_highpT_bin = kFALSE){
       dPhi_pTdist_up[6][2][l][mc_code]->GetXaxis()->SetLabelSize(0.07); 
       dPhi_pTdist_down[6][2][l][mc_code]->Draw("same");
 
+      if(mc_code==5)   signal_dPhi_syst[6][0][3][l]->Draw("same e2");
       signal_dPhi_tot[6][0][2][l][mc_code]->Draw("same");
 
+   
  
 
       l_phi->Draw();
       //  orientation->Draw();
 
-      c_longrange[l][mc_code]->cd(4);
-      legend->Draw();
-  
+
+      c_longrange[l][mc_code]->cd(0);
+
+
+      aj_tex = new TLatex(0.07,0.96,Ajlabel);
+      aj_tex->SetTextSize(0.03);
+      aj_tex->SetLineColor(kWhite);
+      aj_tex->SetNDC();
+      aj_tex->Draw();
       aj_tex->Draw();
    
-      type_tex = new TLatex(0.05,0.1,"Long Range, |#Delta#eta|<2.5");
-      type_tex->SetTextSize(0.07);
+      type_tex = new TLatex(0.3,0.96,"Long Range, |#Delta#eta|< 2.5");
+      type_tex->SetTextSize(0.03);
       type_tex->SetLineColor(kWhite);
       type_tex->SetNDC();
       type_tex->Draw();
-
    
+      TLatex  *luminosity_tex_pp = new TLatex(0.07,0.915,"PYTHIA 6.423 Tune Z2");
+      luminosity_tex_pp->SetTextFont(43);
+      luminosity_tex_pp->SetTextSizePixels(25);
+      luminosity_tex_pp->SetLineColor(kWhite);
+      luminosity_tex_pp->SetNDC();
+      luminosity_tex_pp->Draw();
+   
+      TLatex  *luminosity_tex_PbPb = new TLatex(0.3,0.915,"HYDJET v1.8");
+      luminosity_tex_PbPb->SetTextFont(43);
+      luminosity_tex_PbPb->SetTextSizePixels(25);
+      luminosity_tex_PbPb->SetLineColor(kWhite);
+      luminosity_tex_PbPb->SetNDC();
+      luminosity_tex_PbPb->Draw();
+    
+
+      jet_reco_tex = new TLatex(0.605,0.96,"anti-kT R = 0.3, |#eta_{jet}| < 1.6");
+      jet_reco_tex->SetTextFont(43);
+      jet_reco_tex->SetTextSizePixels(25);
+      jet_reco_tex->SetLineColor(kWhite);
+      jet_reco_tex->SetNDC();
+      jet_reco_tex->Draw();
+
+      jet_cut_tex = new TLatex(0.605,0.915,"120 < p_{T,1}< 300, p_{T,2}> 50 GeV/c, #Delta#phi_{1,2}> 5#pi/6");
+      jet_cut_tex->SetTextFont(43);
+      jet_cut_tex->SetTextSizePixels(25);
+      jet_cut_tex->SetLineColor(kWhite);
+      jet_cut_tex->SetNDC();
+      jet_cut_tex->Draw();
+
+      c_longrange[l][mc_code]->cd(4);
+      legend->Draw();
+     
       c_longrange[l][mc_code]->cd(1);
       dPhi_pTdist_up[1][3][l][mc_code]->Draw();
       label_pp->Draw();
@@ -1837,11 +2166,14 @@ Int_t study_yield_mc(bool use_highpT_bin = kFALSE){
       dPhi_pTdist_up[1][3][l][mc_code]->GetXaxis()->SetLabelSize(0.07); 
       dPhi_pTdist_down[1][3][l][mc_code]->Draw("same");
 
+      if(mc_code==5)   background_syst_rebin[1][0][3][l]->Draw("same e2");
       background_diff_tot[1][0][3][l][mc_code]->Draw("same");
   
+      cout<<"5"<<endl;
       l_phi->Draw();
 
       cms_tex_dphi->Draw(); 
+      prelim_tex_dphi->Draw(); 
       
       c_longrange[l][mc_code]->cd(2);
 
@@ -1849,6 +2181,7 @@ Int_t study_yield_mc(bool use_highpT_bin = kFALSE){
       dPhi_pTdist_up[0][0][l][mc_code]->GetYaxis()->SetLabelSize(0.);
       dPhi_pTdist_down[0][0][l][mc_code]->Draw("same");
 
+      if(mc_code==5)  background_syst_rebin[0][0][0][l]->Draw("same e2");
       background_diff_tot[0][0][0][l][mc_code]->Draw("same");
  
       label_per->Draw();
@@ -1862,6 +2195,7 @@ Int_t study_yield_mc(bool use_highpT_bin = kFALSE){
       label_cent->Draw();
       orientation->Draw();
    
+      if(mc_code==5)    background_syst_rebin[0][0][3][l]->Draw("same e2");
       background_diff_tot[0][0][2][l][mc_code]->Draw("same");
 
       l_phi->Draw();
@@ -1882,7 +2216,10 @@ Int_t study_yield_mc(bool use_highpT_bin = kFALSE){
       l_phi->Draw();
       dPhi_pTdist_down[7][0][l][mc_code]->Draw("same");
 
+      if(mc_code==5)  background_syst_rebin[7][0][0][l]->Draw("same e2");
       background_diff_tot[7][0][0][l][mc_code]->Draw("same");
+
+      cout<<"6"<<endl;
 
       TLatex *label_per2 = new TLatex(0.05,0.9,"(P+H)-PYTHIA 50-100% Cent.");
       label_per2->SetTextSize(0.07);
@@ -1902,21 +2239,42 @@ Int_t study_yield_mc(bool use_highpT_bin = kFALSE){
       dPhi_pTdist_up[7][2][l][mc_code]->GetXaxis()->SetLabelSize(0.07); 
       dPhi_pTdist_down[7][2][l][mc_code]->Draw("same");
 
+     if(mc_code==5)  background_syst_rebin[7][0][3][l]->Draw("same e2");
       background_diff_tot[7][0][2][l][mc_code]->Draw("same");
+
+      cout<<"7"<<endl;
+
       l_phi->Draw();
     
 
-      c_nobkgsub[l][mc_code]->cd(4);
-      legend->Draw();
-  
+      c_nobkgsub[l][mc_code]->cd(0);
+
+
       aj_tex->Draw();
     
-      type_tex = new TLatex(0.05,0.1,"Subleading-Leading, |#Delta#eta|<2.5");
-      type_tex->SetTextSize(0.07);
+      type_tex = new TLatex(0.3,0.96,"Hemisphere Difference, |#Delta#eta|< 2.5");
+      type_tex->SetTextSize(0.03);
       type_tex->SetLineColor(kWhite);
       type_tex->SetNDC();
       type_tex->Draw();
-  
+
+      luminosity_tex_pp->Draw();
+      luminosity_tex_PbPb->Draw();
+      jet_reco_tex->Draw();
+      jet_cut_tex->Draw();
+    
+
+
+
+      c_nobkgsub[l][mc_code]->cd(4);
+
+
+
+
+
+      legend->Draw();
+      
+    
       c_nobkgsub[l][mc_code]->cd(1);
  
       dPhi_Sub_Lead_NoBkg_up[1][3][l][mc_code]->Draw();
@@ -1931,6 +2289,7 @@ Int_t study_yield_mc(bool use_highpT_bin = kFALSE){
       dPhi_Sub_Lead_NoBkg_down[1][3][l][mc_code]->Draw("same");   
 
 
+      if(mc_code==5)     sub_lead_dPhi_syst[3][0][3][l]->Draw("same e2");
       sub_lead_dPhi_tot[1][0][3][l][mc_code]->Draw("same");
 
       label_pp->Draw();
@@ -1938,6 +2297,8 @@ Int_t study_yield_mc(bool use_highpT_bin = kFALSE){
       l_phi->Draw();
 
       cms_tex_dphi->Draw(); 
+      prelim_tex_dphi->Draw(); 
+
       c_nobkgsub[l][mc_code]->cd(2);
 
 
@@ -1945,9 +2306,11 @@ Int_t study_yield_mc(bool use_highpT_bin = kFALSE){
       dPhi_Sub_Lead_NoBkg_up[0][0][l][mc_code]->GetYaxis()->SetLabelSize(0.);
       dPhi_Sub_Lead_NoBkg_down[0][0][l][mc_code]->Draw("same");
 
+      if(mc_code==5)     sub_lead_dPhi_syst[2][0][0][l]->Draw("same e2");
       sub_lead_dPhi_tot[0][0][0][l][mc_code]->Draw("same");
       label_per->Draw();
       l_phi->Draw();
+
 
       c_nobkgsub[l][mc_code]->cd(3);
    
@@ -1955,6 +2318,7 @@ Int_t study_yield_mc(bool use_highpT_bin = kFALSE){
       dPhi_Sub_Lead_NoBkg_up[0][2][l][mc_code]->GetYaxis()->SetLabelSize(0.);
       dPhi_Sub_Lead_NoBkg_down[0][2][l][mc_code]->Draw("same");
 
+      if(mc_code==5)     sub_lead_dPhi_syst[2][0][3][l]->Draw("same e2");
       sub_lead_dPhi_tot[0][0][2][l][mc_code]->Draw("same");
       label_cent->Draw();
 
@@ -1979,6 +2343,7 @@ Int_t study_yield_mc(bool use_highpT_bin = kFALSE){
       dPhi_Sub_Lead_NoBkg_up[6][0][l][mc_code]->GetXaxis()->CenterTitle();
       dPhi_Sub_Lead_NoBkg_down[6][0][l][mc_code]->Draw("same");
 
+      if(mc_code==5) sub_lead_dPhi_syst[6][0][0][l]->Draw("same e2");
       sub_lead_dPhi_tot[6][0][0][l][mc_code]->Draw("same");
 
       label = new TLatex(0.05,0.9,"(P+H)-PYTHIA");
@@ -2002,6 +2367,7 @@ Int_t study_yield_mc(bool use_highpT_bin = kFALSE){
       dPhi_Sub_Lead_NoBkg_up[6][2][l][mc_code]->GetXaxis()->CenterTitle();
       dPhi_Sub_Lead_NoBkg_down[6][2][l][mc_code]->Draw("same");
 
+      if(mc_code==5)   sub_lead_dPhi_syst[6][0][3][l]->Draw("same e2");
       sub_lead_dPhi_tot[6][0][2][l][mc_code]->Draw("same");
 
       l_phi->Draw();
