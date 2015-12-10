@@ -463,7 +463,8 @@ Int_t jff_residual_aj(bool is_recogen = kFALSE, bool is_number = kFALSE){
 	  else residual_name_eta.ReplaceAll("pp","Pythia");
 
 	  jff_residual_eta[g][i][j][l] = (TH1D*)eta_proj_rebin[g-1][i][j][l]->Clone(residual_name_eta);
-	  jff_residual_eta[g][i][j][l]->Add(eta_proj_rebin[g][i][j][l],-1.);
+	  if(g>6&&!is_recogen) 	  jff_residual_eta[g][i][j][l]->Add(eta_proj_rebin[g-6][i][3][l],-1.);
+	  else	  jff_residual_eta[g][i][j][l]->Add(eta_proj_rebin[g][i][j][l],-1.);
 	  jff_residual_eta[g][i][j][l]->SetMinimum(residual_ymin);
 	  jff_residual_eta[g][i][j][l]->SetMaximum(residual_ymax);
 	 
@@ -476,7 +477,8 @@ Int_t jff_residual_aj(bool is_recogen = kFALSE, bool is_number = kFALSE){
 	  else residual_name_phi.ReplaceAll("pp","Pythia");
 
 	  jff_residual_phi[g][i][j][l] = (TH1D*)phi_proj_rebin[g-1][i][j][l]->Clone(residual_name_phi);
-	  jff_residual_phi[g][i][j][l]->Add(phi_proj_rebin[g][i][j][l],-1.);
+	  if(g>6&&!is_recogen) 	  jff_residual_phi[g][i][j][l]->Add(phi_proj_rebin[g-6][i][3][l],-1.);
+	  else	  jff_residual_phi[g][i][j][l]->Add(phi_proj_rebin[g][i][j][l],-1.);
 	  jff_residual_phi[g][i][j][l]->SetMinimum(residual_ymin);
 	  jff_residual_phi[g][i][j][l]->SetMaximum(residual_ymax);
 
@@ -632,7 +634,8 @@ Int_t jff_residual_aj(bool is_recogen = kFALSE, bool is_number = kFALSE){
 	    jff_residual_phi[g][i][j][l]->Draw();
 	    jff_residual_phi[g-6][i][3][l]->Draw("same");
 	    l_phi->Draw();
-	
+
+	   
 	  }
       
 	    if(g%2!=0&&g>5){
@@ -792,6 +795,14 @@ Int_t jff_residual_aj(bool is_recogen = kFALSE, bool is_number = kFALSE){
 	linePt->SetLineStyle(2);
 	linePt->SetLineWidth(1);
 	linePt->Draw("same");
+
+
+	if(j==3){
+	  TLatex *aj_label = new TLatex(0.05,0.8, Ajlabel);
+	  aj_label->SetNDC();
+	  aj_label->SetTextSizePixels(tspixels);
+	  aj_label->Draw();
+	}
 
       
 	if(g!=11)continue;
@@ -1036,16 +1047,32 @@ Int_t jff_residual_aj(bool is_recogen = kFALSE, bool is_number = kFALSE){
 
 
 
+	  if(i==0){
+	    TLatex *pt_label = new TLatex(0.2,0.9, TrkPtBin_labels[i]);
+	    pt_label->SetNDC();
+	    pt_label->SetTextSizePixels(tspixels);
+	    pt_label->Draw();
 
-	  TLatex *pt_label = new TLatex(0.2,0.85, TrkPtBin_labels[i]);
-	  pt_label->SetNDC();
-	  pt_label->SetTextSizePixels(tspixels);
-	  pt_label->Draw();
+	    TLatex *aj_label = new TLatex(0.2,0.8, Ajlabel);
+	    aj_label->SetNDC();
+	    aj_label->SetTextSizePixels(tspixels);
+	    aj_label->Draw();
+	  }else{
+	    TLatex *pt_label = new TLatex(0.05,0.9, TrkPtBin_labels[i]);
+	    pt_label->SetNDC();
+	    pt_label->SetTextSizePixels(tspixels);
+	    pt_label->Draw();
 
-	  TLatex *aj_label = new TLatex(0.2,0.8, Ajlabel);
-	  aj_label->SetNDC();
-	  aj_label->SetTextSizePixels(tspixels);
-	  aj_label->Draw();
+	    TLatex *aj_label = new TLatex(0.05,0.85, Ajlabel);
+	    aj_label->SetNDC();
+	    aj_label->SetTextSizePixels(tspixels);
+	    aj_label->Draw();
+
+
+
+	  }
+
+
 	}
 
       }
@@ -1077,11 +1104,21 @@ Int_t jff_residual_aj(bool is_recogen = kFALSE, bool is_number = kFALSE){
 	cintegral_eta_cent[g][l]->SaveAs("Integral_Closure_Cent_Leading_"+AjBin_strs[l]+"_"+AjBin_strs[l+1]+".pdf");
 	cintegral_eta_cent[g][l]->SaveAs("Integral_Closure_Cent_Leading_"+AjBin_strs[l]+"_"+AjBin_strs[l+1]+".png");
    
-      }
-
+      } 
     
     }//l
   }//g
+
+
+  for(int i = 0; i<6; i++){
+
+      llimiteta = jff_residual_eta[9][i][1][1]->GetXaxis()->FindBin(-.2+.0001);
+	  rlimiteta = jff_residual_eta[9][i][1][1]->GetXaxis()->FindBin(0.2-.0001);
+	     
+	  double Yield_eta = 
+	    cout<<i<<" "<< jff_residual_eta[9][i][1][1]->Integral(llimiteta,rlimiteta,"width")/ abs(eta_proj_rebin[9][i][1][1]->Integral(llimiteta,rlimiteta,"width"))<<endl;
+
+  }
   
   return 0;
 }
