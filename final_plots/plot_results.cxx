@@ -15,6 +15,7 @@
 #include "TLegend.h"
 #include "TGraphErrors.h"
 #include "TMultiGraph.h"
+#include "TGaxis.h"
 #include "TStyle.h"
 #include "TLatex.h"
 #include "THStack.h"
@@ -38,13 +39,16 @@ Int_t plot_results(){
   gStyle->SetOptTitle(1);
   gStyle->SetHatchesLineWidth(2);
 
+  // gStyle->SetTextFont(63);
+
   gStyle->SetPadBottomMargin(0.15);
-  gStyle->SetPadTopMargin   (0.05);
+  gStyle->SetPadTopMargin   (0.25);
   gStyle->SetPadLeftMargin  (0.15);
   gStyle->SetPadRightMargin (0.05);
     
   gStyle->SetPadTickX       (1);
   gStyle->SetPadTickY       (1);
+  gStyle->SetNdivisions(510);
 
  
   TH1D *signal_dPhi_rebin[12][6][4][5];
@@ -94,6 +98,8 @@ Int_t plot_results(){
 
   TFile *f_in = new TFile("../study_yield/Dijet_Results.root");
   TFile *f_in_nobkgsub = new TFile("../study_yield/Dijet_Results_NoBkgSub.root");
+
+  TFile *f_out = new TFile("Systematic_Error.root","RECREATE");
  
   TString in_name, stack_name, tot_name, pTlabel,centlabel,Ajlabel;
 
@@ -367,16 +373,16 @@ Int_t plot_results(){
     background_diff_tot[1][0][3][l]->SetMarkerStyle(4);
     sub_lead_dPhi_tot[1][0][3][l]->SetMarkerStyle(4);
  
-
+ 
 
     signal_dPhi_syst[2][0][0][l] = (TH1D*)f_in->Get((TString)("SubLeading_dPhi_Syst_PbPb_Cent50_Cent100_Pt100_Pt300_"+AjName_strs[l]+"TrkPt4_TrkPt8"))->Clone((TString)("SubLeading_dPhi_Syst_PbPb_"+AjName_strs[l]+"Cent50_Cent100"));
   
 
     signal_dPhi_syst[4][0][0][l] = (TH1D*)f_in->Get((TString)("Leading_dPhi_Syst_PbPb_Cent50_Cent100_Pt100_Pt300_"+AjName_strs[l]+"TrkPt4_TrkPt8"))->Clone((TString)("Leading_dPhi_Syst_PbPb_"+AjName_strs[l]+"Cent50_Cent100"));
 
-    signal_dPhi_syst[2][0][3][l] = (TH1D*)f_in->Get((TString)("SubLeading_dPhi_Syst_PbPb_Cent0_Cent10_Pt100_Pt300_"+AjName_strs[l]+"TrkPt4_TrkPt8"))->Clone((TString)("SubLeading_dPhi_Syst_PbPb_"+AjName_strs[l]+"Cent0_Cent10"));
+    signal_dPhi_syst[2][0][2][l] = (TH1D*)f_in->Get((TString)("SubLeading_dPhi_Syst_PbPb_Cent10_Cent30_Pt100_Pt300_"+AjName_strs[l]+"TrkPt4_TrkPt8"))->Clone((TString)("SubLeading_dPhi_Syst_PbPb_"+AjName_strs[l]+"Cent10_Cent30"));
 
-    signal_dPhi_syst[4][0][3][l] = (TH1D*)f_in->Get((TString)("Leading_dPhi_Syst_PbPb_Cent0_Cent10_Pt100_Pt300_"+AjName_strs[l]+"TrkPt4_TrkPt8"))->Clone((TString)("Leading_dPhi_Syst_PbPb_"+AjName_strs[l]+"Cent0_Cent10"));
+    signal_dPhi_syst[4][0][2][l] = (TH1D*)f_in->Get((TString)("Leading_dPhi_Syst_PbPb_Cent10_Cent30_Pt100_Pt300_"+AjName_strs[l]+"TrkPt4_TrkPt8"))->Clone((TString)("Leading_dPhi_Syst_PbPb_"+AjName_strs[l]+"Cent10_Cent30"));
 
 
      signal_dPhi_syst[3][0][3][l] = (TH1D*)f_in->Get((TString)("SubLeading_dPhi_Syst_pp_Cent0_Cent10_Pt100_Pt300_"+AjName_strs[l]+"TrkPt4_TrkPt8"))->Clone((TString)("SubLeading_dPhi_Syst_pp_"+AjName_strs[l]+"Cent0_Cent10"));
@@ -386,91 +392,94 @@ Int_t plot_results(){
 
     sub_lead_dPhi_syst[2][0][0][l] = (TH1D*)f_in_nobkgsub->Get((TString)("SubLeading_dPhi_Syst_PbPb_Cent50_Cent100_Pt100_Pt300_"+AjName_strs[l]+"TrkPt4_TrkPt8"))->Clone((TString)("Diff_NoBkgSub_dPhi_Syst_PbPb_"+AjName_strs[l]+"Cent50_Cent100"));
   
-    sub_lead_dPhi_syst[2][0][3][l] = (TH1D*)f_in_nobkgsub->Get((TString)("SubLeading_dPhi_Syst_PbPb_Cent0_Cent10_Pt100_Pt300_"+AjName_strs[l]+"TrkPt4_TrkPt8"))->Clone((TString)("Diff_NoBkgSub_dPhi_Syst_PbPb_"+AjName_strs[l]+"Cent0_Cent10"));
+    sub_lead_dPhi_syst[2][0][2][l] = (TH1D*)f_in_nobkgsub->Get((TString)("SubLeading_dPhi_Syst_PbPb_Cent10_Cent30_Pt100_Pt300_"+AjName_strs[l]+"TrkPt4_TrkPt8"))->Clone((TString)("Diff_NoBkgSub_dPhi_Syst_PbPb_"+AjName_strs[l]+"Cent10_Cent30"));
 
      sub_lead_dPhi_syst[3][0][3][l] = (TH1D*)f_in_nobkgsub->Get((TString)("SubLeading_dPhi_Syst_pp_Cent0_Cent10_Pt100_Pt300_"+AjName_strs[l]+"TrkPt4_TrkPt8"))->Clone((TString)("Diff_NoBkgSub_dPhi_Syst_pp_"+AjName_strs[l]+"Cent0_Cent10"));
 
   
     signal_dPhi_syst[2][0][0][l]->SetMarkerStyle(20);
     signal_dPhi_syst[4][0][0][l]->SetMarkerStyle(20);
-    signal_dPhi_syst[2][0][3][l]->SetMarkerStyle(20);
-    signal_dPhi_syst[4][0][3][l]->SetMarkerStyle(20);
+    signal_dPhi_syst[2][0][2][l]->SetMarkerStyle(20);
+    signal_dPhi_syst[4][0][2][l]->SetMarkerStyle(20);
     signal_dPhi_syst[3][0][3][l]->SetMarkerStyle(20);
     signal_dPhi_syst[5][0][3][l]->SetMarkerStyle(20);
 
+    cout<<"and here"<<endl;
 
-    background_syst_rebin[0][4][3][l]->SetMarkerStyle(20);
+    background_syst_rebin[0][4][2][l]->SetMarkerStyle(20);
     background_syst_rebin[0][4][0][l]->SetMarkerStyle(20);
     background_syst_rebin[1][4][3][l]->SetMarkerStyle(20);
-    background_syst_rebin[7][4][3][l]->SetMarkerStyle(20);
+    background_syst_rebin[7][4][2][l]->SetMarkerStyle(20);
     background_syst_rebin[7][4][0][l]->SetMarkerStyle(20);
   
+    cout<<"also here"<<endl;
+    
     sub_lead_dPhi_syst[2][0][0][l]->SetMarkerStyle(20);
-    sub_lead_dPhi_syst[2][0][3][l]->SetMarkerStyle(20);
+    sub_lead_dPhi_syst[2][0][2][l]->SetMarkerStyle(20);
     sub_lead_dPhi_syst[3][0][3][l]->SetMarkerStyle(20);
-
+ 
 
     signal_dPhi_syst[2][0][0][l]->SetMarkerColor(kWhite);
     signal_dPhi_syst[4][0][0][l]->SetMarkerColor(kWhite);
-    signal_dPhi_syst[2][0][3][l]->SetMarkerColor(kWhite);
-    signal_dPhi_syst[4][0][3][l]->SetMarkerColor(kWhite);
+    signal_dPhi_syst[2][0][2][l]->SetMarkerColor(kWhite);
+    signal_dPhi_syst[4][0][2][l]->SetMarkerColor(kWhite);
     signal_dPhi_syst[3][0][3][l]->SetMarkerColor(kWhite);
     signal_dPhi_syst[5][0][3][l]->SetMarkerColor(kWhite);
 
 
-    background_syst_rebin[0][4][3][l]->SetMarkerColor(kWhite);
+    background_syst_rebin[0][4][2][l]->SetMarkerColor(kWhite);
     background_syst_rebin[0][4][0][l]->SetMarkerColor(kWhite);
     background_syst_rebin[1][4][3][l]->SetMarkerColor(kWhite);
-    background_syst_rebin[7][4][3][l]->SetMarkerColor(kWhite);
+    background_syst_rebin[7][4][2][l]->SetMarkerColor(kWhite);
     background_syst_rebin[7][4][0][l]->SetMarkerColor(kWhite);
 
 
     sub_lead_dPhi_syst[2][0][0][l]->SetMarkerColor(kWhite);
-    sub_lead_dPhi_syst[2][0][3][l]->SetMarkerColor(kWhite);
+    sub_lead_dPhi_syst[2][0][2][l]->SetMarkerColor(kWhite);
     sub_lead_dPhi_syst[3][0][3][l]->SetMarkerColor(kWhite);
 
   
   
     signal_dPhi_syst[2][0][0][l]->SetFillStyle(3004);
     signal_dPhi_syst[4][0][0][l]->SetFillStyle(3004);
-    signal_dPhi_syst[2][0][3][l]->SetFillStyle(3004);
-    signal_dPhi_syst[4][0][3][l]->SetFillStyle(3004);
+    signal_dPhi_syst[2][0][2][l]->SetFillStyle(3004);
+    signal_dPhi_syst[4][0][2][l]->SetFillStyle(3004);
     signal_dPhi_syst[3][0][3][l]->SetFillStyle(3004);
     signal_dPhi_syst[5][0][3][l]->SetFillStyle(3004);
-    background_syst_rebin[0][4][3][l]->SetFillStyle(3004);
+    background_syst_rebin[0][4][2][l]->SetFillStyle(3004);
     background_syst_rebin[0][4][0][l]->SetFillStyle(3004);
     background_syst_rebin[1][4][3][l]->SetFillStyle(3004);
-    background_syst_rebin[7][4][3][l]->SetFillStyle(3004);
+    background_syst_rebin[7][4][2][l]->SetFillStyle(3004);
     background_syst_rebin[7][4][0][l]->SetFillStyle(3004);
 
 
     sub_lead_dPhi_syst[2][0][0][l]->SetFillStyle(3004);
-    sub_lead_dPhi_syst[2][0][3][l]->SetFillStyle(3004);
+    sub_lead_dPhi_syst[2][0][2][l]->SetFillStyle(3004);
     sub_lead_dPhi_syst[3][0][3][l]->SetFillStyle(3004);
 
   
  
     signal_dPhi_syst[2][0][0][l]->SetFillColor(kBlack);
     signal_dPhi_syst[4][0][0][l]->SetFillColor(kBlack);
-    signal_dPhi_syst[2][0][3][l]->SetFillColor(kBlack);
-    signal_dPhi_syst[4][0][3][l]->SetFillColor(kBlack);
+    signal_dPhi_syst[2][0][2][l]->SetFillColor(kBlack);
+    signal_dPhi_syst[4][0][2][l]->SetFillColor(kBlack);
     signal_dPhi_syst[3][0][3][l]->SetFillColor(kBlack);
     signal_dPhi_syst[5][0][3][l]->SetFillColor(kBlack);
     background_syst_rebin[0][4][0][l]->SetFillColor(kBlack);
-    background_syst_rebin[0][4][3][l]->SetFillColor(kBlack);
+    background_syst_rebin[0][4][2][l]->SetFillColor(kBlack);
     background_syst_rebin[1][4][3][l]->SetFillColor(kBlack);
-    background_syst_rebin[7][4][3][l]->SetFillColor(kBlack);
+    background_syst_rebin[7][4][2][l]->SetFillColor(kBlack);
     background_syst_rebin[7][4][0][l]->SetFillColor(kBlack);
 
 
     sub_lead_dPhi_syst[2][0][0][l]->SetFillColor(kBlack);
-    sub_lead_dPhi_syst[2][0][3][l]->SetFillColor(kBlack);
+    sub_lead_dPhi_syst[2][0][2][l]->SetFillColor(kBlack);
     sub_lead_dPhi_syst[3][0][3][l]->SetFillColor(kBlack);
 
 
 
     
-    in_name = make_name("PbPb_pp_WithErrors_Syst_",8,0,3,l,pTlabel,centlabel,Ajlabel);
+    in_name = make_name("PbPb_pp_WithErrors_Syst_",8,0,0,l,pTlabel,centlabel,Ajlabel);
     signal_dPhi_syst[8][0][0][l] = (TH1D*)signal_dPhi_syst[2][0][0][l]->Clone(in_name);
     signal_dPhi_syst[8][0][0][l]->Add( signal_dPhi_syst[3][0][3][l],-1.);
 
@@ -531,32 +540,32 @@ Int_t plot_results(){
 
 
     in_name = make_name("PbPb_pp_WithErrors_Syst_",8,0,3,l,pTlabel,centlabel,Ajlabel);
-    signal_dPhi_syst[8][0][3][l] = (TH1D*)signal_dPhi_syst[2][0][3][l]->Clone(in_name);
-    signal_dPhi_syst[8][0][3][l]->Add( signal_dPhi_syst[3][0][3][l],-1.);
+    signal_dPhi_syst[8][0][2][l] = (TH1D*)signal_dPhi_syst[2][0][2][l]->Clone(in_name);
+    signal_dPhi_syst[8][0][2][l]->Add( signal_dPhi_syst[3][0][3][l],-1.);
 
     in_name.ReplaceAll("SubLeading","Leading");
-    signal_dPhi_syst[10][0][3][l] = (TH1D*)signal_dPhi_syst[4][0][3][l]->Clone(in_name);
-    signal_dPhi_syst[10][0][3][l]->Add( signal_dPhi_syst[5][0][3][l],-1.);
+    signal_dPhi_syst[10][0][2][l] = (TH1D*)signal_dPhi_syst[4][0][2][l]->Clone(in_name);
+    signal_dPhi_syst[10][0][2][l]->Add( signal_dPhi_syst[5][0][3][l],-1.);
 
 
 
   
    
-    for(int k = 1; k< signal_dPhi_syst[8][0][3][l]->GetNbinsX()+1; k++){
+    for(int k = 1; k< signal_dPhi_syst[8][0][2][l]->GetNbinsX()+1; k++){
       
-      bc_pbpb =  signal_dPhi_syst[2][0][3][l]->GetBinContent(k);
+      bc_pbpb =  signal_dPhi_syst[2][0][2][l]->GetBinContent(k);
       bc_pp =  signal_dPhi_syst[3][0][3][l]->GetBinContent(k);
       err_change = TMath::Sqrt(0.04*0.04+0.05*0.05)*(TMath::Sqrt(bc_pbpb*bc_pbpb+bc_pp*bc_pp)-TMath::Abs(bc_pbpb - bc_pp));
-      old_err = signal_dPhi_syst[8][0][3][l]->GetBinError(k);
+      old_err = signal_dPhi_syst[8][0][2][l]->GetBinError(k);
       new_err = TMath::Sqrt(old_err*old_err-err_change*err_change);
-      signal_dPhi_syst[8][0][3][l]->SetBinError(k,new_err);
+      signal_dPhi_syst[8][0][2][l]->SetBinError(k,new_err);
     
-      bc_pbpb =  signal_dPhi_syst[4][0][3][l]->GetBinContent(k);
+      bc_pbpb =  signal_dPhi_syst[4][0][2][l]->GetBinContent(k);
       bc_pp =  signal_dPhi_syst[5][0][3][l]->GetBinContent(k);
       err_change = TMath::Sqrt(0.04*0.04+0.05*0.05)*(TMath::Sqrt(bc_pbpb*bc_pbpb+bc_pp*bc_pp)-TMath::Abs(bc_pbpb - bc_pp)); 
-      old_err = signal_dPhi_syst[10][0][3][l]->GetBinError(k);
+      old_err = signal_dPhi_syst[10][0][2][l]->GetBinError(k);
       new_err = TMath::Sqrt(old_err*old_err-err_change*err_change);
-      signal_dPhi_syst[10][0][3][l]->SetBinError(k,new_err);
+      signal_dPhi_syst[10][0][2][l]->SetBinError(k,new_err);
 
     }
 
@@ -565,21 +574,21 @@ Int_t plot_results(){
 
 
     in_name.ReplaceAll("SubLeading","DoubleDiff");
-    signal_dPhi_syst[6][0][3][l] = (TH1D*)signal_dPhi_syst[8][0][3][l]->Clone(in_name);
-    signal_dPhi_syst[6][0][3][l]->Add( signal_dPhi_syst[10][0][3][l]);
+    signal_dPhi_syst[6][0][2][l] = (TH1D*)signal_dPhi_syst[8][0][2][l]->Clone(in_name);
+    signal_dPhi_syst[6][0][2][l]->Add( signal_dPhi_syst[10][0][2][l]);
  
 
 
    
-    for(int k = 1; k< signal_dPhi_syst[8][0][3][l]->GetNbinsX()+1; k++){
+    for(int k = 1; k< signal_dPhi_syst[8][0][2][l]->GetNbinsX()+1; k++){
       
-      bc_pbpb =  signal_dPhi_syst[2][0][3][l]->GetBinContent(k);
-      bc_pp =  signal_dPhi_syst[4][0][3][l]->GetBinContent(k);
-      err_change = TMath::Sqrt(0.04*0.04+0.05*0.05)*(bc_pbpb-TMath::Abs(signal_dPhi_syst[6][0][3][l]->GetBinContent(k)));
+      bc_pbpb =  signal_dPhi_syst[2][0][2][l]->GetBinContent(k);
+      bc_pp =  signal_dPhi_syst[4][0][2][l]->GetBinContent(k);
+      err_change = TMath::Sqrt(0.04*0.04+0.05*0.05)*(bc_pbpb-TMath::Abs(signal_dPhi_syst[6][0][2][l]->GetBinContent(k)));
     
-      old_err = signal_dPhi_syst[6][0][3][l]->GetBinError(k);
+      old_err = signal_dPhi_syst[6][0][2][l]->GetBinError(k);
       new_err = TMath::Sqrt(old_err*old_err-err_change*err_change);
-      signal_dPhi_syst[6][0][3][l]->SetBinError(k,new_err);
+      signal_dPhi_syst[6][0][2][l]->SetBinError(k,new_err);
     
     }
 
@@ -592,8 +601,8 @@ Int_t plot_results(){
 
 
     in_name = make_name("Double_Diff_NoBkgSub_Syst_",8,0,3,l,pTlabel,centlabel,Ajlabel);
-    sub_lead_dPhi_syst[8][0][3][l] = (TH1D*) sub_lead_dPhi_syst[2][0][3][l]->Clone(in_name);
-    sub_lead_dPhi_syst[8][0][3][l]->Add( sub_lead_dPhi_syst[3][0][3][l],-1.);
+    sub_lead_dPhi_syst[8][0][2][l] = (TH1D*) sub_lead_dPhi_syst[2][0][2][l]->Clone(in_name);
+    sub_lead_dPhi_syst[8][0][2][l]->Add( sub_lead_dPhi_syst[3][0][3][l],-1.);
 
 
 
@@ -627,27 +636,27 @@ Int_t plot_results(){
 
 
     tot_name = make_name("AllHists_PbPb_pp_",2,0,0,l,pTlabel,centlabel,Ajlabel);
-    signal_dPhi_tot[8][0][3][l] = (TH1D*) signal_dPhi_tot[2][0][3][l]->Clone(tot_name);
-    signal_dPhi_tot[8][0][3][l]->Add( signal_dPhi_tot[3][0][3][l],-1. );
+    signal_dPhi_tot[8][0][2][l] = (TH1D*) signal_dPhi_tot[2][0][2][l]->Clone(tot_name);
+    signal_dPhi_tot[8][0][2][l]->Add( signal_dPhi_tot[3][0][3][l],-1. );
 
     tot_name.ReplaceAll("SubLeading","Leading");
-    signal_dPhi_tot[10][0][3][l] = (TH1D*) signal_dPhi_tot[4][0][3][l]->Clone(tot_name);
-    signal_dPhi_tot[10][0][3][l]->Add( signal_dPhi_tot[5][0][3][l],-1. );
+    signal_dPhi_tot[10][0][2][l] = (TH1D*) signal_dPhi_tot[4][0][2][l]->Clone(tot_name);
+    signal_dPhi_tot[10][0][2][l]->Add( signal_dPhi_tot[5][0][3][l],-1. );
 
     tot_name.ReplaceAll("Leading","DoubleDiff");
  
-    signal_dPhi_tot[6][0][3][l] = (TH1D*) signal_dPhi_tot[8][0][3][l]->Clone(tot_name);
-    signal_dPhi_tot[6][0][3][l]->Add( signal_dPhi_tot[10][0][3][l] );
+    signal_dPhi_tot[6][0][2][l] = (TH1D*) signal_dPhi_tot[8][0][2][l]->Clone(tot_name);
+    signal_dPhi_tot[6][0][2][l]->Add( signal_dPhi_tot[10][0][2][l] );
 
 
     tot_name = make_name("BackgroundDiff_PbPb_pp_",2,0,3,l,pTlabel,centlabel,Ajlabel);
-    background_diff_tot[7][0][3][l] = (TH1D*) background_diff_tot[0][0][3][l]->Clone(tot_name);
-    background_diff_tot[7][0][3][l]->Add( background_diff_tot[1][0][3][l],-1. );
+    background_diff_tot[7][0][2][l] = (TH1D*) background_diff_tot[0][0][2][l]->Clone(tot_name);
+    background_diff_tot[7][0][2][l]->Add( background_diff_tot[1][0][3][l],-1. );
 
    
     tot_name = make_name("Sub_Lead_PbPb_pp_",2,0,3,l,pTlabel,centlabel,Ajlabel);
-    sub_lead_dPhi_tot[6][0][3][l] = (TH1D*) sub_lead_dPhi_tot[0][0][3][l]->Clone(tot_name);
-    sub_lead_dPhi_tot[6][0][3][l]->Add( sub_lead_dPhi_tot[1][0][3][l],-1. );
+    sub_lead_dPhi_tot[6][0][2][l] = (TH1D*) sub_lead_dPhi_tot[0][0][2][l]->Clone(tot_name);
+    sub_lead_dPhi_tot[6][0][2][l]->Add( sub_lead_dPhi_tot[1][0][3][l],-1. );
 
    
 
@@ -958,18 +967,18 @@ Int_t plot_results(){
 
 
       }
-      signal_max = 135.;
-      signal_min = -135.;
+      signal_max = 104.;
+      signal_min = -106.;
       
 
-      diff_max = 31.;
-      diff_min = -31.;
+      diff_max = 16.;
+      diff_min = -16.;
       
-      double_diff_max = 31.;
-      double_diff_min = -31.; 
+      double_diff_max = 11.;
+      double_diff_min = -11.; 
       
-      no_bgsub_max = 51.;
-      no_bgsub_min = -51.;
+      no_bgsub_max = 25.;
+      no_bgsub_min = -25.;
 
 
       dPhi_pTdist_up[2][j][l]->SetMaximum(signal_max);
@@ -997,8 +1006,8 @@ Int_t plot_results(){
       dPhi_pTdist_up[7][j][l]->SetMaximum(double_diff_max);
       dPhi_pTdist_up[7][j][l]->SetMinimum(double_diff_min);
 
-      dPhi_Sub_Lead_NoBkg_up[6][j][l]->SetMaximum(no_bgsub_max);
-      dPhi_Sub_Lead_NoBkg_up[6][j][l]->SetMinimum(no_bgsub_min);
+      dPhi_Sub_Lead_NoBkg_up[6][j][l]->SetMaximum(double_diff_max);
+      dPhi_Sub_Lead_NoBkg_up[6][j][l]->SetMinimum(double_diff_min);
 
 
 
@@ -1038,10 +1047,10 @@ Int_t plot_results(){
     stack_name = make_name("AllHists_Up_",5,0,3,l,pTlabel,centlabel,Ajlabel);
     dPhi_pTdist_up[5][3][l] = new THStack(stack_name,"");
       
-    stack_name.ReplaceAll("Leading","SubLeading");
+    stack_name.ReplaceAll("Leading","Subleading");
     dPhi_pTdist_up[3][3][l] = new THStack(stack_name,"");
 
-    stack_name.ReplaceAll("SubLeading","SideBandDiff");
+    stack_name.ReplaceAll("Subleading","SideBandDiff");
     dPhi_pTdist_up[1][3][l] = new THStack(stack_name,"");
 
     stack_name.ReplaceAll("SideBandDiff","SubLeadingMinusLeading");
@@ -1100,48 +1109,85 @@ Int_t plot_results(){
 
     ///////////////////////////////////////////////////////////////
     
+    c_jet[l]->cd(0);
 
+    TLatex *aj_tex = new TLatex(0.07,0.98,Ajlabel);
+    aj_tex->SetTextSize(0.025);
+    aj_tex->SetLineColor(kWhite);
+    aj_tex->SetNDC();
+    aj_tex->Draw();
+    
+    TLatex *type_tex = new TLatex(0.3,0.98,"Jet Peak, |#Delta#eta| < 2.5");
+    type_tex->SetTextSize(0.025);
+    type_tex->SetLineColor(kWhite);
+    type_tex->SetNDC();
+    type_tex->Draw();
+   
+    TLatex   *luminosity_tex_pp = new TLatex(0.07,0.96,"pp 5.3 pb^{-1} (2.76 TeV)");
+    luminosity_tex_pp->SetTextFont(43);
+    luminosity_tex_pp->SetTextSizePixels(25);
+    luminosity_tex_pp->SetLineColor(kWhite);
+    luminosity_tex_pp->SetNDC();
+    luminosity_tex_pp->Draw();
+   
+    TLatex   *luminosity_tex_PbPb = new TLatex(0.3,0.96,"PbPb 166 #mub^{-1} (2.76 TeV)");
+    luminosity_tex_PbPb->SetTextFont(43);
+    luminosity_tex_PbPb->SetTextSizePixels(25);
+    luminosity_tex_PbPb->SetLineColor(kWhite);
+    luminosity_tex_PbPb->SetNDC();
+    luminosity_tex_PbPb->Draw();
+    
+
+    TLatex   *jet_reco_tex = new TLatex(0.605,0.98,"anti-k_{T} R = 0.3, |#eta_{jet}| < 1.6");
+    jet_reco_tex->SetTextFont(43);
+    jet_reco_tex->SetTextSizePixels(25);
+    jet_reco_tex->SetLineColor(kWhite);
+    jet_reco_tex->SetNDC();
+    jet_reco_tex->Draw();
+
+    TLatex   *jet_cut_tex = new TLatex(0.605,0.96,"120 < p_{T,1}< 300, p_{T,2}> 50 GeV/c, #Delta#phi_{1,2}> 5#pi/6");
+    jet_cut_tex->SetTextFont(43);
+    jet_cut_tex->SetTextSizePixels(25);
+    jet_cut_tex->SetLineColor(kWhite);
+    jet_cut_tex->SetNDC();
+    jet_cut_tex->Draw();
+    
+
+
+   
 
     c_jet[l]->cd(4);
 
     signal_dPhi_syst[2][0][0][l]->SetLineColor(kBlack);
 
-    TLegend *legend = new TLegend(0.1,0.3,0.9,1.);
-    legend->AddEntry(signal_dPhi_noerr_up[2][0][0][l],"0.5<p_{T}^{assoc.}<1 GeV/c","f");
-    legend->AddEntry(signal_dPhi_noerr_up[2][1][0][l],"1<p_{T}^{assoc.}<2 GeV/c","f");
-    legend->AddEntry(signal_dPhi_noerr_up[2][2][0][l],"2<p_{T}^{assoc.}<3 GeV/c","f");
-    legend->AddEntry(signal_dPhi_noerr_up[2][3][0][l],"3<p_{T}^{assoc.}<4 GeV/c","f");
-    legend->AddEntry(signal_dPhi_noerr_up[2][4][0][l],"4<p_{T}^{assoc.}<8 GeV/c","f");
-    legend->AddEntry(signal_dPhi_syst[2][0][0][l],"Total 0.5<p_{T}^{assoc.}<8 GeV/c","lpfe");
-    legend->SetTextSize(0.055);
+    TLegend *legend = new TLegend(0.1,0.15,0.8,.85);
+    legend->AddEntry(signal_dPhi_noerr_up[2][0][0][l],"0.5 < p_{T}^{assoc.}< 1 GeV/c","f");
+    legend->AddEntry(signal_dPhi_noerr_up[2][1][0][l],"1 < p_{T}^{assoc.}< 2 GeV/c","f");
+    legend->AddEntry(signal_dPhi_noerr_up[2][2][0][l],"2 < p_{T}^{assoc.}< 3 GeV/c","f");
+    legend->AddEntry(signal_dPhi_noerr_up[2][3][0][l],"3 < p_{T}^{assoc.}< 4 GeV/c","f");
+    legend->AddEntry(signal_dPhi_noerr_up[2][4][0][l],"4 < p_{T}^{assoc.}< 8 GeV/c","f");
+    legend->AddEntry(signal_dPhi_syst[2][0][0][l],"0.5 < p_{T}^{assoc.}< 8 GeV/c","lpfe");
+    legend->AddEntry(signal_dPhi_syst[2][0][0][l],"|#eta_{track}| < 2.4 ","");
+    legend->SetTextSize(0.06);
     legend->SetLineColor(kWhite);
     legend->Draw();
 
   
-    TLatex *aj_tex = new TLatex(0.05,0.2,Ajlabel);
-    aj_tex->SetTextSize(0.08);
-    aj_tex->SetLineColor(kWhite);
-    aj_tex->SetNDC();
-    aj_tex->Draw();
-    
-    TLatex *type_tex = new TLatex(0.05,0.1,"Jet Peak, |#Delta#eta|<2.5");
-    type_tex->SetTextSize(0.08);
-    type_tex->SetLineColor(kWhite);
-    type_tex->SetNDC();
-    type_tex->Draw();
-    
-
+ 
   
     c_jet[l]->cd(1);
  
     dPhi_pTdist_up[3][3][l]->Draw();
-    dPhi_pTdist_up[3][3][l]->GetYaxis()->SetLabelSize(0.07); 
-    dPhi_pTdist_up[3][3][l]->GetXaxis()->SetLabelSize(0.07); 
+    dPhi_pTdist_up[3][3][l]->GetYaxis()->SetLabelSize(0.08); 
+    dPhi_pTdist_up[3][3][l]->GetXaxis()->SetLabelSize(0.08); 
     dPhi_pTdist_up[3][3][l]->GetXaxis()->SetTitle("#Delta#phi");
-    dPhi_pTdist_up[3][3][l]->GetXaxis()->SetTitleSize(0.07);
+    dPhi_pTdist_up[3][3][l]->GetXaxis()->SetTitleOffset(0.7);
+    dPhi_pTdist_up[3][3][l]->GetYaxis()->SetTitleOffset(.6);
+    dPhi_pTdist_up[3][3][l]->GetYaxis()->SetNdivisions(510);
+    dPhi_pTdist_up[3][3][l]->GetXaxis()->SetTitleSize(0.09);
     dPhi_pTdist_up[3][3][l]->GetXaxis()->CenterTitle();
-    dPhi_pTdist_up[3][3][l]->GetYaxis()->SetTitle("1/N_{evt} dp_{T}/d#Delta#phi (GeV/c)");
-    dPhi_pTdist_up[3][3][l]->GetYaxis()->SetTitleSize(0.07);
+    dPhi_pTdist_up[3][3][l]->GetYaxis()->SetTitle("P  (GeV/c)");
+    dPhi_pTdist_up[3][3][l]->GetYaxis()->SetTitleSize(0.09);
     dPhi_pTdist_up[3][3][l]->GetYaxis()->CenterTitle();
     dPhi_pTdist_up[5][3][l]->Draw("same");
     dPhi_pTdist_down[5][3][l]->Draw("same");
@@ -1156,7 +1202,8 @@ Int_t plot_results(){
  
  
     label_pp = new TLatex(0.2,0.9,"pp Reference");
-    label_pp->SetTextSize(0.08);
+    label_pp->SetTextFont(63);
+    label_pp->SetTextSizePixels(30);
     label_pp->SetLineColor(kWhite);
     label_pp->SetNDC();
     label_pp->Draw();
@@ -1166,18 +1213,28 @@ Int_t plot_results(){
     l_phi->Draw();
 
 
-    TLatex *cms_tex_dphi = new TLatex(0.2,0.05,"CMS Preliminary");
-   cms_tex_dphi->SetTextSize(0.08);
-   cms_tex_dphi->SetLineColor(kWhite);
-   cms_tex_dphi->SetNDC();
-   cms_tex_dphi->Draw(); 
+    TLatex *cms_tex_dphi = new TLatex(0.2,0.05,"CMS");
+    cms_tex_dphi->SetTextFont(63);
+    cms_tex_dphi->SetTextSizePixels(30);
+    cms_tex_dphi->SetLineColor(kWhite);
+    cms_tex_dphi->SetNDC();
+    cms_tex_dphi->Draw(); 
 
-
+    TLatex *prelim_tex_dphi = new TLatex(0.38,0.05,"Preliminary");
+    prelim_tex_dphi->SetTextFont(53);
+    prelim_tex_dphi->SetTextSizePixels(30);
+    prelim_tex_dphi->SetLineColor(kWhite);
+    prelim_tex_dphi->SetNDC();
+    prelim_tex_dphi->Draw(); 
+  
+    
+    gPad->RedrawAxis();
 
    c_jet[l]->cd(2);
 
    dPhi_pTdist_up[2][0][l]->Draw();
    dPhi_pTdist_up[2][0][l]->GetYaxis()->SetLabelSize(0.);
+   dPhi_pTdist_up[2][0][l]->GetYaxis()->SetNdivisions(306);
    dPhi_pTdist_up[4][0][l]->Draw("same");
    dPhi_pTdist_down[4][0][l]->Draw("same");
    dPhi_pTdist_down[2][0][l]->Draw("same");
@@ -1192,7 +1249,8 @@ Int_t plot_results(){
    signal_dPhi_tot[4][0][0][l]->Draw("same");
  
    label_per = new TLatex(0.05,0.9,"PbPb Cent. 50-100%");
-   label_per->SetTextSize(0.08);
+   label_per->SetTextFont(63);
+   label_per->SetTextSizePixels(30);
    label_per->SetLineColor(kWhite);
    label_per->SetNDC();
    label_per->Draw();
@@ -1200,29 +1258,31 @@ Int_t plot_results(){
 
    c_jet[l]->cd(3);
    
-   dPhi_pTdist_up[2][3][l]->Draw();
-   dPhi_pTdist_up[2][3][l]->GetYaxis()->SetLabelSize(0.);
-   dPhi_pTdist_up[4][3][l]->Draw("same");
-   dPhi_pTdist_down[4][3][l]->Draw("same");
-   dPhi_pTdist_down[2][3][l]->Draw("same");
+   dPhi_pTdist_up[2][2][l]->Draw();
+   dPhi_pTdist_up[2][2][l]->GetYaxis()->SetLabelSize(0.);
+   dPhi_pTdist_up[2][2][l]->GetYaxis()->SetNdivisions(306);
+   dPhi_pTdist_up[4][2][l]->Draw("same");
+   dPhi_pTdist_down[4][2][l]->Draw("same");
+   dPhi_pTdist_down[2][2][l]->Draw("same");
 
- signal_dPhi_syst[2][0][3][l]->Draw("same e2");
-   signal_dPhi_syst[4][0][3][l]->Draw("same e2");
+ signal_dPhi_syst[2][0][2][l]->Draw("same e2");
+   signal_dPhi_syst[4][0][2][l]->Draw("same e2");
  
 
 
-   signal_dPhi_tot[2][0][3][l]->Draw("same");
-   signal_dPhi_tot[4][0][3][l]->Draw("same");
+   signal_dPhi_tot[2][0][2][l]->Draw("same");
+   signal_dPhi_tot[4][0][2][l]->Draw("same");
  
   
-   label_cent = new TLatex(0.05,0.9,"PbPb Cent. 0-10%");
-   label_cent->SetTextSize(0.08);
+   label_cent = new TLatex(0.05,0.9,"PbPb Cent. 0-30%");
+   label_cent->SetTextFont(63);
+   label_cent->SetTextSizePixels(30);
    label_cent->SetLineColor(kWhite);
    label_cent->SetNDC();
    label_cent->Draw();
 
-   TLatex *orientation = new TLatex(.97,0.,"      <--Leading     SubLeading-->");
-   orientation->SetTextSize(0.07);
+   TLatex *orientation = new TLatex(.97,0.,"      <-Leading          Subleading->");
+   orientation->SetTextSize(0.065);
    orientation->SetLineColor(kWhite);
    orientation->SetNDC();
    orientation->SetTextAngle(90.);
@@ -1233,11 +1293,11 @@ Int_t plot_results(){
 
    c_jet[l]->cd(5);
    dPhi_pTdist_up[8][0][l]->Draw();
-   dPhi_pTdist_up[8][0][l]->GetYaxis()->SetLabelSize(0.07); 
+ dPhi_pTdist_up[8][0][l]->GetYaxis()->SetLabelSize(0.0); 
    dPhi_pTdist_up[8][0][l]->GetXaxis()->CenterTitle();
-   dPhi_pTdist_up[8][0][l]->GetYaxis()->SetTitle("1/N_{evt} dp_{T}/d#Delta#phi (GeV/c)");
-   dPhi_pTdist_up[8][0][l]->GetYaxis()->SetTitleSize(0.07);
-   dPhi_pTdist_up[8][0][l]->GetYaxis()->SetTitleOffset(1.2);
+   dPhi_pTdist_up[8][0][l]->GetYaxis()->SetTitle("P_{PbPb}- P_{pp}  (GeV/c)");
+   dPhi_pTdist_up[8][0][l]->GetYaxis()->SetTitleSize(0.0);
+   dPhi_pTdist_up[8][0][l]->GetYaxis()->SetTitleOffset(0.8);
    dPhi_pTdist_up[8][0][l]->GetYaxis()->CenterTitle();
    dPhi_pTdist_down[8][0][l]->Draw("same");
 
@@ -1246,57 +1306,63 @@ Int_t plot_results(){
  
     
 
-   TLatex *label = new TLatex(0.05,0.9,"Subleading PbPb-pp");
-   label->SetTextSize(0.08);
+   TLatex *label = new TLatex(0.05,0.9,"Subleading PbPb - pp");
+   label->SetTextFont(63);
+   label->SetTextSizePixels(30);
    label->SetLineColor(kWhite);
    label->SetNDC();
    label->Draw();
 
    l_phi->Draw();
 
+   gPad->RedrawAxis();
 
    c_jet[l]->cd(6);
 
-   dPhi_pTdist_up[8][3][l]->Draw();
-   dPhi_pTdist_up[8][3][l]->GetYaxis()->SetLabelSize(0.);
+   dPhi_pTdist_up[8][2][l]->Draw();
+   dPhi_pTdist_up[8][2][l]->GetYaxis()->SetLabelSize(0.);
    l_phi->Draw();
-   dPhi_pTdist_down[8][3][l]->Draw("same");
+   dPhi_pTdist_down[8][2][l]->Draw("same");
 
-   signal_dPhi_syst[8][0][3][l]->Draw("same e2");
-   signal_dPhi_tot[8][0][3][l]->Draw("same");
+   signal_dPhi_syst[8][0][2][l]->Draw("same e2");
+   signal_dPhi_tot[8][0][2][l]->Draw("same");
   
    
    c_jet[l]->cd(8);
    dPhi_pTdist_up[10][0][l]->Draw();
-   dPhi_pTdist_up[10][0][l]->GetYaxis()->SetLabelSize(0.07); 
+   dPhi_pTdist_up[10][0][l]->GetYaxis()->SetLabelSize(0.0); 
    dPhi_pTdist_up[10][0][l]->GetXaxis()->CenterTitle();
-   dPhi_pTdist_up[10][0][l]->GetYaxis()->SetTitle("1/N_{evt} dp_{T}/d#Delta#phi (GeV/c)");
-   dPhi_pTdist_up[10][0][l]->GetYaxis()->SetTitleSize(0.07);
-   dPhi_pTdist_up[10][0][l]->GetYaxis()->SetTitleOffset(1.2);
+   dPhi_pTdist_up[10][0][l]->GetYaxis()->SetTitle("P_{PbPb}- P_{pp}  (GeV/c)");
+   dPhi_pTdist_up[10][0][l]->GetYaxis()->SetTitleSize(0.0);
+   dPhi_pTdist_up[10][0][l]->GetYaxis()->SetTitleOffset(0.8);
    dPhi_pTdist_up[10][0][l]->GetYaxis()->CenterTitle();
    dPhi_pTdist_down[10][0][l]->Draw("same");
 
    signal_dPhi_syst[10][0][0][l]->Draw("same e2");
    signal_dPhi_tot[10][0][0][l]->Draw("same");
  
- 
- 
-   label = new TLatex(0.05,0.9,"Leading PbPb-pp (#times -1)");
-   label->SetTextSize(0.08);
+  
+
+   label = new TLatex(0.05,0.9,"Leading PbPb - pp (#times -1)");
+     label->SetTextFont(63);
+   label->SetTextSizePixels(30);
    label->SetLineColor(kWhite);
    label->SetNDC();
    label->Draw();
 
    l_phi->Draw();
 
-   c_jet[l]->cd(9);
-   dPhi_pTdist_up[10][3][l]->Draw();
-   dPhi_pTdist_up[10][3][l]->GetYaxis()->SetLabelSize(0.);
-   dPhi_pTdist_down[10][3][l]->Draw("same");
-   //  orientation->Draw();
+   gPad->RedrawAxis();
 
-   signal_dPhi_syst[10][0][3][l]->Draw("same e2");
-   signal_dPhi_tot[10][0][3][l]->Draw("same");
+  
+   c_jet[l]->cd(9);
+   dPhi_pTdist_up[10][2][l]->Draw();
+   dPhi_pTdist_up[10][2][l]->GetYaxis()->SetLabelSize(0.);
+   dPhi_pTdist_down[10][2][l]->Draw("same");
+ 
+
+   signal_dPhi_syst[10][0][2][l]->Draw("same e2");
+   signal_dPhi_tot[10][0][2][l]->Draw("same");
  
  
 
@@ -1304,80 +1370,197 @@ Int_t plot_results(){
 
    c_jet[l]->cd(11);
    dPhi_pTdist_up[6][0][l]->Draw();
-   dPhi_pTdist_up[6][0][l]->GetYaxis()->SetLabelSize(0.07); 
+   dPhi_pTdist_up[6][0][l]->GetYaxis()->SetLabelSize(0.0); 
  
-   dPhi_pTdist_up[6][0][l]->GetYaxis()->SetTitle("1/N_{evt} dp_{T}/d#Delta#phi (GeV/c)");
-   dPhi_pTdist_up[6][0][l]->GetYaxis()->SetTitleSize(0.07);
-   dPhi_pTdist_up[6][0][l]->GetYaxis()->SetTitleOffset(1.2);
+   dPhi_pTdist_up[6][0][l]->GetYaxis()->SetTitle("#DeltaP_{PbPb}- #DeltaP_{pp}  (GeV/c)");
+   dPhi_pTdist_up[6][0][l]->GetYaxis()->SetTitleSize(0.0);
+   dPhi_pTdist_up[6][0][l]->GetYaxis()->SetTitleOffset(0.8);
    dPhi_pTdist_up[6][0][l]->GetYaxis()->CenterTitle();
 
    dPhi_pTdist_up[6][0][l]->GetXaxis()->SetTitle("#Delta#phi");
-   dPhi_pTdist_up[6][0][l]->GetXaxis()->SetTitleSize(0.07);
+   dPhi_pTdist_up[6][0][l]->GetXaxis()->SetTitleOffset(0.7);
+   dPhi_pTdist_up[6][0][l]->GetXaxis()->SetTitleSize(0.09);
    dPhi_pTdist_up[6][0][l]->GetXaxis()->CenterTitle();
-   dPhi_pTdist_up[6][0][l]->GetXaxis()->SetLabelSize(0.07); 
+   dPhi_pTdist_up[6][0][l]->GetXaxis()->SetLabelSize(0.08); 
    dPhi_pTdist_down[6][0][l]->Draw("same");
 
    signal_dPhi_syst[6][0][0][l]->Draw("same e2");
    signal_dPhi_tot[6][0][0][l]->Draw("same");
  
  
-   label = new TLatex(0.05,0.9,"Subleading-Leading");
-   label->SetTextSize(0.08);
+   label = new TLatex(0.05,0.9,"Subleading - Leading");
+     label->SetTextFont(63);
+   label->SetTextSizePixels(30);
    label->SetLineColor(kWhite);
    label->SetNDC();
    label->Draw();
-   TLatex *label2 = new TLatex(0.05,0.8,"(PbPb-pp)");
-   label2->SetTextSize(0.08);
+   TLatex *label2 = new TLatex(0.05,0.8,"(PbPb - pp)");
+   label2->SetTextFont(63);
+   label2->SetTextSizePixels(30);
    label2->SetLineColor(kWhite);
    label2->SetNDC();
    label2->Draw();
 
    l_phi->Draw();
 
+   TPave *cover_x_l = new TPave(-.08,0.,0.1,0.13);
+   cover_x_l->SetFillColor(kWhite);
+   cover_x_l->SetLineColor(kWhite);
+   cover_x_l->SetOption("NDC NB");
+   cover_x_l->Draw();
+
+   TPave *cover_x_r = new TPave(0.83,0.,1.05,0.13);
+   cover_x_r->SetFillColor(kWhite);
+   cover_x_r->SetLineColor(kWhite);
+   cover_x_r->SetOption("NDC NB");
+   cover_x_r->Draw();
+
+ 
    c_jet[l]->cd(12);
-   dPhi_pTdist_up[6][3][l]->Draw();
-   dPhi_pTdist_up[6][3][l]->GetYaxis()->SetLabelSize(0.);
+   dPhi_pTdist_up[6][2][l]->Draw();
+   dPhi_pTdist_up[6][2][l]->GetYaxis()->SetLabelSize(0.);
 
-   dPhi_pTdist_up[6][3][l]->GetXaxis()->SetTitle("#Delta#phi");
-   dPhi_pTdist_up[6][3][l]->GetXaxis()->SetTitleSize(0.07);
-   dPhi_pTdist_up[6][3][l]->GetXaxis()->CenterTitle();
-   dPhi_pTdist_up[6][3][l]->GetXaxis()->SetLabelSize(0.07); 
-   dPhi_pTdist_down[6][3][l]->Draw("same");
+   dPhi_pTdist_up[6][2][l]->GetXaxis()->SetTitle("#Delta#phi");
+   dPhi_pTdist_up[6][2][l]->GetXaxis()->SetTitleOffset(0.7);
+   dPhi_pTdist_up[6][2][l]->GetXaxis()->SetTitleSize(0.09);
+   dPhi_pTdist_up[6][2][l]->GetXaxis()->CenterTitle();
+   dPhi_pTdist_up[6][2][l]->GetXaxis()->SetLabelSize(0.08); 
+   dPhi_pTdist_down[6][2][l]->Draw("same");
 
-   signal_dPhi_syst[6][0][3][l]->Draw("same e2");
-   signal_dPhi_tot[6][0][3][l]->Draw("same");
+   signal_dPhi_syst[6][0][2][l]->Draw("same e2");
+   signal_dPhi_tot[6][0][2][l]->Draw("same");
 
  
 
    l_phi->Draw();
    //  orientation->Draw();
 
-   c_longrange[l]->cd(4);
-   legend->Draw();
+   cover_x_l->Draw();
+   cover_x_r->Draw();
+
+
+   c_jet[l]->cd(4);
+   
+   TGaxis *dummy_axis_diff = new TGaxis(1.,0.,1.0,.975,diff_min,diff_max);
+
+   dummy_axis_diff->ImportAxisAttributes( dPhi_pTdist_up[3][3][l]->GetYaxis());
+   dummy_axis_diff->SetTitleOffset(.9);
+   dummy_axis_diff->SetTitleSize(0.09);
+   dummy_axis_diff->SetLabelSize(0.08);
+   dummy_axis_diff->SetTickSize(0.);
+   dummy_axis_diff->SetTitle("P_{PbPb}- P_{pp}  (GeV/c)");
+   dummy_axis_diff->Draw();
+
   
+   c_jet[l]->cd(7);
+  dummy_axis_diff->Draw();
+
+  c_jet[l]->cd(10);
+  TGaxis *dummy_axis_double_diff = new TGaxis(1.,0.13,1.0,.975,double_diff_min,double_diff_max);
+
+  dummy_axis_double_diff->ImportAxisAttributes( dPhi_pTdist_up[3][3][l]->GetYaxis());
+
+  dummy_axis_double_diff->SetTitleOffset(0.9);
+  dummy_axis_double_diff->SetTitleSize(0.085);
+  dummy_axis_double_diff->SetLabelSize(0.075);
+  dummy_axis_double_diff->SetTickSize(0.);
+  dummy_axis_double_diff->SetTitle("#DeltaP_{PbPb}- #DeltaP_{pp}  (GeV/c)   ");
+  dummy_axis_double_diff->Draw();
+ 
+
+  c_jet[l]->cd(4);
+  TGaxis *dummy_axis_phi = new TGaxis(0.165,1.,1.0,1.,-TMath::Pi()/2.,TMath::Pi()/2.);
+
+  dummy_axis_phi->ImportAxisAttributes( dPhi_pTdist_up[3][3][l]->GetXaxis());
+  dummy_axis_phi->SetTitleOffset(0.8);
+  dummy_axis_phi->SetTickSize(0.);
+  dummy_axis_phi->Draw();
+ 
+  TPave *cover_x_l2 = new TPave(0.9,0.9,1.05,0.99);
+  cover_x_l2->SetFillColor(kWhite);
+  cover_x_l2->SetLineColor(kWhite);
+  cover_x_l2->SetOption("NDC NB");
+  cover_x_l2->Draw();
+
+     
+ 
+  TPave *cover_x_r2 = new TPave(-.05,0.9,0.5,0.99);
+  cover_x_r2->SetFillColor(kWhite);
+  cover_x_r2->SetLineColor(kWhite);
+  cover_x_r2->SetOption("NDC NB");
+  cover_x_r2->Draw();
+
+     
+
+
+
+   c_longrange[l]->cd(0);
+
+   aj_tex = new TLatex(0.07,0.96,Ajlabel);
+   aj_tex->SetTextSize(0.03);
+   aj_tex->SetLineColor(kWhite);
+   aj_tex->SetNDC();
+   aj_tex->Draw();
    aj_tex->Draw();
    
-   type_tex = new TLatex(0.05,0.1,"Long Range, |#Delta#eta|<2.5");
-   type_tex->SetTextSize(0.08);
+   type_tex = new TLatex(0.3,0.96,"Long Range, |#Delta#eta|< 2.5");
+   type_tex->SetTextSize(0.03);
    type_tex->SetLineColor(kWhite);
    type_tex->SetNDC();
    type_tex->Draw();
+   
+   luminosity_tex_pp = new TLatex(0.07,0.915,"pp 5.3 pb^{-1} (2.76 TeV)");
+   luminosity_tex_pp->SetTextFont(43);
+   luminosity_tex_pp->SetTextSizePixels(25);
+   luminosity_tex_pp->SetLineColor(kWhite);
+   luminosity_tex_pp->SetNDC();
+   luminosity_tex_pp->Draw();
+   
+   luminosity_tex_PbPb = new TLatex(0.3,0.915,"PbPb 166 #mub^{-1} (2.76 TeV)");
+   luminosity_tex_PbPb->SetTextFont(43);
+   luminosity_tex_PbPb->SetTextSizePixels(25);
+   luminosity_tex_PbPb->SetLineColor(kWhite);
+   luminosity_tex_PbPb->SetNDC();
+   luminosity_tex_PbPb->Draw();
+    
+
+   jet_reco_tex = new TLatex(0.605,0.96,"anti-k_{T} R = 0.3, |#eta_{jet}| < 1.6");
+   jet_reco_tex->SetTextFont(43);
+   jet_reco_tex->SetTextSizePixels(25);
+   jet_reco_tex->SetLineColor(kWhite);
+   jet_reco_tex->SetNDC();
+   jet_reco_tex->Draw();
+
+   jet_cut_tex = new TLatex(0.605,0.915,"120 < p_{T,1}< 300, p_{T,2}> 50 GeV/c, #Delta#phi_{1,2}> 5#pi/6");
+   jet_cut_tex->SetTextFont(43);
+   jet_cut_tex->SetTextSizePixels(25);
+   jet_cut_tex->SetLineColor(kWhite);
+   jet_cut_tex->SetNDC();
+   jet_cut_tex->Draw();
 
    
+   c_longrange[l]->cd(4);
+   legend->Draw();
+  
+   dummy_axis_phi->Draw();
+   cover_x_l2->Draw();
+
+    
    c_longrange[l]->cd(1);
    dPhi_pTdist_up[1][3][l]->Draw();
    label_pp->Draw();
  
-   dPhi_pTdist_up[1][3][l]->GetYaxis()->SetTitle("1/N_{evt} dp_{T}/d#Delta#phi (GeV/c)");
-   dPhi_pTdist_up[1][3][l]->GetYaxis()->SetTitleSize(0.07);
+   dPhi_pTdist_up[1][3][l]->GetYaxis()->SetTitle("#DeltaP  (GeV/c)");
+   dPhi_pTdist_up[1][3][l]->GetYaxis()->SetTitleSize(0.09);
    dPhi_pTdist_up[1][3][l]->GetYaxis()->CenterTitle();
-   dPhi_pTdist_up[1][3][l]->GetYaxis()->SetLabelSize(0.07); 
-
+   dPhi_pTdist_up[1][3][l]->GetYaxis()->SetLabelSize(0.08); 
+   dPhi_pTdist_up[1][3][l]->GetYaxis()->SetTitleOffset(0.7);
 
    dPhi_pTdist_up[1][3][l]->GetXaxis()->SetTitle("#Delta#phi");
-   dPhi_pTdist_up[1][3][l]->GetXaxis()->SetTitleSize(0.07);
+   dPhi_pTdist_up[1][3][l]->GetXaxis()->SetTitleOffset(0.7);
+   dPhi_pTdist_up[1][3][l]->GetXaxis()->SetTitleSize(0.09);
    dPhi_pTdist_up[1][3][l]->GetXaxis()->CenterTitle();
-   dPhi_pTdist_up[1][3][l]->GetXaxis()->SetLabelSize(0.07); 
+   dPhi_pTdist_up[1][3][l]->GetXaxis()->SetLabelSize(0.08); 
    dPhi_pTdist_down[1][3][l]->Draw("same");
 
    background_syst_rebin[1][4][3][l]->Draw("same e2");
@@ -1386,6 +1569,7 @@ Int_t plot_results(){
   l_phi->Draw();
 
   cms_tex_dphi->Draw(); 
+  prelim_tex_dphi->Draw(); 
    c_longrange[l]->cd(2);
 
    dPhi_pTdist_up[0][0][l]->Draw();
@@ -1401,14 +1585,14 @@ Int_t plot_results(){
 
    c_longrange[l]->cd(3);
  
-   dPhi_pTdist_up[0][3][l]->Draw();
-   dPhi_pTdist_up[0][3][l]->GetYaxis()->SetLabelSize(0.);
-   dPhi_pTdist_down[0][3][l]->Draw("same");
+   dPhi_pTdist_up[0][2][l]->Draw();
+   dPhi_pTdist_up[0][2][l]->GetYaxis()->SetLabelSize(0.);
+   dPhi_pTdist_down[0][2][l]->Draw("same");
    label_cent->Draw();
    orientation->Draw();
    
-   background_syst_rebin[0][4][3][l]->Draw("same e2");
-   background_diff_tot[0][0][3][l]->Draw("same");
+   background_syst_rebin[0][4][2][l]->Draw("same e2");
+   background_diff_tot[0][0][2][l]->Draw("same");
 
    l_phi->Draw();
 
@@ -1417,65 +1601,104 @@ Int_t plot_results(){
   
 
    dPhi_pTdist_up[7][0][l]->GetXaxis()->SetTitle("#Delta#phi");
-   dPhi_pTdist_up[7][0][l]->GetXaxis()->SetTitleSize(0.07);
+   dPhi_pTdist_up[7][0][l]->GetXaxis()->SetTitleOffset(0.7);
+   dPhi_pTdist_up[7][0][l]->GetXaxis()->SetTitleSize(0.09);
    dPhi_pTdist_up[7][0][l]->GetXaxis()->CenterTitle();
-   dPhi_pTdist_up[7][0][l]->GetXaxis()->SetLabelSize(0.07); 
+   dPhi_pTdist_up[7][0][l]->GetXaxis()->SetLabelSize(0.08); 
    
-   dPhi_pTdist_up[7][0][l]->GetYaxis()->SetTitle("1/N_{evt} dp_{T}/d#Delta#phi (GeV/c)");
-   dPhi_pTdist_up[7][0][l]->GetYaxis()->SetTitleSize(0.07);
+   dPhi_pTdist_up[7][0][l]->GetYaxis()->SetTitle("#DeltaP_{PbPb}- #DeltaP_{pp}  (GeV/c)");
+   dPhi_pTdist_up[7][0][l]->GetYaxis()->SetTitleSize(0.0);
    dPhi_pTdist_up[7][0][l]->GetYaxis()->CenterTitle();
-   dPhi_pTdist_up[7][0][l]->GetYaxis()->SetLabelSize(0.07); 
+   dPhi_pTdist_up[7][0][l]->GetYaxis()->SetLabelSize(0.0); 
+   dPhi_pTdist_up[7][0][l]->GetYaxis()->SetTitleOffset(0.5);
    l_phi->Draw();
    dPhi_pTdist_down[7][0][l]->Draw("same");
 
    background_syst_rebin[7][4][0][l]->Draw("same e2");
    background_diff_tot[7][0][0][l]->Draw("same");
 
-  TLatex *label_per2 = new TLatex(0.05,0.9,"PbPb - pp (50-100% Cent.)");
-   label_per2->SetTextSize(0.08);
+  TLatex *label_per2 = new TLatex(0.05,0.9,"PbPb - pp");
+  label_per2->SetTextFont(63);
+  label_per2->SetTextSizePixels(30);
    label_per2->SetLineColor(kWhite);
    label_per2->SetNDC();
    label_per2->Draw();
   
+   cover_x_r = new TPave(-0.05,0.,.1,0.13);
+   cover_x_r->SetFillColor(kWhite);
+   cover_x_r->SetLineColor(kWhite);
+   cover_x_r->SetOption("NDC NB");
+   cover_x_r->Draw();
+   cover_x_r->Draw();
+
+   cover_x_l = new TPave(0.85,0.,1.05,0.13);
+   cover_x_l->SetFillColor(kWhite);
+   cover_x_l->SetLineColor(kWhite);
+   cover_x_l->SetOption("NDC NB");
+   cover_x_l->Draw();
+   cover_x_l->Draw();
+
 
    c_longrange[l]->cd(6);
-   dPhi_pTdist_up[7][3][l]->Draw();
-   dPhi_pTdist_up[7][3][l]->GetYaxis()->SetLabelSize(0.);
+   dPhi_pTdist_up[7][2][l]->Draw();
+   dPhi_pTdist_up[7][2][l]->GetYaxis()->SetLabelSize(0.);
    
 
-   dPhi_pTdist_up[7][3][l]->GetXaxis()->SetTitle("#Delta#phi");
-   dPhi_pTdist_up[7][3][l]->GetXaxis()->SetTitleSize(0.07);
-   dPhi_pTdist_up[7][3][l]->GetXaxis()->CenterTitle();
-   dPhi_pTdist_up[7][3][l]->GetXaxis()->SetLabelSize(0.07); 
-   dPhi_pTdist_down[7][3][l]->Draw("same");
+   dPhi_pTdist_up[7][2][l]->GetXaxis()->SetTitle("#Delta#phi");
+   dPhi_pTdist_up[7][2][l]->GetXaxis()->SetTitleOffset(0.7);
+   dPhi_pTdist_up[7][2][l]->GetXaxis()->SetTitleSize(0.09);
+   dPhi_pTdist_up[7][2][l]->GetXaxis()->CenterTitle();
+   dPhi_pTdist_up[7][2][l]->GetXaxis()->SetLabelSize(0.08); 
+   dPhi_pTdist_down[7][2][l]->Draw("same");
 
-   background_syst_rebin[7][4][3][l]->Draw("same e2");
-   background_diff_tot[7][0][3][l]->Draw("same");
+   background_syst_rebin[7][4][2][l]->Draw("same e2");
+   background_diff_tot[7][0][2][l]->Draw("same");
    l_phi->Draw();
 
+   cover_x_r->Draw();
+   cover_x_l->Draw();
 
-  c_nobkgsub[l]->cd(4);
-  legend->Draw();
-  
-  aj_tex->Draw();
+   c_longrange[l]->cd(4);
+   dummy_axis_double_diff->Draw();
+   
+   c_nobkgsub[l]->cd(0);
+   aj_tex->Draw();
     
-  type_tex = new TLatex(0.05,0.1,"Subleading-Leading, |#Delta#eta|<2.5");
-  type_tex->SetTextSize(0.08);
-  type_tex->SetLineColor(kWhite);
-  type_tex->SetNDC();
-  type_tex->Draw();
+   type_tex = new TLatex(0.3,0.96,"Hemisphere Difference, |#Delta#eta|< 2.5");
+   type_tex->SetTextSize(0.03);
+   type_tex->SetLineColor(kWhite);
+   type_tex->SetNDC();
+   type_tex->Draw();
+
+   luminosity_tex_pp->Draw();
+   luminosity_tex_PbPb->Draw();
+   jet_reco_tex->Draw();
+   jet_cut_tex->Draw();
+    
+
+
+   c_nobkgsub[l]->cd(4);
+   legend->Draw();
+   dummy_axis_phi->Draw();
+   cover_x_l2->Draw();
+   
+
   
+   
     c_nobkgsub[l]->cd(1);
  
     dPhi_Sub_Lead_NoBkg_up[1][3][l]->Draw();
-    dPhi_Sub_Lead_NoBkg_up[1][3][l]->GetYaxis()->SetLabelSize(0.07); 
-    dPhi_Sub_Lead_NoBkg_up[1][3][l]->GetXaxis()->SetLabelSize(0.07); 
+    dPhi_Sub_Lead_NoBkg_up[1][3][l]->GetYaxis()->SetLabelSize(0.08); 
+    dPhi_Sub_Lead_NoBkg_up[1][3][l]->GetXaxis()->SetLabelSize(0.08); 
     dPhi_Sub_Lead_NoBkg_up[1][3][l]->GetXaxis()->SetTitle("#Delta#phi");
-    dPhi_Sub_Lead_NoBkg_up[1][3][l]->GetXaxis()->SetTitleSize(0.07);
+    dPhi_Sub_Lead_NoBkg_up[1][3][l]->GetXaxis()->SetTitleOffset(0.7);
+    dPhi_Sub_Lead_NoBkg_up[1][3][l]->GetYaxis()->SetTitleOffset(0.7);
+    dPhi_Sub_Lead_NoBkg_up[1][3][l]->GetXaxis()->SetTitleSize(0.09);
     dPhi_Sub_Lead_NoBkg_up[1][3][l]->GetXaxis()->CenterTitle();
-    dPhi_Sub_Lead_NoBkg_up[1][3][l]->GetYaxis()->SetTitle("1/N_{evt} dp_{T}/d#Delta#phi (GeV/c)");
-    dPhi_Sub_Lead_NoBkg_up[1][3][l]->GetYaxis()->SetTitleSize(0.07);
+    dPhi_Sub_Lead_NoBkg_up[1][3][l]->GetYaxis()->SetTitle("#DeltaP  (GeV/c)");
+    dPhi_Sub_Lead_NoBkg_up[1][3][l]->GetYaxis()->SetTitleSize(0.09);
     dPhi_Sub_Lead_NoBkg_up[1][3][l]->GetYaxis()->CenterTitle();
+    dPhi_Sub_Lead_NoBkg_up[1][3][l]->GetYaxis()->SetNdivisions(408);
     dPhi_Sub_Lead_NoBkg_down[1][3][l]->Draw("same");   
 
 
@@ -1486,12 +1709,14 @@ Int_t plot_results(){
 
     l_phi->Draw();
 
-    cms_tex_dphi->Draw(); 
+     cms_tex_dphi->Draw(); 
+  prelim_tex_dphi->Draw();  
     c_nobkgsub[l]->cd(2);
 
 
     dPhi_Sub_Lead_NoBkg_up[0][0][l]->Draw();
     dPhi_Sub_Lead_NoBkg_up[0][0][l]->GetYaxis()->SetLabelSize(0.);
+    dPhi_Sub_Lead_NoBkg_up[0][0][l]->GetYaxis()->SetNdivisions(408);
     dPhi_Sub_Lead_NoBkg_down[0][0][l]->Draw("same");
 
     sub_lead_dPhi_syst[2][0][0][l]->Draw("same e2");
@@ -1501,12 +1726,13 @@ Int_t plot_results(){
 
     c_nobkgsub[l]->cd(3);
    
-    dPhi_Sub_Lead_NoBkg_up[0][3][l]->Draw();
-    dPhi_Sub_Lead_NoBkg_up[0][3][l]->GetYaxis()->SetLabelSize(0.);
-    dPhi_Sub_Lead_NoBkg_down[0][3][l]->Draw("same");
+    dPhi_Sub_Lead_NoBkg_up[0][2][l]->Draw();
+    dPhi_Sub_Lead_NoBkg_up[0][2][l]->GetYaxis()->SetLabelSize(0.);
+    dPhi_Sub_Lead_NoBkg_up[0][2][l]->GetYaxis()->SetNdivisions(408);
+    dPhi_Sub_Lead_NoBkg_down[0][2][l]->Draw("same");
 
-    sub_lead_dPhi_syst[2][0][3][l]->Draw("same e2");
-    sub_lead_dPhi_tot[0][0][3][l]->Draw("same");
+    sub_lead_dPhi_syst[2][0][2][l]->Draw("same e2");
+    sub_lead_dPhi_tot[0][0][2][l]->Draw("same");
     label_cent->Draw();
 
     orientation->Draw();
@@ -1516,74 +1742,98 @@ Int_t plot_results(){
 
     c_nobkgsub[l]->cd(5);
     dPhi_Sub_Lead_NoBkg_up[6][0][l]->Draw();
-    dPhi_Sub_Lead_NoBkg_up[6][0][l]->GetYaxis()->SetLabelSize(0.07); 
+    dPhi_Sub_Lead_NoBkg_up[6][0][l]->GetYaxis()->SetLabelSize(0.0); 
     dPhi_Sub_Lead_NoBkg_up[6][0][l]->GetYaxis()->CenterTitle();
-    dPhi_Sub_Lead_NoBkg_up[6][0][l]->GetYaxis()->SetTitle("1/N_{evt} dp_{T}/d#Delta#phi (GeV/c)");
-    dPhi_Sub_Lead_NoBkg_up[6][0][l]->GetYaxis()->SetTitleSize(0.07);
-    dPhi_Sub_Lead_NoBkg_up[6][0][l]->GetYaxis()->SetTitleOffset(1.2);
+    dPhi_Sub_Lead_NoBkg_up[6][0][l]->GetYaxis()->SetTitle("#DeltaP_{PbPb}- #DeltaP_{pp}  (GeV/c)");
+    dPhi_Sub_Lead_NoBkg_up[6][0][l]->GetYaxis()->SetTitleSize(0.0);
+    dPhi_Sub_Lead_NoBkg_up[6][0][l]->GetYaxis()->SetTitleOffset(0.5);
 
-    dPhi_Sub_Lead_NoBkg_up[6][0][l]->GetXaxis()->SetLabelSize(0.07); 
+    dPhi_Sub_Lead_NoBkg_up[6][0][l]->GetXaxis()->SetLabelSize(0.08); 
     dPhi_Sub_Lead_NoBkg_up[6][0][l]->GetXaxis()->CenterTitle();
     dPhi_Sub_Lead_NoBkg_up[6][0][l]->GetXaxis()->SetTitle("#Delta#phi");
-    dPhi_Sub_Lead_NoBkg_up[6][0][l]->GetXaxis()->SetTitleSize(0.07);
-    dPhi_Sub_Lead_NoBkg_up[6][0][l]->GetXaxis()->SetTitleOffset(1.2);
+    dPhi_Sub_Lead_NoBkg_up[6][0][l]->GetXaxis()->SetTitleSize(0.09);
+    dPhi_Sub_Lead_NoBkg_up[6][0][l]->GetXaxis()->SetTitleOffset(0.7);
     dPhi_Sub_Lead_NoBkg_up[6][0][l]->GetXaxis()->CenterTitle();
     dPhi_Sub_Lead_NoBkg_down[6][0][l]->Draw("same");
 
     sub_lead_dPhi_syst[8][0][0][l]->Draw("same e2");
     sub_lead_dPhi_tot[6][0][0][l]->Draw("same");
 
-    label = new TLatex(0.05,0.9,"PbPb-pp");
+    label = new TLatex(0.05,0.9,"PbPb - pp");
     label->SetTextSize(0.08);
     label->SetLineColor(kWhite);
     label->SetNDC();
     label->Draw();
 
     l_phi->Draw();
-
+    cover_x_r->Draw();
+    cover_x_l->Draw();
 
     c_nobkgsub[l]->cd(6);
 
-    dPhi_Sub_Lead_NoBkg_up[6][3][l]->Draw();
-    dPhi_Sub_Lead_NoBkg_up[6][3][l]->GetYaxis()->SetLabelSize(0.);
-    dPhi_Sub_Lead_NoBkg_up[6][3][l]->GetXaxis()->SetLabelSize(0.07); 
-    dPhi_Sub_Lead_NoBkg_up[6][3][l]->GetXaxis()->CenterTitle();
-    dPhi_Sub_Lead_NoBkg_up[6][3][l]->GetXaxis()->SetTitle("#Delta#phi");
-    dPhi_Sub_Lead_NoBkg_up[6][3][l]->GetXaxis()->SetTitleSize(0.07);
-    dPhi_Sub_Lead_NoBkg_up[6][3][l]->GetXaxis()->SetTitleOffset(1.2);
-    dPhi_Sub_Lead_NoBkg_up[6][3][l]->GetXaxis()->CenterTitle();
-    dPhi_Sub_Lead_NoBkg_down[6][3][l]->Draw("same");
+    dPhi_Sub_Lead_NoBkg_up[6][2][l]->Draw();
+    dPhi_Sub_Lead_NoBkg_up[6][2][l]->GetYaxis()->SetLabelSize(0.);
+    dPhi_Sub_Lead_NoBkg_up[6][2][l]->GetXaxis()->SetLabelSize(0.08); 
+    dPhi_Sub_Lead_NoBkg_up[6][2][l]->GetXaxis()->CenterTitle();
+    dPhi_Sub_Lead_NoBkg_up[6][2][l]->GetXaxis()->SetTitle("#Delta#phi");
+    dPhi_Sub_Lead_NoBkg_up[6][2][l]->GetXaxis()->SetTitleSize(0.09);
+    dPhi_Sub_Lead_NoBkg_up[6][2][l]->GetXaxis()->SetTitleOffset(0.7);
+    dPhi_Sub_Lead_NoBkg_up[6][2][l]->GetXaxis()->CenterTitle();
+    dPhi_Sub_Lead_NoBkg_down[6][2][l]->Draw("same");
 
-    sub_lead_dPhi_syst[8][0][3][l]->Draw("same e2");
-    sub_lead_dPhi_tot[6][0][3][l]->Draw("same");
+    sub_lead_dPhi_syst[8][0][2][l]->Draw("same e2");
+    sub_lead_dPhi_tot[6][0][2][l]->Draw("same");
 
     l_phi->Draw();
- 
+    
+    cover_x_r->Draw();
+    cover_x_l->Draw();
+  
+    c_nobkgsub[l]->cd(4);
+   dummy_axis_double_diff->Draw();
+   
  
    if(l<2){
-     c_jet[l]->SaveAs("Missing_pT_JetRelated_"+AjBin_strs[l]+"_"+AjBin_strs[l+1]+".png");
-     c_jet[l]->SaveAs("Missing_pT_JetRelated_"+AjBin_strs[l]+"_"+AjBin_strs[l+1]+".pdf");
+     c_jet[l]->Print("Missing_pT_JetRelated_"+AjBin_strs[l]+"_"+AjBin_strs[l+1]+".png");
+     c_jet[l]->Print("Missing_pT_JetRelated_"+AjBin_strs[l]+"_"+AjBin_strs[l+1]+".pdf");
 
-     c_longrange[l]->SaveAs("Missing_pT_LongRange_"+AjBin_strs[l]+"_"+AjBin_strs[l+1]+".png");
-     c_longrange[l]->SaveAs("Missing_pT_LongRange_"+AjBin_strs[l]+"_"+AjBin_strs[l+1]+".pdf");
+     c_longrange[l]->Print("Missing_pT_LongRange_"+AjBin_strs[l]+"_"+AjBin_strs[l+1]+".png");
+     c_longrange[l]->Print("Missing_pT_LongRange_"+AjBin_strs[l]+"_"+AjBin_strs[l+1]+".pdf");
 
-     c_nobkgsub[l]->SaveAs("Missing_pT_NoBkgSub_"+AjBin_strs[l]+"_"+AjBin_strs[l+1]+".png");
-     c_nobkgsub[l]->SaveAs("Missing_pT_NoBkgSub_"+AjBin_strs[l]+"_"+AjBin_strs[l+1]+".pdf");
+     c_nobkgsub[l]->Print("Missing_pT_NoBkgSub_"+AjBin_strs[l]+"_"+AjBin_strs[l+1]+".png");
+     c_nobkgsub[l]->Print("Missing_pT_NoBkgSub_"+AjBin_strs[l]+"_"+AjBin_strs[l+1]+".pdf");
  
    }else{
-     c_jet[l]->SaveAs("Missing_pT_JetRelated_AjInclusive.png");
-     c_jet[l]->SaveAs("Missing_pT_JetRelated_AjInclusive.pdf");
+     c_jet[l]->Print("Missing_pT_JetRelated_AjInclusive.png");
+     c_jet[l]->Print("Missing_pT_JetRelated_AjInclusive.pdf");
 
-     c_longrange[l]->SaveAs("Missing_pT_LongRange_AjInclusive.png");
-     c_longrange[l]->SaveAs("Missing_pT_LongRange_AjInclusive.pdf");
+     c_longrange[l]->Print("Missing_pT_LongRange_AjInclusive.png");
+     c_longrange[l]->Print("Missing_pT_LongRange_AjInclusive.pdf");
 
-     c_nobkgsub[l]->SaveAs("Missing_pT_NoBkgSub_AjInclusive.png");
-     c_nobkgsub[l]->SaveAs("Missing_pT_NoBkgSub_AjInclusive.pdf");
+     c_nobkgsub[l]->Print("Missing_pT_NoBkgSub_AjInclusive.png");
+     c_nobkgsub[l]->Print("Missing_pT_NoBkgSub_AjInclusive.pdf");
 
 
    }
+  
 
+   f_out->cd();
 
+ 
+   background_syst_rebin[0][4][2][l]->Write();
+   background_syst_rebin[1][4][3][l]->Write();
+   background_syst_rebin[7][4][2][l]->Write();
+   background_syst_rebin[0][4][0][l]->Write();
+   background_syst_rebin[7][4][0][l]->Write();
+   signal_dPhi_syst[4][0][0][l]->Write();
+   signal_dPhi_syst[2][0][0][l]->Write();
+   signal_dPhi_syst[2][0][2][l]->Write();
+   signal_dPhi_syst[4][0][2][l]->Write();
+   signal_dPhi_syst[3][0][3][l]->Write();
+   signal_dPhi_syst[5][0][3][l]->Write();
+   sub_lead_dPhi_syst[2][0][0][l]->Write();
+   sub_lead_dPhi_syst[2][0][2][l]->Write();
+   sub_lead_dPhi_syst[3][0][3][l]->Write();
    //-----------------------------
    //  Make Integrals
    //-----------------------------
@@ -1925,49 +2175,53 @@ Int_t plot_results(){
 
   }//l
 
+  gStyle->SetPadBottomMargin(0.2);
+
    c_longrange_int = new TCanvas("LongrangeIntegrals","",10,10,800,400);
    c_longrange_int->Divide(2,1,0,0);
    
-   float int_max = 16.;
-   float int_min = -4.;
+
+
+   float int_max = 14.6;
+   float int_min = -2.;
   
    c_longrange_int->cd(1);
  
    Integral[1][3][0]->SetMarkerStyle(20); 
-   Integral[1][3][0]->SetMarkerSize(2);
+   Integral[1][3][0]->SetMarkerSize(1);
    Integral[1][3][0]->SetMarkerColor(kBlack);
    Integral[1][3][0]->SetLineColor(kBlack);
   
  
    Integral[1][3][1]->SetMarkerStyle(20); 
-   Integral[1][3][1]->SetMarkerSize(2);
+   Integral[1][3][1]->SetMarkerSize(1);
    Integral[1][3][1]->SetMarkerColor(kBlack);
    Integral[1][3][1]->SetLineColor(kBlack);
 
    Integral[0][0][0]->SetMarkerStyle(24); 
-   Integral[0][0][0]->SetMarkerSize(2.5);
+   Integral[0][0][0]->SetMarkerSize(1.5);
    Integral[0][0][0]->SetMarkerColor(kRed+2);
    Integral[0][0][0]->SetLineColor(kRed+2);
 
 
 
    Integral[0][0][1]->SetMarkerStyle(24); 
-   Integral[0][0][1]->SetMarkerSize(2.5);
+   Integral[0][0][1]->SetMarkerSize(1.5);
    Integral[0][0][1]->SetMarkerColor(kRed+2);
    Integral[0][0][1]->SetLineColor(kRed+2);
 
 
 
-   Integral[0][3][0]->SetMarkerStyle(21); 
-   Integral[0][3][0]->SetMarkerSize(2);
-   Integral[0][3][0]->SetMarkerColor(kRed+2);
-   Integral[0][3][0]->SetLineColor(kRed+2);
+   Integral[0][2][0]->SetMarkerStyle(21); 
+   Integral[0][2][0]->SetMarkerSize(1);
+   Integral[0][2][0]->SetMarkerColor(kRed+2);
+   Integral[0][2][0]->SetLineColor(kRed+2);
   
  
-   Integral[0][3][1]->SetMarkerStyle(21); 
-   Integral[0][3][1]->SetMarkerSize(2);
-   Integral[0][3][1]->SetMarkerColor(kRed+2);
-   Integral[0][3][1]->SetLineColor(kRed+2);
+   Integral[0][2][1]->SetMarkerStyle(21); 
+   Integral[0][2][1]->SetMarkerSize(1);
+   Integral[0][2][1]->SetMarkerColor(kRed+2);
+   Integral[0][2][1]->SetLineColor(kRed+2);
     
  
    Integral[0][0][0]->SetMaximum(int_max);
@@ -1975,18 +2229,19 @@ Int_t plot_results(){
   
  
    Integral[0][0][0]->Draw();
-   Integral[0][0][0]->GetXaxis()->SetTitle("p_{T}^{assoc} (GeV/c)");
-   Integral[0][0][0]->GetXaxis()->SetTitleSize(0.07);
+   Integral[0][0][0]->GetXaxis()->SetTitle("p_{T}^{assoc}   (GeV/c)");
+   Integral[0][0][0]->GetXaxis()->SetTitleSize(0.08);
+   Integral[0][0][0]->GetXaxis()->SetTitleOffset(1.);
    Integral[0][0][0]->GetXaxis()->CenterTitle();
-   Integral[0][0][0]->GetXaxis()->SetLabelSize(0.07); 
-   Integral[0][0][0]->GetXaxis()->SetRangeUser(0.501,7.99);
+   Integral[0][0][0]->GetXaxis()->SetLabelSize(0.08); 
+   Integral[0][0][0]->GetXaxis()->SetRangeUser(0.501,7.6);
  
 
-   Integral[0][0][0]->GetYaxis()->SetTitle("1/N_{evt} #Sigma p_{T} (GeV/c)");
-   Integral[0][0][0]->GetYaxis()->SetTitleSize(0.07);
+   Integral[0][0][0]->GetYaxis()->SetTitle("#Sigma #DeltaP   (GeV/c)");
+   Integral[0][0][0]->GetYaxis()->SetTitleSize(0.08);
    Integral[0][0][0]->GetYaxis()->CenterTitle();
-   Integral[0][0][0]->GetYaxis()->SetTitleOffset(0.8);
-   Integral[0][0][0]->GetYaxis()->SetLabelSize(0.07); 
+   Integral[0][0][0]->GetYaxis()->SetTitleOffset(.7);
+   Integral[0][0][0]->GetYaxis()->SetLabelSize(0.08); 
  
 
 
@@ -1994,14 +2249,14 @@ Int_t plot_results(){
  
    //   Integral_syst[0][0][0]->Draw("same e2");   
    //  Integral_syst[0][3][0]->SetFillStyle(0);
-   Integral_syst[0][3][0]->Draw("same e2");   
+   Integral_syst[0][2][0]->Draw("same e2");   
   
    Integral_syst[1][3][0]->Draw("same e2");
    Integral[0][0][0]->Draw("same");
-   Integral[0][3][0]->Draw("same");
+   Integral[0][2][0]->Draw("same");
 
 
-   TLatex *aj_tex = new TLatex(0.2,0.9,"A_{J}<0.22");
+   TLatex *aj_tex = new TLatex(0.2,0.9,"A_{J} < 0.22");
    aj_tex->SetTextSize(0.08);
    aj_tex->SetLineColor(kWhite);
    aj_tex->SetNDC();
@@ -2013,20 +2268,27 @@ Int_t plot_results(){
    TLine *l_int = new TLine(0.5,0.,8.0,0.);
    l_int->SetLineStyle(2);
    l_int->Draw();
+  
 
+   TLegend *legend_int = new TLegend(0.17,0.6,0.97,0.85);
 
-   TLegend *legend_int = new TLegend(0.2,0.6,0.97,0.85);
-
-   Integral[0][3][0]->SetFillColor(kBlack);
-   Integral[0][3][0]->SetFillStyle(3004);
+   Integral[0][2][0]->SetFillColor(kBlack);
+   Integral[0][2][0]->SetFillStyle(3004);
  
-   legend_int->AddEntry(Integral[0][0][0],"PbPb 50-100% Long range asymmetry");
-   legend_int->AddEntry(Integral[0][3][0],"PbPb 0-10% Long range asymmetry","lpfe");
-   legend_int->AddEntry(Integral_syst[1][3][0],"pp Ref. Long range asymmetry","f");
+   legend_int->AddEntry(Integral[0][0][0],"PbPb 50-100% ");
+   legend_int->AddEntry(Integral[0][2][0],"PbPb 0-30%","lpfe");
+   legend_int->AddEntry(Integral_syst[1][3][0],"pp Reference","f");
  
    legend_int->SetLineColor(kWhite);
-   legend_int->SetTextSize(0.04);
+   legend_int->SetTextSize(0.08);
    legend_int->Draw();
+
+ 
+   TPave *cover_x_int = new TPave(0.95,-0.5,1.05,0.18);
+   cover_x_int->SetFillColor(kWhite);
+   cover_x_int->SetLineColor(kWhite);
+   cover_x_int->SetOption("NDC NB");
+   cover_x_int->Draw();
 
  
 
@@ -2038,52 +2300,94 @@ Int_t plot_results(){
 
 
    Integral[0][0][1]->Draw();
-   Integral[0][0][1]->GetXaxis()->SetTitle("p_{T}^{assoc} (GeV/c)");
-   Integral[0][0][1]->GetXaxis()->SetTitleSize(0.07);
+   Integral[0][0][1]->GetXaxis()->SetTitle("p_{T}^{assoc}   (GeV/c)");
+   Integral[0][0][1]->GetXaxis()->SetTitleSize(0.08);
+   Integral[0][0][1]->GetXaxis()->SetTitleOffset(1.);
    Integral[0][0][1]->GetXaxis()->CenterTitle();
-   Integral[0][0][1]->GetXaxis()->SetLabelSize(0.07); 
+   Integral[0][0][1]->GetXaxis()->SetLabelSize(0.08); 
    Integral[0][0][1]->GetXaxis()->SetRangeUser(0.501,7.99);
    Integral[0][0][1]->GetYaxis()->SetTitleSize(0.0);
+   Integral[0][0][1]->GetYaxis()->SetTitleOffset(.8);
    Integral[0][0][1]->GetYaxis()->SetLabelSize(0.0);
   
    Integral[0][0][1]->Draw();
  
    //Integral_syst[0][0][1]->Draw("same e2");   
-   Integral_syst[0][3][1]->Draw("same e2");   
+   Integral_syst[0][2][1]->Draw("same e2");   
 
    
    Integral_syst[1][3][1]->Draw("same e2");
-Integral[0][0][1]->Draw("same");
-   Integral[0][3][1]->Draw("same");
-  
-   TLatex *longrange_tex = new TLatex(0.05,0.8,"Long range asymmetry |#Delta#eta|<2.5");
-   longrange_tex->SetTextSize(0.05);
-   longrange_tex->SetLineColor(kWhite);
-   longrange_tex->SetNDC();
-   longrange_tex->Draw(); 
+   Integral[0][0][1]->Draw("same");
+   Integral[0][2][1]->Draw("same");
  
 
-
-   aj_tex = new TLatex(0.05,0.9,"A_{J}>0.22");
+   aj_tex = new TLatex(0.05,0.9,"A_{J} > 0.22");
    aj_tex->SetTextSize(0.08);
    aj_tex->SetLineColor(kWhite);
    aj_tex->SetNDC();
    aj_tex->Draw(); 
  
 
-   TLatex *cms_tex = new TLatex(0.4,0.9,"CMS Preliminary");
+   TLatex *cms_tex = new TLatex(0.4,0.9,"CMS");
    cms_tex->SetTextSize(0.08);
    cms_tex->SetLineColor(kWhite);
    cms_tex->SetNDC();
    cms_tex->Draw(); 
 
 
-
-
+    TLatex *prelim_tex = new TLatex(0.55,0.9,"Preliminary");
+    prelim_tex->SetTextFont(53);
+    prelim_tex->SetTextSizePixels(25);
+    prelim_tex->SetLineColor(kWhite);
+    prelim_tex->SetNDC();
+    prelim_tex->Draw(); 
+  
 
    l_int->Draw();
-   c_longrange_int->SaveAs("Integral_Longrange.png");
-   c_longrange_int->SaveAs("Integral_Longrange.pdf");
+
+   cover_x_int->Draw();
+   c_longrange_int->cd(0);
+
+    
+    TLatex *type_tex_int = new TLatex(0.1,0.93,"Long range asymmetry |#Delta#eta|<2.5");
+    type_tex_int->SetTextSize(0.06);
+    type_tex_int->SetLineColor(kWhite);
+    type_tex_int->SetNDC();
+    type_tex_int->Draw();
+   
+    TLatex   *luminosity_tex_int_pp = new TLatex(0.1,0.87,"pp 5.3 pb^{-1} (2.76 TeV)");
+    luminosity_tex_int_pp->SetTextFont(43);
+    luminosity_tex_int_pp->SetTextSizePixels(18);
+    luminosity_tex_int_pp->SetLineColor(kWhite);
+    luminosity_tex_int_pp->SetNDC();
+    luminosity_tex_int_pp->Draw();
+   
+    TLatex   *luminosity_tex_int_PbPb = new TLatex(0.1,0.81,"PbPb 166 #mub^{-1} (2.76 TeV)");
+    luminosity_tex_int_PbPb->SetTextFont(43);
+    luminosity_tex_int_PbPb->SetTextSizePixels(18);
+    luminosity_tex_int_PbPb->SetLineColor(kWhite);
+    luminosity_tex_int_PbPb->SetNDC();
+    luminosity_tex_int_PbPb->Draw();
+    
+
+    TLatex   *jet_reco_tex_int = new TLatex(0.55,0.87,"anti-k_{T} R = 0.3, |#eta_{jet}| < 1.6");
+    jet_reco_tex_int->SetTextFont(43);
+    jet_reco_tex_int->SetTextSizePixels(18);
+    jet_reco_tex_int->SetLineColor(kWhite);
+    jet_reco_tex_int->SetNDC();
+    jet_reco_tex_int->Draw();
+
+    TLatex   *jet_cut_tex_int = new TLatex(0.55,0.81,"120 < p_{T,1}< 300, p_{T,2}> 50 GeV/c, #Delta#phi_{1,2}> 5#pi/6");
+    jet_cut_tex_int->SetTextFont(43);
+    jet_cut_tex_int->SetTextSizePixels(18);
+    jet_cut_tex_int->SetLineColor(kWhite);
+    jet_cut_tex_int->SetNDC();
+    jet_cut_tex_int->Draw();
+    
+  
+   c_longrange_int->Print("Integral_Longrange.png");
+   c_longrange_int->Print("Integral_Longrange.pdf");
+
 
    //---------------------
    //Integral summary
@@ -2100,161 +2404,272 @@ Integral[0][0][1]->Draw("same");
 
  
     
-  Integral_noerr_up[10][3][0]->SetMarkerSize(0);
-  Integral_noerr_up[10][3][0]->SetFillColor(kYellow-9);
-  Integral_noerr_up[10][3][1]->SetMarkerSize(0);
-  Integral_noerr_up[10][3][1]->SetFillColor(kYellow-9);
+  Integral_noerr_up[10][2][0]->SetMarkerSize(0);
+  Integral_noerr_up[10][2][0]->SetFillColor(kYellow-9);
+  Integral_noerr_up[10][2][1]->SetMarkerSize(0);
+  Integral_noerr_up[10][2][1]->SetFillColor(kYellow-9);
   
-  Integral_noerr_down[10][3][0]->SetMarkerSize(0);
-  Integral_noerr_down[10][3][0]->SetFillColor(kYellow-9);
-  Integral_noerr_down[10][3][1]->SetMarkerSize(0);
-  Integral_noerr_down[10][3][1]->SetFillColor(kYellow-9);
+  Integral_noerr_down[10][2][0]->SetMarkerSize(0);
+  Integral_noerr_down[10][2][0]->SetFillColor(kYellow-9);
+  Integral_noerr_down[10][2][1]->SetMarkerSize(0);
+  Integral_noerr_down[10][2][1]->SetFillColor(kYellow-9);
  
-  Integral_noerr_up[8][3][0]->SetMarkerSize(0);
-  Integral_noerr_up[8][3][1]->SetMarkerSize(0);
-  Integral_noerr_up[8][3][0]->SetFillColor(kGreen+3);
-  Integral_noerr_up[8][3][1]->SetFillColor(kGreen+3);
+  Integral_noerr_up[8][2][0]->SetMarkerSize(0);
+  Integral_noerr_up[8][2][1]->SetMarkerSize(0);
+  Integral_noerr_up[8][2][0]->SetFillColor(kGreen+3);
+  Integral_noerr_up[8][2][1]->SetFillColor(kGreen+3);
 
-  Integral_noerr_down[8][3][0]->SetMarkerSize(0);
-  Integral_noerr_down[8][3][1]->SetMarkerSize(0);
-  Integral_noerr_down[8][3][0]->SetFillColor(kGreen+3);
-  Integral_noerr_down[8][3][1]->SetFillColor(kGreen+3);
-
-
-
- 
-  Integral_noerr_up[9][3][0]->SetMarkerSize(0);
-  Integral_noerr_up[9][3][0]->SetFillColor(kBlue-9);
-  Integral_noerr_up[9][3][1]->SetMarkerSize(0);
-  Integral_noerr_up[9][3][1]->SetFillColor(kBlue-9);
- 
-  Integral_noerr_up[6][3][0]->SetMarkerSize(0);
-  Integral_noerr_up[6][3][1]->SetMarkerSize(0);
-  Integral_noerr_up[6][3][0]->SetFillColor(kRed+2);
-  Integral_noerr_up[6][3][1]->SetFillColor(kRed+2);
-
+  Integral_noerr_down[8][2][0]->SetMarkerSize(0);
+  Integral_noerr_down[8][2][1]->SetMarkerSize(0);
+  Integral_noerr_down[8][2][0]->SetFillColor(kGreen+3);
+  Integral_noerr_down[8][2][1]->SetFillColor(kGreen+3);
 
 
 
  
-  Integral_noerr_down[9][3][0]->SetMarkerSize(0);
-  Integral_noerr_down[9][3][0]->SetFillColor(kBlue-9);
-  Integral_noerr_down[9][3][1]->SetMarkerSize(0);
-  Integral_noerr_down[9][3][1]->SetFillColor(kBlue-9);
+  Integral_noerr_up[9][2][0]->SetMarkerSize(0);
+  Integral_noerr_up[9][2][0]->SetFillColor(kBlue-9);
+  Integral_noerr_up[9][2][1]->SetMarkerSize(0);
+  Integral_noerr_up[9][2][1]->SetFillColor(kBlue-9);
  
-  Integral_noerr_down[6][3][0]->SetMarkerSize(0);
-  Integral_noerr_down[6][3][1]->SetMarkerSize(0);
-  Integral_noerr_down[6][3][0]->SetFillColor(kRed+2);
-  Integral_noerr_down[6][3][1]->SetFillColor(kRed+2);
+  Integral_noerr_up[6][2][0]->SetMarkerSize(0);
+  Integral_noerr_up[6][2][1]->SetMarkerSize(0);
+  Integral_noerr_up[6][2][0]->SetFillColor(kRed+2);
+  Integral_noerr_up[6][2][1]->SetFillColor(kRed+2);
+
+
+
+
+ 
+  Integral_noerr_down[9][2][0]->SetMarkerSize(0);
+  Integral_noerr_down[9][2][0]->SetFillColor(kBlue-9);
+  Integral_noerr_down[9][2][1]->SetMarkerSize(0);
+  Integral_noerr_down[9][2][1]->SetFillColor(kBlue-9);
+ 
+  Integral_noerr_down[6][2][0]->SetMarkerSize(0);
+  Integral_noerr_down[6][2][1]->SetMarkerSize(0);
+  Integral_noerr_down[6][2][0]->SetFillColor(kRed+2);
+  Integral_noerr_down[6][2][1]->SetFillColor(kRed+2);
 
  
  
    TString int_name = "int_jet_up_Aj0_Aj22";
  
-   Integral_up[8][3][0] = new THStack(int_name, "");
-   Integral_up[8][3][0]->Add(Integral_noerr_up[8][3][0]);
-   Integral_up[8][3][0]->Add(Integral_noerr_up[10][3][0]);
+   Integral_up[8][2][0] = new THStack(int_name, "");
+   Integral_up[8][2][0]->Add(Integral_noerr_up[8][2][0]);
+   Integral_up[8][2][0]->Add(Integral_noerr_up[10][2][0]);
  
   
    int_name.ReplaceAll("up","down");
-   Integral_down[8][3][0] = new THStack(int_name, "");
-   Integral_down[8][3][0]->Add(Integral_noerr_down[8][3][0]);
-   Integral_down[8][3][0]->Add(Integral_noerr_down[10][3][0]);
+   Integral_down[8][2][0] = new THStack(int_name, "");
+   Integral_down[8][2][0]->Add(Integral_noerr_down[8][2][0]);
+   Integral_down[8][2][0]->Add(Integral_noerr_down[10][2][0]);
    
 
 
    int_name = "int_jet_up_Aj22_Aj75";
 
-   Integral_up[8][3][1] = new THStack(int_name, "");
-   Integral_up[8][3][1]->Add(Integral_noerr_up[8][3][1]);
-   Integral_up[8][3][1]->Add(Integral_noerr_up[10][3][1]);
+   Integral_up[8][2][1] = new THStack(int_name, "");
+   Integral_up[8][2][1]->Add(Integral_noerr_up[8][2][1]);
+   Integral_up[8][2][1]->Add(Integral_noerr_up[10][2][1]);
   
   
    int_name.ReplaceAll("up","down");
-   Integral_down[8][3][1] = new THStack(int_name, "");
-   Integral_down[8][3][1]->Add(Integral_noerr_down[8][3][1]);
-   Integral_down[8][3][1]->Add(Integral_noerr_down[10][3][1]);
+   Integral_down[8][2][1] = new THStack(int_name, "");
+   Integral_down[8][2][1]->Add(Integral_noerr_down[8][2][1]);
+   Integral_down[8][2][1]->Add(Integral_noerr_down[10][2][1]);
   
 
   
    int_name = "int_diff_up_Aj0_Aj22";
  
-   Integral_up[9][3][0] = new THStack(int_name, "");
-   Integral_up[9][3][0]->Add(Integral_noerr_up[9][3][0]);
-   Integral_up[9][3][0]->Add(Integral_noerr_up[6][3][0]);
+   Integral_up[9][2][0] = new THStack(int_name, "");
+   Integral_up[9][2][0]->Add(Integral_noerr_up[9][2][0]);
+   Integral_up[9][2][0]->Add(Integral_noerr_up[6][2][0]);
  
   
    int_name.ReplaceAll("up","down");
-   Integral_down[9][3][0] = new THStack(int_name, "");
-   Integral_down[9][3][0]->Add(Integral_noerr_down[9][3][0]);
-   Integral_down[9][3][0]->Add(Integral_noerr_down[6][3][0]);
+   Integral_down[9][2][0] = new THStack(int_name, "");
+   Integral_down[9][2][0]->Add(Integral_noerr_down[9][2][0]);
+   Integral_down[9][2][0]->Add(Integral_noerr_down[6][2][0]);
    
 
 
    int_name = "int_diff_up_Aj22_Aj75";
 
-   Integral_up[9][3][1] = new THStack(int_name, "");
-   Integral_up[9][3][1]->Add(Integral_noerr_up[9][3][1]);
-   Integral_up[9][3][1]->Add(Integral_noerr_up[6][3][1]);
+   Integral_up[9][2][1] = new THStack(int_name, "");
+   Integral_up[9][2][1]->Add(Integral_noerr_up[9][2][1]);
+   Integral_up[9][2][1]->Add(Integral_noerr_up[6][2][1]);
   
   
    int_name.ReplaceAll("up","down");
-   Integral_down[9][3][1] = new THStack(int_name, "");
-   Integral_down[9][3][1]->Add(Integral_noerr_down[9][3][1]);
-   Integral_down[9][3][1]->Add(Integral_noerr_down[6][3][1]);
+   Integral_down[9][2][1] = new THStack(int_name, "");
+   Integral_down[9][2][1]->Add(Integral_noerr_down[9][2][1]);
+   Integral_down[9][2][1]->Add(Integral_noerr_down[6][2][1]);
   
+
+
+   //peripheral
+
+
+ 
+    
+  Integral_noerr_up[10][0][0]->SetMarkerSize(0);
+  Integral_noerr_up[10][0][0]->SetFillColor(kYellow-9);
+  Integral_noerr_up[10][0][1]->SetMarkerSize(0);
+  Integral_noerr_up[10][0][1]->SetFillColor(kYellow-9);
+  
+  Integral_noerr_down[10][0][0]->SetMarkerSize(0);
+  Integral_noerr_down[10][0][0]->SetFillColor(kYellow-9);
+  Integral_noerr_down[10][0][1]->SetMarkerSize(0);
+  Integral_noerr_down[10][0][1]->SetFillColor(kYellow-9);
+ 
+  Integral_noerr_up[8][0][0]->SetMarkerSize(0);
+  Integral_noerr_up[8][0][1]->SetMarkerSize(0);
+  Integral_noerr_up[8][0][0]->SetFillColor(kGreen+3);
+  Integral_noerr_up[8][0][1]->SetFillColor(kGreen+3);
+
+  Integral_noerr_down[8][0][0]->SetMarkerSize(0);
+  Integral_noerr_down[8][0][1]->SetMarkerSize(0);
+  Integral_noerr_down[8][0][0]->SetFillColor(kGreen+3);
+  Integral_noerr_down[8][0][1]->SetFillColor(kGreen+3);
+
+
+
+ 
+  Integral_noerr_up[9][0][0]->SetMarkerSize(0);
+  Integral_noerr_up[9][0][0]->SetFillColor(kBlue-9);
+  Integral_noerr_up[9][0][1]->SetMarkerSize(0);
+  Integral_noerr_up[9][0][1]->SetFillColor(kBlue-9);
+ 
+  Integral_noerr_up[6][0][0]->SetMarkerSize(0);
+  Integral_noerr_up[6][0][1]->SetMarkerSize(0);
+  Integral_noerr_up[6][0][0]->SetFillColor(kRed+2);
+  Integral_noerr_up[6][0][1]->SetFillColor(kRed+2);
+
+
+
+
+ 
+  Integral_noerr_down[9][0][0]->SetMarkerSize(0);
+  Integral_noerr_down[9][0][0]->SetFillColor(kBlue-9);
+  Integral_noerr_down[9][0][1]->SetMarkerSize(0);
+  Integral_noerr_down[9][0][1]->SetFillColor(kBlue-9);
+ 
+  Integral_noerr_down[6][0][0]->SetMarkerSize(0);
+  Integral_noerr_down[6][0][1]->SetMarkerSize(0);
+  Integral_noerr_down[6][0][0]->SetFillColor(kRed+2);
+  Integral_noerr_down[6][0][1]->SetFillColor(kRed+2);
+
+ 
+ 
+  int_name = "int_jet_up_Aj0_Aj22";
+ 
+   Integral_up[8][0][0] = new THStack(int_name, "");
+   Integral_up[8][0][0]->Add(Integral_noerr_up[8][0][0]);
+   Integral_up[8][0][0]->Add(Integral_noerr_up[10][0][0]);
+ 
+  
+   int_name.ReplaceAll("up","down");
+   Integral_down[8][0][0] = new THStack(int_name, "");
+   Integral_down[8][0][0]->Add(Integral_noerr_down[8][0][0]);
+   Integral_down[8][0][0]->Add(Integral_noerr_down[10][0][0]);
+   
+
+
+   int_name = "int_jet_up_Aj22_Aj75";
+
+   Integral_up[8][0][1] = new THStack(int_name, "");
+   Integral_up[8][0][1]->Add(Integral_noerr_up[8][0][1]);
+   Integral_up[8][0][1]->Add(Integral_noerr_up[10][0][1]);
+  
+  
+   int_name.ReplaceAll("up","down");
+   Integral_down[8][0][1] = new THStack(int_name, "");
+   Integral_down[8][0][1]->Add(Integral_noerr_down[8][0][1]);
+   Integral_down[8][0][1]->Add(Integral_noerr_down[10][0][1]);
+  
+
+  
+   int_name = "int_diff_up_Aj0_Aj22";
+ 
+   Integral_up[9][0][0] = new THStack(int_name, "");
+   Integral_up[9][0][0]->Add(Integral_noerr_up[9][0][0]);
+   Integral_up[9][0][0]->Add(Integral_noerr_up[6][0][0]);
+ 
+  
+   int_name.ReplaceAll("up","down");
+   Integral_down[9][0][0] = new THStack(int_name, "");
+   Integral_down[9][0][0]->Add(Integral_noerr_down[9][0][0]);
+   Integral_down[9][0][0]->Add(Integral_noerr_down[6][0][0]);
+   
+
+
+   int_name = "int_diff_up_Aj22_Aj75";
+
+   Integral_up[9][0][1] = new THStack(int_name, "");
+   Integral_up[9][0][1]->Add(Integral_noerr_up[9][0][1]);
+   Integral_up[9][0][1]->Add(Integral_noerr_up[6][0][1]);
+  
+  
+   int_name.ReplaceAll("up","down");
+   Integral_down[9][0][1] = new THStack(int_name, "");
+   Integral_down[9][0][1]->Add(Integral_noerr_down[9][0][1]);
+   Integral_down[9][0][1]->Add(Integral_noerr_down[6][0][1]);
+  
+
 
 
 
 
    ///DRAWING//
+   c_all_int->cd(1);
 
 
-
-   float summary_int_max = 14.;
-   float summary_int_min = -14.;
+   float summary_int_max = 16.;
+   float summary_int_min = -13.;
  
-   float summary_int_max2 = 12.;
+   float summary_int_max2 = 16.;
    float summary_int_min2 = -13.;
  
 
-   Integral_up[8][3][0]->Draw();
+   Integral_up[8][2][0]->Draw();
   
 
-   Integral_up[8][3][0]->SetMaximum(summary_int_max);
-   Integral_up[8][3][0]->SetMinimum(summary_int_min);
-   Integral_up[8][3][0]->GetYaxis()->SetLabelSize(0.07);
-   Integral_up[8][3][0]->GetYaxis()->SetTitleSize(0.065);
-   Integral_up[8][3][0]->GetYaxis()->SetTitleOffset(2.5);
-   Integral_up[8][3][0]->GetYaxis()->SetTitle("(1/N_{evt}#Sigmap_{T})_{PbPb}-(1/N_{evt}#Sigmap_{T})_{pp} (GeV/c)");
-    Integral_up[8][3][0]->GetYaxis()->CenterTitle();
-   Integral_up[8][3][0]->GetYaxis()->SetTitleOffset(0.8);
+   Integral_up[8][2][0]->SetMaximum(summary_int_max);
+   Integral_up[8][2][0]->SetMinimum(summary_int_min);
+   Integral_up[8][2][0]->GetYaxis()->SetLabelSize(0.085);
+   Integral_up[8][2][0]->GetYaxis()->SetTitleSize(0.085);
+   Integral_up[8][2][0]->GetYaxis()->SetTitleOffset(0.7);
+   Integral_up[8][2][0]->GetYaxis()->SetTitle("#Sigma P_{PbPb}- #Sigma P_{pp}   (GeV/c)");
+    Integral_up[8][2][0]->GetYaxis()->CenterTitle();
+   Integral_up[8][2][0]->GetYaxis()->SetTitleOffset(0.8);
 
-   Integral_up[8][3][0]->GetXaxis()->SetLabelSize(0.0); 
-   Integral_up[8][3][0]->GetXaxis()->SetRangeUser(0.501,7.99);
+   Integral_up[8][2][0]->GetXaxis()->SetLabelSize(0.0); 
+   Integral_up[8][2][0]->GetXaxis()->SetRangeUser(0.501,7.99);
   
 
 
-   Integral_down[8][3][0]->Draw("same ");
+   Integral_down[8][2][0]->Draw("same ");
 
 
-   Integral_syst[8][3][0]->Add( Integral_syst[10][3][0]);
-   Integral_syst[8][3][0]->Draw("same e2");
+   Integral_syst[8][2][0]->Add( Integral_syst[10][2][0]);
+   Integral_syst[8][2][0]->Draw("same e2");
 
 
-   Integral[8][3][0]->Add(   Integral[10][3][0]);
-   Integral[8][3][0]->Draw("same");
+   Integral[8][2][0]->Add(   Integral[10][2][0]);
+   Integral[8][2][0]->Draw("same");
    
 
    l_int->Draw();
 
 
 
-   TLegend *legend_int_lead = new TLegend(0.42,0.7,0.95,0.95);
-   legend_int_lead->AddEntry(Integral_noerr_up[8][3][0],"SubLeading jet modification","f");
-   legend_int_lead->AddEntry(Integral_noerr_up[10][3][0],"Leading jet modification","f");
-   legend_int_lead->AddEntry(Integral_syst[8][3][0],"Dijet modification","lpfe");
-   legend_int_lead->SetTextSize(0.055);
+   TLegend *legend_int_lead = new TLegend(0.17,0.65,0.95,0.85);
+   legend_int_lead->AddEntry(Integral_noerr_up[8][2][0],"Subleading jet ","f");
+   legend_int_lead->AddEntry(Integral_noerr_up[10][2][0],"Leading jet ","f");
+   legend_int_lead->AddEntry(Integral_syst[8][2][0],"Subleading+leading jet ","lpfe");
+   legend_int_lead->SetTextSize(0.07);
    legend_int_lead->SetLineColor(kWhite);
    legend_int_lead->Draw();
    
@@ -2275,27 +2690,27 @@ Integral[0][0][1]->Draw("same");
 
    c_all_int->cd(2);
 
-   Integral_up[8][3][1]->Draw();
+   Integral_up[8][2][1]->Draw();
   
 
-   Integral_up[8][3][1]->SetMaximum(summary_int_max);
-   Integral_up[8][3][1]->SetMinimum(summary_int_min);
-   Integral_up[8][3][1]->GetYaxis()->SetLabelSize(0.0);
-   Integral_up[8][3][1]->GetYaxis()->SetTitleSize(0.0);
+   Integral_up[8][2][1]->SetMaximum(summary_int_max);
+   Integral_up[8][2][1]->SetMinimum(summary_int_min);
+   Integral_up[8][2][1]->GetYaxis()->SetLabelSize(0.0);
+   Integral_up[8][2][1]->GetYaxis()->SetTitleSize(0.0);
  
 
-   Integral_up[8][3][1]->GetXaxis()->SetLabelSize(0.0); 
-   Integral_up[8][3][1]->GetXaxis()->SetRangeUser(0.501,7.99);
+   Integral_up[8][2][1]->GetXaxis()->SetLabelSize(0.0); 
+   Integral_up[8][2][1]->GetXaxis()->SetRangeUser(0.501,7.99);
   
-   Integral_down[8][3][1]->Draw("same ");
+   Integral_down[8][2][1]->Draw("same ");
 
 
-   Integral_syst[8][3][1]->Add(Integral_syst[10][3][1]);
-   Integral_syst[8][3][1]->Draw("same e2");
+   Integral_syst[8][2][1]->Add(Integral_syst[10][2][1]);
+   Integral_syst[8][2][1]->Draw("same e2");
 
 
-   Integral[8][3][1]->Add( Integral[10][3][1]);
-   Integral[8][3][1]->Draw("same");
+   Integral[8][2][1]->Add( Integral[10][2][1]);
+   Integral[8][2][1]->Draw("same");
   
 
    l_int->Draw();
@@ -2308,11 +2723,12 @@ Integral[0][0][1]->Draw("same");
   
   
    cms_tex->Draw(); 
+   prelim_tex->Draw(); 
 
 
 
 
-   TLatex *cent_tex = new TLatex(0.4,0.7,"0-10% Central");
+   TLatex *cent_tex = new TLatex(0.4,0.7,"0-30% Central");
    cent_tex->SetTextSize(0.08);
    cent_tex->SetLineColor(kWhite);
    cent_tex->SetNDC();
@@ -2320,7 +2736,7 @@ Integral[0][0][1]->Draw("same");
   
 
    TLatex *data_tex = new TLatex(0.4,0.8,"PbPb - pp");
-   data_tex->SetTextSize(0.08);
+   data_tex->SetTextSize(0.1);
    data_tex->SetLineColor(kWhite);
    data_tex->SetNDC();
    data_tex->Draw(); 
@@ -2330,79 +2746,309 @@ Integral[0][0][1]->Draw("same");
     c_all_int->cd(3);
 
    cout<<"here"<<endl;
-   Integral_up[9][3][0]->Draw();
+   Integral_up[9][2][0]->Draw();
 
 
-   Integral_up[9][3][0]->SetMaximum(summary_int_max2);
-   Integral_up[9][3][0]->SetMinimum(summary_int_min2);
-   Integral_up[9][3][0]->GetYaxis()->SetLabelSize(0.06);
-   Integral_up[9][3][0]->GetYaxis()->SetTitleSize(0.055);
-   Integral_up[9][3][0]->GetYaxis()->SetTitleOffset(2.5);
-   Integral_up[9][3][0]->GetYaxis()->SetTitle("(1/N_{evt}#Sigmap_{T})_{PbPb}-(1/N_{evt}#Sigmap_{T})_{pp} (GeV/c)");
-   Integral_up[9][3][0]->GetYaxis()->CenterTitle();
-   Integral_up[9][3][0]->GetXaxis()->SetTitle("p_{T}^{assoc} (GeV/c)");
-   Integral_up[9][3][0]->GetXaxis()->SetTitleSize(0.07);
-   Integral_up[9][3][0]->GetXaxis()->CenterTitle();
-   Integral_up[9][3][0]->GetXaxis()->SetLabelSize(0.07); 
-   Integral_up[9][3][0]->GetYaxis()->SetTitleOffset(0.8);
-   Integral_up[9][3][0]->GetXaxis()->SetRangeUser(.501,7.99);
+   Integral_up[9][2][0]->SetMaximum(summary_int_max2);
+   Integral_up[9][2][0]->SetMinimum(summary_int_min2);
+   Integral_up[9][2][0]->GetYaxis()->SetLabelSize(0.07);
+   Integral_up[9][2][0]->GetYaxis()->SetTitleSize(0.07);
+   Integral_up[9][2][0]->GetYaxis()->SetTitleOffset(.9);
+   Integral_up[9][2][0]->GetYaxis()->SetTitle("#Sigma #DeltaP_{PbPb}- #Sigma #DeltaP_{pp}   (GeV/c)");
+   Integral_up[9][2][0]->GetYaxis()->CenterTitle();
+   Integral_up[9][2][0]->GetXaxis()->SetTitle("p_{T}^{assoc}   (GeV/c)");
+   Integral_up[9][2][0]->GetXaxis()->SetTitleSize(0.08);
+   Integral_up[9][2][0]->GetXaxis()->CenterTitle();
+   Integral_up[9][2][0]->GetXaxis()->SetLabelSize(0.08); 
+   Integral_up[9][2][0]->GetXaxis()->SetTitleOffset(1.);
+   Integral_up[9][2][0]->GetXaxis()->SetRangeUser(.501,7.99);
    
-   Integral_down[9][3][0]->Draw("same");
+   Integral_down[9][2][0]->Draw("same");
 
 
-   Integral_syst[9][3][0]->Add(Integral_syst[6][3][0]);
-   Integral_syst[9][3][0]->Draw("same e2");
+   Integral_syst[9][2][0]->Add(Integral_syst[6][2][0]);
+   Integral_syst[9][2][0]->Draw("same e2");
 
-   Integral[9][3][0]->Add(Integral[6][3][0]);
-   Integral[9][3][0]->Draw("same");
+   Integral[9][2][0]->Add(Integral[6][2][0]);
+   Integral[9][2][0]->Draw("same");
      
 
 
    l_int->Draw();
 
-   TLegend *legend_int_diff = new TLegend(0.42,0.7,0.95,0.95);
-   legend_int_diff->AddEntry(Integral_noerr_up[9][3][0],"Dijet modification","f");
-   legend_int_diff->AddEntry(Integral_noerr_up[6][3][0],"Long range difference","f");
-   legend_int_diff->AddEntry(Integral_syst[9][3][0],"Total difference","lpfe");
-   legend_int_diff->SetTextSize(0.055);
+   TLegend *legend_int_diff = new TLegend(0.17,0.75,0.95,0.95);
+   legend_int_diff->AddEntry(Integral_noerr_up[9][2][0],"Subleading+leading jet ","f");
+   legend_int_diff->AddEntry(Integral_noerr_up[6][2][0],"Long range","f");
+   legend_int_diff->AddEntry(Integral_syst[9][2][0],"Total","lpfe");
+   legend_int_diff->SetTextSize(0.062);
    legend_int_diff->SetLineColor(kWhite);
    legend_int_diff->Draw();
 
    l_int2->Draw();
+ cover_x_int->Draw();
 
-    c_all_int->cd(4);
+
+ c_all_int->cd(4);
  
-    Integral_up[9][3][1]->Draw();
+    Integral_up[9][2][1]->Draw();
 
 
-   Integral_up[9][3][1]->SetMaximum(summary_int_max2);
-   Integral_up[9][3][1]->SetMinimum(summary_int_min2);
-   Integral_up[9][3][1]->GetYaxis()->SetLabelSize(0.0);
-   Integral_up[9][3][1]->GetYaxis()->SetTitleSize(0.0);
-    Integral_up[9][3][1]->GetXaxis()->SetTitle("p_{T}^{assoc} (GeV/c)");
-   Integral_up[9][3][1]->GetXaxis()->SetTitleSize(0.07);
-   Integral_up[9][3][1]->GetXaxis()->CenterTitle();
-   Integral_up[9][3][1]->GetXaxis()->SetLabelSize(0.07); 
-   Integral_up[9][3][1]->GetYaxis()->SetTitleOffset(0.8);
-   Integral_up[9][3][1]->GetXaxis()->SetRangeUser(.501,7.99);
+   Integral_up[9][2][1]->SetMaximum(summary_int_max2);
+   Integral_up[9][2][1]->SetMinimum(summary_int_min2);
+   Integral_up[9][2][1]->GetYaxis()->SetLabelSize(0.0);
+   Integral_up[9][2][1]->GetYaxis()->SetTitleSize(0.0);
+    Integral_up[9][2][1]->GetXaxis()->SetTitle("p_{T}^{assoc}   (GeV/c)");
+   Integral_up[9][2][1]->GetXaxis()->SetTitleSize(0.08);
+   Integral_up[9][2][1]->GetXaxis()->CenterTitle();
+   Integral_up[9][2][1]->GetXaxis()->SetLabelSize(0.08); 
+   Integral_up[9][2][1]->GetYaxis()->SetTitleOffset(0.8);
+   Integral_up[9][2][1]->GetXaxis()->SetRangeUser(.501,7.99);
    
-   Integral_down[9][3][1]->Draw("same");
+   Integral_down[9][2][1]->Draw("same");
 
 
-   Integral_syst[9][3][1]->Add(Integral_syst[6][3][1]);
-   Integral_syst[9][3][1]->Draw("same e2");
+   Integral_syst[9][2][1]->Add(Integral_syst[6][2][1]);
+   Integral_syst[9][2][1]->Draw("same e2");
 
 
-   Integral[9][3][1]->Add( Integral[6][3][1]);
-   Integral[9][3][1]->Draw("same");
+   Integral[9][2][1]->Add( Integral[6][2][1]);
+   Integral[9][2][1]->Draw("same");
      
 
 
 
    l_int2->Draw();
+   cover_x_int->Draw();
 
-   c_all_int->SaveAs("Integral_PbPb_pp_Summary.png");
-   c_all_int->SaveAs("Integral_PbPb_pp_Summary.pdf");
+
+   c_all_int->cd(0);
+
+   
+    TLatex   *luminosity_tex_all_pp = new TLatex(0.1,0.96,"pp 5.3 pb^{-1} (2.76 TeV)");
+    luminosity_tex_all_pp->SetTextFont(43);
+    luminosity_tex_all_pp->SetTextSizePixels(25);
+    luminosity_tex_all_pp->SetLineColor(kWhite);
+    luminosity_tex_all_pp->SetNDC();
+    luminosity_tex_all_pp->Draw();
+   
+    TLatex   *luminosity_tex_all_PbPb = new TLatex(0.1,0.92,"PbPb 166 #mub^{-1} (2.76 TeV)");
+    luminosity_tex_all_PbPb->SetTextFont(43);
+    luminosity_tex_all_PbPb->SetTextSizePixels(25);
+    luminosity_tex_all_PbPb->SetLineColor(kWhite);
+    luminosity_tex_all_PbPb->SetNDC();
+    luminosity_tex_all_PbPb->Draw();
+    
+
+    TLatex   *jet_reco_tex_all = new TLatex(0.53,0.96,"anti-k_{T} R = 0.3, |#eta_{jet}| < 1.6");
+    jet_reco_tex_all->SetTextFont(43);
+    jet_reco_tex_all->SetTextSizePixels(25);
+    jet_reco_tex_all->SetLineColor(kWhite);
+    jet_reco_tex_all->SetNDC();
+    jet_reco_tex_all->Draw();
+
+    TLatex   *jet_cut_tex_all = new TLatex(0.53,0.92,"120 < p_{T,1}< 300, p_{T,2}> 50 GeV/c, #Delta#phi_{1,2}> 5#pi/6");
+    jet_cut_tex_all->SetTextFont(43);
+    jet_cut_tex_all->SetTextSizePixels(25);
+    jet_cut_tex_all->SetLineColor(kWhite);
+    jet_cut_tex_all->SetNDC();
+    jet_cut_tex_all->Draw();
+    
+
+
+   c_all_int->Print("Integral_PbPb_pp_Summary.png");
+   c_all_int->Print("Integral_PbPb_pp_Summary.pdf");
+
+
+
+   //peripheral
+
+   c_all_int->cd(1);
+
+
+   Integral_up[8][0][0]->Draw();
+  
+
+  
+   Integral_up[8][0][0]->SetMaximum(summary_int_max);
+   Integral_up[8][0][0]->SetMinimum(summary_int_min);
+   Integral_up[8][0][0]->GetYaxis()->SetLabelSize(0.085);
+   Integral_up[8][0][0]->GetYaxis()->SetTitleSize(0.085);
+   Integral_up[8][0][0]->GetYaxis()->SetTitleOffset(0.7);
+   Integral_up[8][0][0]->GetYaxis()->SetTitle("#Sigma P_{PbPb}- #Sigma P_{pp}   (GeV/c)");
+    Integral_up[8][0][0]->GetYaxis()->CenterTitle();
+   Integral_up[8][0][0]->GetYaxis()->SetTitleOffset(0.8);
+
+   Integral_up[8][0][0]->GetXaxis()->SetLabelSize(0.0); 
+   Integral_up[8][0][0]->GetXaxis()->SetRangeUser(0.501,7.99);
+  
+  
+
+   Integral_down[8][0][0]->Draw("same ");
+
+
+   Integral_syst[8][0][0]->Add( Integral_syst[10][0][0]);
+   Integral_syst[8][0][0]->Draw("same e2");
+
+
+   Integral[8][0][0]->Add(   Integral[10][0][0]);
+   Integral[8][0][0]->Draw("same");
+   
+
+   l_int->Draw();
+
+   legend_int_lead->Draw();
+   
+
+   
+   aj_tex = new TLatex(0.2,0.9,"A_{J}<0.22");
+   aj_tex->SetTextSize(0.08);
+   aj_tex->SetLineColor(kWhite);
+   aj_tex->SetNDC();
+   aj_tex->Draw(); 
+ 
+
+    l_int2->Draw();
+
+
+
+   c_all_int->cd(2);
+
+   Integral_up[8][0][1]->Draw();
+  
+
+   Integral_up[8][0][1]->SetMaximum(summary_int_max);
+   Integral_up[8][0][1]->SetMinimum(summary_int_min);
+   Integral_up[8][0][1]->GetYaxis()->SetLabelSize(0.0);
+   Integral_up[8][0][1]->GetYaxis()->SetTitleSize(0.0);
+ 
+
+   Integral_up[8][0][1]->GetXaxis()->SetLabelSize(0.0); 
+   Integral_up[8][0][1]->GetXaxis()->SetRangeUser(0.501,7.99);
+  
+   Integral_down[8][0][1]->Draw("same ");
+
+
+   Integral_syst[8][0][1]->Add(Integral_syst[10][0][1]);
+   Integral_syst[8][0][1]->Draw("same e2");
+
+
+   Integral[8][0][1]->Add( Integral[10][0][1]);
+   Integral[8][0][1]->Draw("same");
+  
+
+   l_int->Draw();
+
+   aj_tex = new TLatex(0.05,0.9,"A_{J}>0.22");
+   aj_tex->SetTextSize(0.08);
+   aj_tex->SetLineColor(kWhite);
+   aj_tex->SetNDC();
+   aj_tex->Draw(); 
+  
+  
+   cms_tex->Draw(); 
+   prelim_tex->Draw(); 
+
+
+
+
+   cent_tex = new TLatex(0.4,0.7,"50-100% Peripheral");
+   cent_tex->SetTextSize(0.08);
+   cent_tex->SetLineColor(kWhite);
+   cent_tex->SetNDC();
+   cent_tex->Draw(); 
+  
+
+   data_tex->Draw(); 
+
+
+   l_int2->Draw();
+    c_all_int->cd(3);
+
+   cout<<"here"<<endl;
+   Integral_up[9][0][0]->Draw();
+
+
+
+   Integral_up[9][0][0]->SetMaximum(summary_int_max2);
+   Integral_up[9][0][0]->SetMinimum(summary_int_min2);
+   Integral_up[9][0][0]->GetYaxis()->SetLabelSize(0.07);
+   Integral_up[9][0][0]->GetYaxis()->SetTitleSize(0.07);
+   Integral_up[9][0][0]->GetYaxis()->SetTitleOffset(.9);
+   Integral_up[9][0][0]->GetYaxis()->SetTitle("#Sigma #DeltaP_{PbPb}- #Sigma #DeltaP_{pp}   (GeV/c)");
+   Integral_up[9][0][0]->GetYaxis()->CenterTitle();
+   Integral_up[9][0][0]->GetXaxis()->SetTitle("p_{T}^{assoc}   (GeV/c)");
+   Integral_up[9][0][0]->GetXaxis()->SetTitleSize(0.08);
+   Integral_up[9][0][0]->GetXaxis()->CenterTitle();
+   Integral_up[9][0][0]->GetXaxis()->SetLabelSize(0.08); 
+   Integral_up[9][0][0]->GetXaxis()->SetTitleOffset(1.);
+   Integral_up[9][0][0]->GetXaxis()->SetRangeUser(.501,7.99);
+   
+   Integral_down[9][0][0]->Draw("same");
+
+
+   Integral_syst[9][0][0]->Add(Integral_syst[6][0][0]);
+   Integral_syst[9][0][0]->Draw("same e2");
+
+   Integral[9][0][0]->Add(Integral[6][0][0]);
+   Integral[9][0][0]->Draw("same");
+     
+
+
+   l_int->Draw();
+   
+   legend_int_diff->Draw();
+
+   l_int2->Draw();
+   cover_x_int->Draw();
+
+    c_all_int->cd(4);
+ 
+    Integral_up[9][0][1]->Draw();
+
+   Integral_up[9][0][1]->SetMaximum(summary_int_max2);
+   Integral_up[9][0][1]->SetMinimum(summary_int_min2);
+   Integral_up[9][0][1]->GetYaxis()->SetLabelSize(0.0);
+   Integral_up[9][0][1]->GetYaxis()->SetTitleSize(0.0);
+    Integral_up[9][0][1]->GetXaxis()->SetTitle("p_{T}^{assoc}   (GeV/c)");
+   Integral_up[9][0][1]->GetXaxis()->SetTitleSize(0.08);
+   Integral_up[9][0][1]->GetXaxis()->CenterTitle();
+   Integral_up[9][0][1]->GetXaxis()->SetLabelSize(0.08); 
+   Integral_up[9][0][1]->GetYaxis()->SetTitleOffset(0.8);
+   Integral_up[9][0][1]->GetXaxis()->SetRangeUser(.501,7.99);   Integral_up[9][0][1]->GetXaxis()->SetRangeUser(.501,7.99);
+   
+   Integral_down[9][0][1]->Draw("same");
+
+
+   Integral_syst[9][0][1]->Add(Integral_syst[6][0][1]);
+   Integral_syst[9][0][1]->Draw("same e2");
+
+
+   Integral[9][0][1]->Add( Integral[6][0][1]);
+   Integral[9][0][1]->Draw("same");
+     
+
+
+
+   l_int2->Draw();
+   cover_x_int->Draw();
+
+
+   c_all_int->cd(0);
+
+   luminosity_tex_all_pp->Draw();
+   
+   luminosity_tex_all_PbPb->Draw();
+    
+
+     jet_reco_tex_all->Draw();
+
+    jet_cut_tex_all->Draw();
+    
+
+
+   c_all_int->Print("Integral_PbPb_pp_Summary_Peripheral.png");
+   c_all_int->Print("Integral_PbPb_pp_Summary_Peripheral.pdf");
+
 
    return 0;
   
