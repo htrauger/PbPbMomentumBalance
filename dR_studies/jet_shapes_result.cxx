@@ -13,6 +13,7 @@
 #include "TLegend.h"
 #include "TMultiGraph.h"
 #include "TGraphErrors.h"
+#include "TGaxis.h"
 #include "TGraphAsymmErrors.h"
 #include "TStyle.h"
 #include "TLatex.h"
@@ -59,7 +60,7 @@ Int_t jet_shapes_result(bool is_subleading = kFALSE, bool use_highpT_bin = kTRUE
  
   gStyle->SetOptStat(0);  
   gStyle->SetPadBottomMargin(0.15);
-  gStyle->SetPadTopMargin   (0.05);
+  gStyle->SetPadTopMargin   (0.25);
   gStyle->SetPadLeftMargin  (0.15);
   gStyle->SetPadRightMargin (0.05);
  
@@ -211,8 +212,9 @@ Int_t jet_shapes_result(bool is_subleading = kFALSE, bool use_highpT_bin = kTRUE
 
 	    resultMC2[g][ibin][0][ibin3]->Eval(ClosureFit);
 	        
+	
 	    result[g][ibin][ibin2][ibin3]->Add(resultMC2[g][ibin][0][ibin3],-1.);
-
+	 
 	  }
 
 	  if(ibin==0&&g==1){
@@ -255,7 +257,7 @@ Int_t jet_shapes_result(bool is_subleading = kFALSE, bool use_highpT_bin = kTRUE
 
 	  }
 
-	  if(ibin==0){
+	  if(g%2==0||ibin==0){
 	    
 	    for(int k = 1; k< resultMC_reco[g][ibin][0][ibin3]->GetNbinsX(); k++){
 	      for(int m = 1; m< resultMC_reco[g][ibin][0][ibin3]->GetNbinsY(); m++){
@@ -273,10 +275,11 @@ Int_t jet_shapes_result(bool is_subleading = kFALSE, bool use_highpT_bin = kTRUE
 	    }
 	    }
 	  }
-	  
+
+
 	  if(g==0) result[g][ibin][ibin2][ibin3]->Add(resultMC_reco[g][ibin][0][ibin3],-1.);
 	  else 	  result[g][ibin][ibin2][ibin3]->Add(resultMC_reco[g][0][0][ibin3],-1.);
-	  
+
 
 	  resultMC[g][ibin][ibin2][ibin3] = (TH2D*)resultMC2[g][ibin][ibin2][ibin3]->Clone((TString)("Combined_MC_"+ CBin_strs[ibin] + "_" + CBin_strs[ibin+1] + "_"+TrkPtBin_strs[ibin3]+"_" +TrkPtBin_strs[ibin3+1]));
 
@@ -288,10 +291,12 @@ Int_t jet_shapes_result(bool is_subleading = kFALSE, bool use_highpT_bin = kTRUE
 
 	    resultMC[g][ibin][ibin2][6] = (TH2D*) result[g][ibin][ibin2][ibin3]->Clone(((TString) ("Summed_result_MC"+ CBin_strs[ibin] + "_" + CBin_strs[ibin+1] + "_" + PtBin_strs[ibin2] + "_" + PtBin_strs[ibin2+1]+"_"+TrkPtBin_strs[ibin3]+"_" +TrkPtBin_strs[ibin3+1])));
 	  }else if(ibin3>0&&(use_highpT_bin||ibin3<5)){
+
 	    result[g][ibin][ibin2][6]->Add(result[g][ibin][ibin2][ibin3]);
 	    resultMC[g][ibin][ibin2][6]->Add(resultMC[g][ibin][ibin2][ibin3]);
 	  }
 	}
+
     
 	for (int ibin3=0;ibin3<nTrkPtBins;ibin3++){
 
@@ -495,7 +500,19 @@ Int_t jet_shapes_result(bool is_subleading = kFALSE, bool use_highpT_bin = kTRUE
 		JetShape_ref[0][ibin][ibin3]->SetBinError(6,0.010);
 
 	      }
+
+	      
+	      if(ibin==1){
+
+		JetShape_ref[0][ibin][ibin3]->Scale(0.53);
+		JetShape_ref[0][ibin][ibin3]->Add(JetShape_ref[1][ibin-1][ibin3],0.47);
+	
+
+	      }
+
 	    }
+
+	    
 	  
 
 	    if(((ibin3>0&&ibin3<5)||ibin3==6)){
@@ -572,7 +589,7 @@ Int_t jet_shapes_result(bool is_subleading = kFALSE, bool use_highpT_bin = kTRUE
 
 	  JetShapeMC[g][ibin][ibin3]->Scale(1./norm);
 	
-	
+
 	  fout->cd();
 	  
 	  JetShape2[g][ibin][ibin3]->SetAxisRange(0.,0.99,"x");
@@ -709,18 +726,18 @@ Int_t jet_shapes_result(bool is_subleading = kFALSE, bool use_highpT_bin = kTRUE
       JetShape2[0][ibin][k]->GetXaxis()->SetLabelFont(42);
       JetShape2[0][ibin][k]->GetXaxis()->SetLabelOffset(0.02);
       JetShape2[0][ibin][k]->GetXaxis()->SetLabelSize(0.08);
-      JetShape2[0][ibin][k]->GetXaxis()->SetTitleSize(0.065);
+      JetShape2[0][ibin][k]->GetXaxis()->SetTitleSize(0.08);
       JetShape2[0][ibin][k]->GetXaxis()->SetTickLength(0.025);
       JetShape2[0][ibin][k]->GetXaxis()->SetTitleOffset(1.3);
       JetShape2[0][ibin][k]->GetXaxis()->SetTitleFont(42);
-      JetShape2[0][ibin][k]->GetYaxis()->SetTitle("#rho(r)");
+      JetShape2[0][ibin][k]->GetYaxis()->SetTitle("#rho(r) (GeV/c)");
       JetShape2[0][ibin][k]->GetYaxis()->CenterTitle(true);
       JetShape2[0][ibin][k]->GetYaxis()->SetLabelFont(42);
       JetShape2[0][ibin][k]->GetYaxis()->SetLabelOffset(0.004);
       JetShape2[0][ibin][k]->GetYaxis()->SetLabelSize(0.075);
       JetShape2[0][ibin][k]->GetYaxis()->SetTitleSize(0.09);
       JetShape2[0][ibin][k]->GetYaxis()->SetTickLength(0.025);
-      JetShape2[0][ibin][k]->GetYaxis()->SetTitleOffset(.8);
+      JetShape2[0][ibin][k]->GetYaxis()->SetTitleOffset(1.);
      
       // JetShape2[0][ibin][k]->SetMinimum(0.008);
       //JetShape2[0][ibin][k]->SetMaximum(14.5);
@@ -729,7 +746,7 @@ Int_t jet_shapes_result(bool is_subleading = kFALSE, bool use_highpT_bin = kTRUE
       JetShape2[0][ibin][k]->SetMaximum(35.1);
 
       JetShape2[0][ibin][k]->GetYaxis()->SetLabelSize(0.07);
-      JetShape2[0][ibin][k]->GetYaxis()->SetTitleSize(0.08);
+    
 
       gPad->SetLogy();
 
@@ -829,7 +846,7 @@ Int_t jet_shapes_result(bool is_subleading = kFALSE, bool use_highpT_bin = kTRUE
       JetShape_diff2[0][ibin][k]->GetXaxis()->SetNdivisions(408);
       JetShape_diff2[0][ibin][k]->GetYaxis()->SetNdivisions(612);
       JetShape_diff2[0][ibin][k]->GetYaxis()->SetLabelSize(0.07);
-      JetShape_diff2[0][ibin][k]->GetYaxis()->SetTitleSize(0.08);
+      JetShape_diff2[0][ibin][k]->GetYaxis()->SetTitleSize(0.09);
 
       if(ibin==3){
 	JetShape_diff2[0][ibin][k]->GetXaxis()->SetTitleSize(0.9*JetShape_diff2[0][ibin][k]->GetXaxis()->GetTitleSize());
@@ -1145,51 +1162,91 @@ Int_t jet_shapes_result(bool is_subleading = kFALSE, bool use_highpT_bin = kTRUE
 
 
   PAS_plot->cd(4);
-  TLegend *legend = new TLegend(0.1,0.3,0.9,1.);
-  legend->AddEntry(JetShape_noerr_up[0][0][0],"0.5<p_{T}^{assoc.}<1 GeV/c","f");
-  legend->AddEntry(JetShape_noerr_up[0][0][1],"1<p_{T}^{assoc.}<2 GeV/c","f");
-  legend->AddEntry(JetShape_noerr_up[0][0][2],"2<p_{T}^{assoc.}<3 GeV/c","f");
-  legend->AddEntry(JetShape_noerr_up[0][0][3],"3<p_{T}^{assoc.}<4 GeV/c","f");
-  legend->AddEntry(JetShape_noerr_up[0][0][4],"4<p_{T}^{assoc.}<8 GeV/c","f");
+  TLegend *legend = new TLegend(0.1,0.05,0.9,.9);
+  legend->AddEntry(JetShape_noerr_up[0][0][0],"0.5 < p_{T}^{assoc.}< 1 GeV/c","f");
+  legend->AddEntry(JetShape_noerr_up[0][0][1],"1 < p_{T}^{assoc.}< 2 GeV/c","f");
+  legend->AddEntry(JetShape_noerr_up[0][0][2],"2 < p_{T}^{assoc.}< 3 GeV/c","f");
+  legend->AddEntry(JetShape_noerr_up[0][0][3],"3 < p_{T}^{assoc.}< 4 GeV/c","f");
+  legend->AddEntry(JetShape_noerr_up[0][0][4],"4 < p_{T}^{assoc.}< 8 GeV/c","f");
+ 
 
   if(!use_highpT_bin){
-    legend->AddEntry(JetShape_graph[0][0][6],"Total 0.5<p_{T}^{assoc.}<8 GeV/c","lpfe");
-  }else{
-    legend->AddEntry(JetShape_noerr_up[0][0][5],"p_{T}^{assoc.}>8 GeV/c","f");
-    legend->AddEntry(JetShape_graph[0][0][6],"Total p_{T}^{assoc.}>0.5 GeV/c","lpfe");
+    legend->AddEntry(JetShape_graph[0][0][6],"Total 0.5 < p_{T}^{assoc.}< 8 GeV/c","lpfe");
+  }else{ 
+    legend->AddEntry(JetShape_noerr_up[0][0][5],"p_{T}^{assoc.}> 8 GeV/c","f");
+    legend->AddEntry(JetShape_graph[0][0][6],"Total p_{T}^{assoc.}> 0.5 GeV/c","lpfe");
   }
+  legend->AddEntry(JetShape_noerr_up[0][0][4],"|#eta_{track}|< 2.4","");
   legend->SetTextSize(0.055);
   legend->SetLineColor(kWhite);
   legend->Draw();
 
   
-  TLatex *aj_tex = new TLatex(0.05,0.2,"A_{J} Inclusive");
-  aj_tex->SetTextSize(0.08);
+    
+
+  PAS_plot->cd(0);
+
+
+  TLatex *aj_tex = new TLatex(0.07,0.96,"A_{J} Inclusive");
+  aj_tex->SetTextSize(0.035);
   aj_tex->SetLineColor(kWhite);
   aj_tex->SetNDC();
   aj_tex->Draw();
     
   TLatex *type_tex;
-  if(is_subleading) type_tex = new TLatex(0.05,0.1,"SubLeading Jet Shape");
-  else type_tex = new TLatex(0.05,0.1,"Leading Jet Shape");
-  type_tex->SetTextSize(0.08);
+  if(is_subleading) type_tex = new TLatex(0.3,0.96,"SubLeading Jet Shape");
+  else type_tex = new TLatex(0.3,0.96,"Leading Jet Shape");
+ 
+  type_tex->SetTextSize(0.035);
   type_tex->SetLineColor(kWhite);
   type_tex->SetNDC();
   type_tex->Draw();
+   
+  TLatex   *luminosity_tex_pp = new TLatex(0.07,0.92,"pp 5.3 pb^{-1} (2.76 TeV)");
+  luminosity_tex_pp->SetTextFont(43);
+  luminosity_tex_pp->SetTextSizePixels(25);
+    luminosity_tex_pp->SetLineColor(kWhite);
+    luminosity_tex_pp->SetNDC();
+    luminosity_tex_pp->Draw();
+   
+    TLatex   *luminosity_tex_PbPb = new TLatex(0.3,0.92,"PbPb 166 #mub^{-1} (2.76 TeV)");
+    luminosity_tex_PbPb->SetTextFont(43);
+    luminosity_tex_PbPb->SetTextSizePixels(25);
+    luminosity_tex_PbPb->SetLineColor(kWhite);
+    luminosity_tex_PbPb->SetNDC();
+    luminosity_tex_PbPb->Draw();
+    
+
+    TLatex   *jet_reco_tex = new TLatex(0.605,0.96,"anti-k_{T} R = 0.3, |#eta_{jet}| < 1.6");
+    jet_reco_tex->SetTextFont(43);
+    jet_reco_tex->SetTextSizePixels(25);
+    jet_reco_tex->SetLineColor(kWhite);
+    jet_reco_tex->SetNDC();
+    jet_reco_tex->Draw();
+
+    TLatex   *jet_cut_tex = new TLatex(0.605,0.92,"120 < p_{T,1}< 300, p_{T,2}> 50 GeV/c, #Delta#phi_{1,2}> 5#pi/6");
+    jet_cut_tex->SetTextFont(43);
+    jet_cut_tex->SetTextSizePixels(25);
+    jet_cut_tex->SetLineColor(kWhite);
+    jet_cut_tex->SetNDC();
+    jet_cut_tex->Draw();
     
 
 
   
   PAS_plot->cd(1);
   
+ 
   JetShape_Stack_Up[1][0]->Draw();
   JetShape_Stack_Up[1][0]->GetXaxis()->SetRangeUser(0.,0.99);
+  JetShape_Stack_Up[1][0]->GetXaxis()->SetNdivisions(505);
 
   gPad->SetLogy();
-  JetShape_Stack_Up[1][0]->GetYaxis()->SetLabelSize(0.07);
-  JetShape_Stack_Up[1][0]->GetYaxis()->SetTitleSize(0.07);
-  JetShape_Stack_Up[1][0]->GetYaxis()->SetTitle("#rho(r)");
-  JetShape_Stack_Up[1][0]->GetYaxis()->CenterTitle();
+  JetShape_Stack_Up[1][0]->GetYaxis()->SetLabelSize(0.08);
+  JetShape_Stack_Up[1][0]->GetYaxis()->SetTitleSize(0.09);
+  JetShape_Stack_Up[1][0]->GetYaxis()->SetTitleOffset(0.8);
+  JetShape_Stack_Up[1][0]->GetYaxis()->SetTitle("#rho(#Deltar)  (GeV/c)");
+  //  JetShape_Stack_Up[1][0]->GetYaxis()->CenterTitle();
   JetShape_Stack_Down[1][0]->Draw("same");
   JetShape_Stack_Up[1][0]->Draw("same");
 
@@ -1200,7 +1257,7 @@ Int_t jet_shapes_result(bool is_subleading = kFALSE, bool use_highpT_bin = kTRUE
   if(!is_subleading)JetShape_ref[1][0][6]->Draw("same");
 
   TLatex  *label_pp = new TLatex(0.2,0.9,"pp Refrence");
-  label_pp->SetTextSize(0.08);
+  label_pp->SetTextSize(0.09);
   label_pp->SetLineColor(kWhite);
   label_pp->SetNDC();
   label_pp->Draw();
@@ -1210,13 +1267,23 @@ Int_t jet_shapes_result(bool is_subleading = kFALSE, bool use_highpT_bin = kTRUE
   l_dr->Draw();
 
 
-  TLatex *cms_tex_dphi = new TLatex(0.2,0.8,"CMS Preliminary");
-  cms_tex_dphi->SetTextSize(0.08);
+  TLatex *cms_tex_dphi = new TLatex(0.25,0.8,"CMS");
+  cms_tex_dphi->SetTextFont(63);
+  cms_tex_dphi->SetTextSizePixels(30);
   cms_tex_dphi->SetLineColor(kWhite);
   cms_tex_dphi->SetNDC();
   cms_tex_dphi->Draw(); 
 
 
+TLatex *prelim_tex_dphi = new TLatex(0.45,0.8,"Preliminary");
+  prelim_tex_dphi->SetTextFont(53);
+  prelim_tex_dphi->SetTextSizePixels(30);
+  prelim_tex_dphi->SetLineColor(kWhite);
+  prelim_tex_dphi->SetNDC();
+  prelim_tex_dphi->Draw(); 
+
+
+  gPad->RedrawAxis();
 
   PAS_plot->cd(2);
 
@@ -1225,6 +1292,7 @@ Int_t jet_shapes_result(bool is_subleading = kFALSE, bool use_highpT_bin = kTRUE
   JetShape_Stack_Up[0][3]->Draw();
 
   JetShape_Stack_Up[0][3]->GetXaxis()->SetRangeUser(0.,0.99);
+  JetShape_Stack_Up[0][3]->GetXaxis()->SetNdivisions(505);
 
   gPad->SetLogy();
   JetShape_Stack_Up[0][3]->GetYaxis()->SetLabelSize(0.);
@@ -1238,7 +1306,7 @@ Int_t jet_shapes_result(bool is_subleading = kFALSE, bool use_highpT_bin = kTRUE
   if(!is_subleading) JetShape_ref[0][3][6]->Draw("same");
 
   TLatex  *label_per = new TLatex(0.05,0.9,"PbPb Cent. 50-100%");
-  label_per->SetTextSize(0.08);
+  label_per->SetTextSize(0.09);
   label_per->SetLineColor(kWhite);
   label_per->SetNDC();
   label_per->Draw()
@@ -1247,21 +1315,22 @@ Int_t jet_shapes_result(bool is_subleading = kFALSE, bool use_highpT_bin = kTRUE
 
   PAS_plot->cd(3);
   
-  JetShape_Stack_Up[0][0]->Draw();
+  JetShape_Stack_Up[0][1]->Draw();
   gPad->SetLogy();
-  JetShape_Stack_Up[0][0]->GetYaxis()->SetLabelSize(0.);
-  JetShape_Stack_Down[0][0]->Draw("same");
+  JetShape_Stack_Up[0][1]->GetYaxis()->SetLabelSize(0.);
+  JetShape_Stack_Down[0][1]->Draw("same");
 
-  JetShape_Stack_Up[0][0]->GetXaxis()->SetRangeUser(0.,0.99);
+  JetShape_Stack_Up[0][1]->GetXaxis()->SetRangeUser(0.,0.99);
+  JetShape_Stack_Up[0][1]->GetXaxis()->SetNdivisions(505);
 
    
-   JetShape_graph[0][0][6]->Draw("same e2 P");
-   JetShape2[0][0][6]->Draw("same");
+   JetShape_graph[0][1][6]->Draw("same e2 P");
+   JetShape2[0][1][6]->Draw("same");
 
-if(!is_subleading) JetShape_ref[0][0][6]->Draw("same");
+if(!is_subleading) JetShape_ref[0][1][6]->Draw("same");
 
-  TLatex  *label_cent = new TLatex(0.05,0.9,"PbPb Cent. 0-10%");
-  label_cent->SetTextSize(0.08);
+  TLatex  *label_cent = new TLatex(0.05,0.9,"PbPb Cent. 0-30%");
+  label_cent->SetTextSize(0.09);
   label_cent->SetLineColor(kWhite);
   label_cent->SetNDC();
   label_cent->Draw();
@@ -1272,22 +1341,24 @@ if(!is_subleading) JetShape_ref[0][0][6]->Draw("same");
 
 
   JetShape_ratio[0][3][6]->SetMinimum(0.);
-  JetShape_ratio[0][3][6]->SetMaximum(8.5);
+  JetShape_ratio[0][3][6]->SetMaximum(6.5);
 
 
  JetShape_ratio[0][3][6]->Draw();
- JetShape_ratio[0][3][6]->GetYaxis()->SetLabelSize(0.07); 
+ JetShape_ratio[0][3][6]->GetYaxis()->SetLabelSize(0.08); 
  JetShape_ratio[0][3][6]->GetYaxis()->CenterTitle();
  JetShape_ratio[0][3][6]->GetYaxis()->SetTitle("#rho(r)_{PbPb}/#rho(r)_{pp}");
- JetShape_ratio[0][3][6]->GetYaxis()->SetTitleSize(0.07);
- JetShape_ratio[0][3][6]->GetYaxis()->SetTitleOffset(1.2);
+ JetShape_ratio[0][3][6]->GetYaxis()->SetTitleSize(0.0);
+ JetShape_ratio[0][3][6]->GetYaxis()->SetLabelSize(0.0);
+ JetShape_ratio[0][3][6]->GetYaxis()->SetTitleOffset(1.);
 
- JetShape_ratio[0][3][6]->GetXaxis()->SetLabelSize(0.06); 
+ JetShape_ratio[0][3][6]->GetXaxis()->SetLabelSize(0.08); 
  JetShape_ratio[0][3][6]->GetXaxis()->CenterTitle();
- JetShape_ratio[0][3][6]->GetXaxis()->SetTitle("r");
- JetShape_ratio[0][3][6]->GetXaxis()->SetTitleSize(0.07);
- JetShape_ratio[0][3][6]->GetXaxis()->SetTitleOffset(1.);
+ JetShape_ratio[0][3][6]->GetXaxis()->SetTitle("#Deltar");
+ JetShape_ratio[0][3][6]->GetXaxis()->SetTitleSize(0.09);
+ JetShape_ratio[0][3][6]->GetXaxis()->SetTitleOffset(0.6);
  JetShape_ratio[0][3][6]->GetXaxis()->CenterTitle();
+ JetShape_ratio[0][3][6]->GetXaxis()->SetNdivisions(505);
  
 
  JetShape_ratio[0][3][6]->SetMarkerStyle(20);
@@ -1301,16 +1372,16 @@ if(!is_subleading) JetShape_ref[0][0][6]->Draw("same");
 
 
   TLatex  *label_ratio = new TLatex(0.05,0.9,"");
-  label_ratio->SetTextSize(0.08);
+  label_ratio->SetTextSize(0.09);
   label_ratio->SetLineColor(kWhite);
   label_ratio->SetNDC();
   label_ratio->Draw();
 
-  TLegend *legend_ratio = new TLegend(0.02,0.75,0.9,0.9);
-  legend_ratio->AddEntry(JetShape_ratio[0][3][6],"Jet Shape Ratio PbPb/pp");
-  if(!is_subleading)  legend_ratio->AddEntry(JetShape_ref_ratio[0][3][6],"CMS Published: PLB 730 (2014)");
+  TLegend *legend_ratio = new TLegend(0.02,0.7,0.9,0.9);
+  legend_ratio->AddEntry(JetShape_ratio[0][3][6],"PbPb/pp");
+  if(!is_subleading)  legend_ratio->AddEntry(JetShape_ref_ratio[0][3][6],"PLB 730 (2014)");
   legend_ratio->SetLineColor(kWhite);
-  legend_ratio->SetTextSize(0.055);
+  legend_ratio->SetTextSize(0.08);
   legend_ratio->Draw("same");
 
 
@@ -1319,57 +1390,132 @@ if(!is_subleading) JetShape_ref[0][0][6]->Draw("same");
   line->SetLineStyle(2);
   line->Draw();
 
+  
+   TPave *cover_x_r = new TPave(0.9,0.,1.1,0.13);
+   cover_x_r->SetFillColor(kWhite);
+   cover_x_r->SetLineColor(kWhite);
+   cover_x_r->SetOption("NDC NB");
+
+   cover_x_r->Draw();
+
+  TPave *cover_x_l = new TPave(-.0175,0.,0.1,0.125);
+   cover_x_l->SetFillColor(kWhite);
+   cover_x_l->SetLineColor(kWhite);
+   cover_x_l->SetOption("NDC NB");
+
+
+   cover_x_l->Draw();
+ 
+
+
+
   PAS_plot->cd(6);
 
 
-  JetShape_ratio[0][0][6]->SetMinimum(0.);
-  JetShape_ratio[0][0][6]->SetMaximum(8.5);
+  JetShape_ratio[0][1][6]->SetMinimum(0.);
+  JetShape_ratio[0][1][6]->SetMaximum(6.5);
 
 
- JetShape_ratio[0][0][6]->SetMarkerStyle(20);
- JetShape_ratio[0][0][6]->SetMarkerSize(1);
- JetShape_ratio[0][0][6]->SetMarkerColor(kBlack);
+ JetShape_ratio[0][1][6]->SetMarkerStyle(20);
+ JetShape_ratio[0][1][6]->SetMarkerSize(1);
+ JetShape_ratio[0][1][6]->SetMarkerColor(kBlack);
  
 
- JetShape_ratio[0][0][6]->Draw();
- JetShape_ratio[0][0][6]->GetYaxis()->SetLabelSize(0.0); 
-  JetShape_ratio[0][0][6]->GetXaxis()->SetLabelSize(0.06); 
- JetShape_ratio[0][0][6]->GetXaxis()->CenterTitle();
- JetShape_ratio[0][0][6]->GetXaxis()->SetTitle("r");
- JetShape_ratio[0][0][6]->GetXaxis()->SetTitleSize(0.07);
- JetShape_ratio[0][0][6]->GetXaxis()->SetTitleOffset(1.);
- JetShape_ratio[0][0][6]->GetXaxis()->CenterTitle();
+ JetShape_ratio[0][1][6]->Draw();
+ JetShape_ratio[0][1][6]->GetYaxis()->SetLabelSize(0.0); 
+  JetShape_ratio[0][1][6]->GetXaxis()->SetLabelSize(0.08); 
+ JetShape_ratio[0][1][6]->GetXaxis()->CenterTitle();
+ JetShape_ratio[0][1][6]->GetXaxis()->SetTitle("#Deltar");
+ JetShape_ratio[0][1][6]->GetXaxis()->SetTitleSize(0.09);
+ JetShape_ratio[0][1][6]->GetXaxis()->SetTitleOffset(.6);
+ JetShape_ratio[0][1][6]->GetXaxis()->CenterTitle();
+ JetShape_ratio[0][1][6]->GetXaxis()->SetNdivisions(505);
 
  
-  JetShape_ratio[0][0][6]->Draw();
-  JetShape_graph[2][0][6]->Draw("same e2 P");
-  JetShape_ratio[0][0][6]->Draw("same");
-  if(!is_subleading) JetShape_ref_ratio[0][0][6]->Draw("same");
+  JetShape_ratio[0][1][6]->Draw();
+  JetShape_graph[2][1][6]->Draw("same e2 P");
+  JetShape_ratio[0][1][6]->Draw("same");
+  if(!is_subleading) JetShape_ref_ratio[0][1][6]->Draw("same");
  
 
   line->Draw();
+ cover_x_l->Draw();
+   cover_x_r->Draw();
+
+ 
+  PAS_plot->cd(4);
+ 
+  TGaxis *dummy_axis_jetshape = new TGaxis(1.,0.13,1.0,.975,0.0,6.4);
+
+  dummy_axis_jetshape->ImportAxisAttributes( JetShape_ratio[0][1][6]->GetYaxis());
+  dummy_axis_jetshape->SetTitleOffset(1.);
+  dummy_axis_jetshape->SetTickSize(0.);
+  dummy_axis_jetshape->CenterTitle();
+  dummy_axis_jetshape->SetTitleSize(0.08);
+ dummy_axis_jetshape->SetLabelSize(0.08);
+
+  dummy_axis_jetshape->SetTitle("#rho(#Deltar)_{PbPb}/#rho(#Deltar)_{pp}");
+  dummy_axis_jetshape->Draw();
+ 
+  TGaxis *dummy_axis_r = new TGaxis(0.165,1.,1.0,1.,0.,1.);
+
+  dummy_axis_r->ImportAxisAttributes( JetShape_ratio[0][1][6]->GetXaxis());
+  dummy_axis_r->SetTitleOffset(0.6);
+  dummy_axis_r->SetTitleSize(0.09);
+  dummy_axis_r->SetTickSize(0.);
+  dummy_axis_r->SetNdivisions(505);
+  dummy_axis_r->Draw();
+ 
+TPave *cover_x_b = new TPave(0.9,0.,0.995,0.17);
+   cover_x_b->SetFillColor(kWhite);
+   cover_x_b->SetLineColor(kWhite);
+   cover_x_b->SetOption("NDC NB");
+   cover_x_b->Draw();
+
+ 
+ 
 
   if(!use_highpT_bin){
     if(!is_subleading){
-      PAS_plot->SaveAs("JetShapes_PAS.png");
-      PAS_plot->SaveAs("JetShapes_PAS.pdf");
+          PAS_plot->SaveAs("JetShapes_PAS.pdf");
     }else{
-      PAS_plot->SaveAs("JetShapes_SubLeading_PAS.png");
-      PAS_plot->SaveAs("JetShapes_SubLeading_PAS.pdf");
+          PAS_plot->SaveAs("JetShapes_SubLeading_PAS.pdf");
 
     }
   
 
   }else{
    if(!is_subleading){
-      PAS_plot->SaveAs("JetShapes_WithHighpT_PAS.png");
+    
       PAS_plot->SaveAs("JetShapes_WithHighpT_PAS.pdf");
     }else{
-      PAS_plot->SaveAs("JetShapes_SubLeading_WithHighpT_PAS.png");
+    
       PAS_plot->SaveAs("JetShapes_SubLeading_WithHighpT_PAS.pdf");
 
     }
   }
+
+
+
+
+  if(!use_highpT_bin){
+    if(!is_subleading){
+      PAS_plot->SaveAs("JetShapes_PAS.png");
+     }else{
+      PAS_plot->SaveAs("JetShapes_SubLeading_PAS.png");
+ 
+    }
+  
+
+  }else{
+   if(!is_subleading){
+      PAS_plot->SaveAs("JetShapes_WithHighpT_PAS.png");
+     }else{
+      PAS_plot->SaveAs("JetShapes_SubLeading_WithHighpT_PAS.png");
+ 
+    }
+  }
+
 
   cout<<"pp:"<<endl;
   cout<<"Syst. norm uncertainty: "<<( JetShape_syst[1][3][6]->GetBinError(1)+JetShape_syst[1][3][6]->GetBinError(2)+JetShape_syst[1][3][6]->GetBinError(3)+JetShape_syst[1][3][6]->GetBinError(4)+JetShape_syst[1][3][6]->GetBinError(5)+JetShape_syst[1][3][6]->GetBinError(6))*0.05<<endl;
@@ -1384,10 +1530,10 @@ if(!is_subleading) JetShape_ref[0][0][6]->Draw("same");
 
 
 
-  cout<<"PbPb Cent 0-10%:"<<endl;
-  cout<<"Syst. norm uncertainty: "<<( JetShape_syst[0][0][6]->GetBinError(1)+JetShape_syst[0][0][6]->GetBinError(2)+JetShape_syst[0][0][6]->GetBinError(3)+JetShape_syst[0][0][6]->GetBinError(4)+JetShape_syst[0][0][6]->GetBinError(5)+JetShape_syst[0][0][6]->GetBinError(6))*0.05<<endl;
+  cout<<"PbPb Cent 0-30%:"<<endl;
+  cout<<"Syst. norm uncertainty: "<<( JetShape_syst[0][1][6]->GetBinError(1)+JetShape_syst[0][1][6]->GetBinError(2)+JetShape_syst[0][1][6]->GetBinError(3)+JetShape_syst[0][1][6]->GetBinError(4)+JetShape_syst[0][1][6]->GetBinError(5)+JetShape_syst[0][1][6]->GetBinError(6))*0.05<<endl;
 
-  cout<<"Stat. norm uncertainty: "<<( JetShape2[0][0][6]->GetBinError(1)+JetShape2[0][0][6]->GetBinError(2)+JetShape2[0][0][6]->GetBinError(3)+JetShape2[0][0][6]->GetBinError(4)+JetShape2[0][0][6]->GetBinError(5)+JetShape2[0][0][6]->GetBinError(6))*0.05<<endl;
+  cout<<"Stat. norm uncertainty: "<<( JetShape2[0][1][6]->GetBinError(1)+JetShape2[0][1][6]->GetBinError(2)+JetShape2[0][1][6]->GetBinError(3)+JetShape2[0][1][6]->GetBinError(4)+JetShape2[0][1][6]->GetBinError(5)+JetShape2[0][1][6]->GetBinError(6))*0.05<<endl;
 
 
   
