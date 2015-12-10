@@ -299,12 +299,16 @@ Int_t study_yield_aj(bool is_number = kFALSE, bool use_highpT_bin = kFALSE){
 	 
 	    signal_dEta_rebin[g+4][i][j][l]->Add(spill_over_dEta[g+4][i][j][l],-1.);
 	    signal_dPhi_rebin[g+4][i][j][l]->Add(spill_over_dPhi[g+4][i][j][l],-1.);
+	
 
-
-	    jff_name = make_name("JFF_Residual_Eta_",g+8,i,j,l,pTlabel,centlabel,Ajlabel);
-	    if(i>4)	    jff_residual_dEta[g+2][i][j][l] = (TH1D*)f_jff_reco->Get(jff_name)->Clone(jff_name);
-	    else   jff_residual_dEta[g+2][i][j][l] = (TH1D*)f_jff_gen->Get(jff_name)->Clone(jff_name);
-
+	   
+	    if(i>4){
+	      jff_name = make_name("JFF_Residual_Eta_",g+8,i,0,l,pTlabel,centlabel,Ajlabel);
+	      jff_residual_dEta[g+2][i][j][l] = (TH1D*)f_jff_reco->Get(jff_name)->Clone(jff_name);
+	    }else{
+	      jff_name = make_name("JFF_Residual_Eta_",g+8,i,j,l,pTlabel,centlabel,Ajlabel);
+	      jff_residual_dEta[g+2][i][j][l] = (TH1D*)f_jff_gen->Get(jff_name)->Clone(jff_name);
+	    }
 	    jff_name.ReplaceAll("Eta","Phi");
 	    if(i>4)    jff_residual_dPhi[g+2][i][j][l] = (TH1D*)f_jff_reco->Get(jff_name)->Clone(jff_name);
 	    else     jff_residual_dPhi[g+2][i][j][l] = (TH1D*)f_jff_gen->Get(jff_name)->Clone(jff_name);
@@ -323,33 +327,10 @@ Int_t study_yield_aj(bool is_number = kFALSE, bool use_highpT_bin = kFALSE){
 	    signal_dEta_rebin[g+4][i][j][l]->Add(jff_residual_dEta[g+4][i][j][l],-1.);
 	    signal_dPhi_rebin[g+4][i][j][l]->Add(jff_residual_dPhi[g+4][i][j][l],-1.);
 
-	    /*    
-	    if(j==0){
-	      jff_name = make_name("JFF_Residual_Eta_",g+9,i,3,l,pTlabel,centlabel,Ajlabel);
-	      jff_residual_dEta[g+2][i][j][l] = (TH1D*)f_jff->Get(jff_name)->Clone(jff_name);
-
-	      jff_name.ReplaceAll("Eta","Phi");
-	      jff_residual_dPhi[g+2][i][j][l] = (TH1D*)f_jff->Get(jff_name)->Clone(jff_name);
-	 
-	      jff_name = make_name("JFF_Residual_Eta_",g+11,i,3,l,pTlabel,centlabel,Ajlabel);
-	      jff_residual_dEta[g+4][i][j][l] = (TH1D*)f_jff->Get(jff_name)->Clone(jff_name);
-
-	      jff_name.ReplaceAll("Eta","Phi");
-	      jff_residual_dPhi[g+4][i][j][l] = (TH1D*)f_jff->Get(jff_name)->Clone(jff_name);
-	    }
-	    
-	    signal_dEta_rebin[g+2][i][j][l]->Add(jff_residual_dEta[g+2][i][0][l],-1.);
-	    signal_dPhi_rebin[g+2][i][j][l]->Add(jff_residual_dPhi[g+2][i][0][l],-1.);
-	 
-	    signal_dEta_rebin[g+4][i][j][l]->Add(jff_residual_dEta[g+4][i][0][l],-1.);
-	    signal_dPhi_rebin[g+4][i][j][l]->Add(jff_residual_dPhi[g+4][i][0][l],-1.);
-	    */
-
 	    
 	  }
 
 	
-	  cout<<"and here"<<endl;
 
 	  //---------------------------------------------------
 	  //---------------------------------------------------
@@ -452,7 +433,7 @@ Int_t study_yield_aj(bool is_number = kFALSE, bool use_highpT_bin = kFALSE){
 	  signal_dPhi_rebin[2][i][j][l]->GetYaxis()->SetLabelSize(0.0);
 	}
 
-	if(i==4){
+	if(i==5){
 	  signal_dPhi_rebin[2][i][j][l]->GetXaxis()->SetLabelSize(0.06);
 	  signal_dPhi_rebin[2][i][j][l]->GetXaxis()->SetTitleSize(0.06);
 	  signal_dPhi_rebin[2][i][j][l]->GetXaxis()->SetTitle("#Delta#phi");
@@ -562,11 +543,11 @@ Int_t study_yield_aj(bool is_number = kFALSE, bool use_highpT_bin = kFALSE){
 	  for(int k = 1; k<signal_dPhi_syst[2][i][j][l]->GetNbinsX()+1; k++){
 
 	    bc =  signal_dPhi_syst[2][i][j][l]->GetBinContent(k);
-	    err = TMath::Sqrt(bc*rel_err*bc*rel_err+background_syst_rebin[0][i][j][l]->GetBinError(1)*background_syst_rebin[0][i][j][l]->GetBinError(1)+me_err[2][i][j][l]*me_err[2][i][j][l]+spill_over_dPhi[2][0][j][l]->GetBinContent(k)*spill_over_dPhi[2][0][j][l]->GetBinContent(k)/4.);
+	    err = TMath::Sqrt(bc*rel_err*bc*rel_err+background_syst_rebin[0][i][j][l]->GetBinError(1)*background_syst_rebin[0][i][j][l]->GetBinError(1)+me_err[2][i][j][l]*me_err[2][i][j][l]+spill_over_dPhi[2][i][j][l]->GetBinContent(k)*spill_over_dPhi[2][i][j][l]->GetBinContent(k)/4.);
 	    signal_dPhi_syst[2][i][j][l]->SetBinError(k,err);
 
 	    bc =  signal_dPhi_syst[4][i][j][l]->GetBinContent(k);
-	    err = TMath::Sqrt(bc*rel_err*bc*rel_err+background_syst_rebin[0][i][j][l]->GetBinError(1)*background_syst_rebin[0][i][j][l]->GetBinError(1)+me_err[4][i][j][l]*me_err[4][i][j][l]+spill_over_dPhi[4][0][j][l]->GetBinContent(k)*spill_over_dPhi[4][0][j][l]->GetBinContent(k)/4.);
+	    err = TMath::Sqrt(bc*rel_err*bc*rel_err+background_syst_rebin[0][i][j][l]->GetBinError(1)*background_syst_rebin[0][i][j][l]->GetBinError(1)+me_err[4][i][j][l]*me_err[4][i][j][l]+spill_over_dPhi[4][i][j][l]->GetBinContent(k)*spill_over_dPhi[4][i][j][l]->GetBinContent(k)/4.);
 	    signal_dPhi_syst[4][i][j][l]->SetBinError(k,err);
 	  }
 	    
@@ -710,7 +691,7 @@ Int_t study_yield_aj(bool is_number = kFALSE, bool use_highpT_bin = kFALSE){
 	  signal_dEta_rebin[2][i][j][l]->GetYaxis()->SetLabelSize(0.0);
 	}
 
-	if(i==4){
+	if(i==5){
 	  signal_dEta_rebin[2][i][j][l]->GetXaxis()->SetLabelSize(0.06);
 	  signal_dEta_rebin[2][i][j][l]->GetXaxis()->SetTitleSize(0.06);
 	  signal_dEta_rebin[2][i][j][l]->GetXaxis()->SetTitle("#Delta#eta");
@@ -785,8 +766,7 @@ Int_t study_yield_aj(bool is_number = kFALSE, bool use_highpT_bin = kFALSE){
 	background_diff_rebin[1][i][j][l]->Write();
 
 	signal_dEta_rebin[2][i][j][l]->Write();
-	signal_dEta_rebin[4][i][j][l]->Write();
-	signal_dEta_rebin[3][i][j][l]->Write();
+	signal_dEta_rebin[4][i][j][l]->Write();	signal_dEta_rebin[3][i][j][l]->Write();
 	signal_dEta_rebin[5][i][j][l]->Write();
 
 
@@ -807,12 +787,14 @@ Int_t study_yield_aj(bool is_number = kFALSE, bool use_highpT_bin = kFALSE){
     if(l<2){
       c_yields_phi[l]->SaveAs((TString)("Yields_dPhi_"+AjBin_strs[l]+"_"+AjBin_strs[l+1]+".png"));
       c_PbPb_pp_phi[l]->SaveAs((TString)("Yields_dPhi_PbPb_minus_pp_"+AjBin_strs[l]+"_"+AjBin_strs[l+1]+".png"));
+      c_yields_eta[l]->SaveAs((TString)("Yields_dEta_"+AjBin_strs[l]+"_"+AjBin_strs[l+1]+".pdf"));
       c_yields_eta[l]->SaveAs((TString)("Yields_dEta_"+AjBin_strs[l]+"_"+AjBin_strs[l+1]+".png"));
       c_PbPb_pp_eta[l]->SaveAs((TString)("Yields_dEta_PbPb_minus_pp_"+AjBin_strs[l]+"_"+AjBin_strs[l+1]+".png"));
  
     }else{
       c_yields_phi[l]->SaveAs((TString)("Yields_dPhi_AjInclusive.png"));
       c_PbPb_pp_phi[l]->SaveAs((TString)("Yields_dPhi_PbPb_minus_pp_AjInclusive.png"));
+      c_yields_eta[l]->SaveAs((TString)("Yields_dEta_AjInclusive.pdf"));
       c_yields_eta[l]->SaveAs((TString)("Yields_dEta_AjInclusive.png"));
       c_PbPb_pp_eta[l]->SaveAs((TString)("Yields_dEta_PbPb_minus_pp_AjInclusive.png"));
     }
