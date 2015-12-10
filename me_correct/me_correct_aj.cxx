@@ -93,7 +93,7 @@ Int_t me_correct_aj(bool is_pp = kFALSE){
 
   float CBins[nCBins+1] = {0, 10, 30, 50, 100};
   TString CBin_strs[nCBins+1] = {"Cent0", "Cent10", "Cent30","Cent50", "Cent100"};
-  TString CBin_labels[nCBins] = {"Cent. 0-10%","Cent. 10-30%","Cent. 30-50%","Cent. 50-100%"};
+  TString CBin_labels[nCBins] = {"Cent. 0-10%","Cent. 0-30%","Cent. 30-50%","Cent. 50-100%"};
 
  
   float TrkPtBins[nTrkPtBins+1] = {0.5,1, 2, 3, 4, 8, 300};
@@ -175,6 +175,12 @@ Int_t me_correct_aj(bool is_pp = kFALSE){
  
       only_subleadingjets_corrpT[ibin][ibin2] = (TH1F*)fin->Get((TString) (desc + "_only_subleadingjets_corrpT"+ CBin_strs[ibin] + "_" + CBin_strs[ibin+1] + "_" + PtBin_strs[ibin2] + "_" + PtBin_strs[ibin2+1]))->Clone((TString) ("only_subleadingjets_corrpT_"+ CBin_strs[ibin] + "_" + CBin_strs[ibin+1] + "_" + PtBin_strs[ibin2] + "_" + PtBin_strs[ibin2+1]));
  
+      if(ibin==1){
+	only_leadingjets_corrpT[ibin][ibin2]->Add(	only_leadingjets_corrpT[ibin-1][ibin2]);
+ 	only_subleadingjets_corrpT[ibin][ibin2]->Add(only_subleadingjets_corrpT[ibin-1][ibin2]);
+
+      }
+
       fout->cd();
       only_leadingjets_corrpT[ibin][ibin2]->Write();
       only_subleadingjets_corrpT[ibin][ibin2]->Write();
@@ -194,27 +200,19 @@ Int_t me_correct_aj(bool is_pp = kFALSE){
 
 	hJetTrackSignalBackgroundSubLeading_pTweighted[ibin][ibin2][ibin3] = (TH2D*)fin->Get((TString) (desc + "_hJetTrackSignalBackgroundSubLeading_pTweighted"+  CBin_strs[ibin] + "_" + CBin_strs[ibin+1] + "_" + PtBin_strs[ibin2] + "_" + PtBin_strs[ibin2+1]+ "_" + TrkPtBin_strs[ibin3] + "_" + TrkPtBin_strs[ibin3+1]))->Clone((TString) ("Raw_Yield_pTweighted_SubLeading_"+ CBin_strs[ibin] + "_" + CBin_strs[ibin+1] + "_" + PtBin_strs[ibin2] + "_" + PtBin_strs[ibin2+1]+"_"+TrkPtBin_strs[ibin3]+"_" +TrkPtBin_strs[ibin3+1]));
 
-	/*
-	if(!is_pp&&ibin3==0&ibin==3){
-	  hJetTrackMELeading[ibin][ibin2][ibin3] = (TH2D*)fin_mb->Get((TString) (desc + "_hJetTrackMELeading"+ CBin_strs[ibin-1] + "_" + CBin_strs[ibin] + "_" + PtBin_strs[ibin2] + "_" + PtBin_strs[ibin2+1]+ "_" + TrkPtBin_strs[ibin3] + "_" + TrkPtBin_strs[ibin3+1]))->Clone((TString) ("Mixed_Event_Leading_"+ CBin_strs[ibin] + "_" + CBin_strs[ibin+1] + "_" + PtBin_strs[ibin2] + "_" + PtBin_strs[ibin2+1]+"_"+TrkPtBin_strs[ibin3]+"_" +TrkPtBin_strs[ibin3+1]));
-
-	  hJetTrackMESubLeading[ibin][ibin2][ibin3] = (TH2D*)fin_mb->Get((TString) (desc + "_hJetTrackMESubLeading"+  CBin_strs[ibin-1] + "_" + CBin_strs[ibin] + "_" + PtBin_strs[ibin2] + "_" + PtBin_strs[ibin2+1]+ "_" + TrkPtBin_strs[ibin3] + "_" + TrkPtBin_strs[ibin3+1]))->Clone((TString) ("Mixed_Event_SubLeading_"+ CBin_strs[ibin] + "_" + CBin_strs[ibin+1] + "_" + PtBin_strs[ibin2] + "_" + PtBin_strs[ibin2+1]+"_"+TrkPtBin_strs[ibin3]+"_" +TrkPtBin_strs[ibin3+1]));
-	}else{
-	
-	if(!is_pp&&ibin3<3){
-	  hJetTrackMELeading[ibin][ibin2][ibin3] = (TH2D*)fin_mb->Get((TString) (desc + "_hJetTrackMELeading"+ CBin_strs[ibin] + "_" + CBin_strs[ibin+1] + "_" + PtBin_strs[ibin2] + "_" + PtBin_strs[ibin2+1]+ "_" + TrkPtBin_strs[ibin3] + "_" + TrkPtBin_strs[ibin3+1]))->Clone((TString) ("Mixed_Event_Leading_"+ CBin_strs[ibin] + "_" + CBin_strs[ibin+1] + "_" + PtBin_strs[ibin2] + "_" + PtBin_strs[ibin2+1]+"_"+TrkPtBin_strs[ibin3]+"_" +TrkPtBin_strs[ibin3+1]));
-
-	  hJetTrackMESubLeading[ibin][ibin2][ibin3] = (TH2D*)fin_mb->Get((TString) (desc + "_hJetTrackMESubLeading"+  CBin_strs[ibin] + "_" + CBin_strs[ibin+1] + "_" + PtBin_strs[ibin2] + "_" + PtBin_strs[ibin2+1]+ "_" + TrkPtBin_strs[ibin3] + "_" + TrkPtBin_strs[ibin3+1]))->Clone((TString) ("Mixed_Event_SubLeading_"+ CBin_strs[ibin] + "_" + CBin_strs[ibin+1] + "_" + PtBin_strs[ibin2] + "_" + PtBin_strs[ibin2+1]+"_"+TrkPtBin_strs[ibin3]+"_" +TrkPtBin_strs[ibin3+1]));
-	}else{
-
-	*/
-
 	  hJetTrackMELeading[ibin][ibin2][ibin3] = (TH2D*)fin->Get((TString) (desc + "_hJetTrackMELeading"+ CBin_strs[ibin] + "_" + CBin_strs[ibin+1] + "_" + PtBin_strs[ibin2] + "_" + PtBin_strs[ibin2+1]+ "_" + TrkPtBin_strs[ibin3] + "_" + TrkPtBin_strs[ibin3+1]))->Clone((TString) ("Mixed_Event_Leading_"+ CBin_strs[ibin] + "_" + CBin_strs[ibin+1] + "_" + PtBin_strs[ibin2] + "_" + PtBin_strs[ibin2+1]+"_"+TrkPtBin_strs[ibin3]+"_" +TrkPtBin_strs[ibin3+1]));
 
 	  hJetTrackMESubLeading[ibin][ibin2][ibin3] = (TH2D*)fin->Get((TString) (desc + "_hJetTrackMESubLeading"+  CBin_strs[ibin] + "_" + CBin_strs[ibin+1] + "_" + PtBin_strs[ibin2] + "_" + PtBin_strs[ibin2+1]+ "_" + TrkPtBin_strs[ibin3] + "_" + TrkPtBin_strs[ibin3+1]))->Clone((TString) ("Mixed_Event_SubLeading_"+ CBin_strs[ibin] + "_" + CBin_strs[ibin+1] + "_" + PtBin_strs[ibin2] + "_" + PtBin_strs[ibin2+1]+"_"+TrkPtBin_strs[ibin3]+"_" +TrkPtBin_strs[ibin3+1]));
 
-	  //	}
 
+	  if(ibin==1){
+	    hJetTrackSignalBackgroundLeading[ibin][ibin2][ibin3]->Add(hJetTrackSignalBackgroundLeading[ibin-1][ibin2][ibin3]);
+	    hJetTrackSignalBackgroundSubLeading[ibin][ibin2][ibin3]->Add(hJetTrackSignalBackgroundSubLeading[ibin-1][ibin2][ibin3]);
+	    hJetTrackSignalBackgroundLeading_pTweighted[ibin][ibin2][ibin3]->Add(hJetTrackSignalBackgroundLeading_pTweighted[ibin-1][ibin2][ibin3]);
+	    hJetTrackSignalBackgroundSubLeading_pTweighted[ibin][ibin2][ibin3]->Add(hJetTrackSignalBackgroundSubLeading_pTweighted[ibin-1][ibin2][ibin3]);
+	    hJetTrackMELeading[ibin][ibin2][ibin3]->Add(hJetTrackMELeading[ibin-1][ibin2][ibin3]);
+	    hJetTrackMESubLeading[ibin][ibin2][ibin3]->Add( hJetTrackMESubLeading[ibin-1][ibin2][ibin3]);
+	  }
       }
 
       for(int ibin4 = 0; ibin4 <nAjBins; ibin4++){
@@ -223,6 +221,14 @@ Int_t me_correct_aj(bool is_pp = kFALSE){
  
 	only_subleadingjets_Aj_corrpT[ibin][ibin2][ibin4] = (TH1F*)fin->Get((TString) (desc + "_only_subleadingjets_Aj_corrpT"+ CBin_strs[ibin] + "_" + CBin_strs[ibin+1] + "_" + PtBin_strs[ibin2] + "_" + PtBin_strs[ibin2+1]+"_"+AjBin_strs[ibin4]+"_"+AjBin_strs[ibin4+1]))->Clone((TString) ("only_subleadingjets_corrpT_"+ CBin_strs[ibin] + "_" + CBin_strs[ibin+1] + "_" + PtBin_strs[ibin2] + "_" + PtBin_strs[ibin2+1]+"_"+AjBin_strs[ibin4]+"_"+AjBin_strs[ibin4+2]));
  
+
+	if(ibin==1){
+
+
+	  only_leadingjets_Aj_corrpT[ibin][ibin2][ibin4]->Add(only_leadingjets_Aj_corrpT[ibin-1][ibin2][ibin4]);
+	  only_subleadingjets_Aj_corrpT[ibin][ibin2][ibin4]->Add(only_subleadingjets_Aj_corrpT[ibin-1][ibin2][ibin4]);
+
+	}
 
 	for(int ibin3 = 0; ibin3 < nTrkPtBins; ibin3++){
 
@@ -241,31 +247,28 @@ Int_t me_correct_aj(bool is_pp = kFALSE){
 	  
 
 	  hJetTrackSignalBackgroundSubLeading_Aj_pTweighted[ibin][ibin2][ibin4][ibin3] = (TH2D*)fin->Get((TString) (desc + "_hJetTrackSignalBackgroundSubLeading_Aj_pTweighted"+  CBin_strs[ibin] + "_" + CBin_strs[ibin+1] + "_" + PtBin_strs[ibin2] + "_" + PtBin_strs[ibin2+1]+"_"+AjBin_strs[ibin4]+"_"+AjBin_strs[ibin4+1]+ "_" + TrkPtBin_strs[ibin3] + "_" + TrkPtBin_strs[ibin3+1]))->Clone((TString) ("Raw_Yield_pTweighted_SubLeading_"+ CBin_strs[ibin] + "_" + CBin_strs[ibin+1] + "_" + PtBin_strs[ibin2] + "_" + PtBin_strs[ibin2+1]+"_"+AjBin_strs[ibin4]+"_"+AjBin_strs[ibin4+2]+"_"+TrkPtBin_strs[ibin3]+"_" +TrkPtBin_strs[ibin3+1]));
-
-	  /*
-	  if(!is_pp&&ibin3<3){
-	    hJetTrackMELeading_Aj[ibin][ibin2][ibin4][ibin3] = (TH2D*)fin_mb->Get((TString) (desc + "_hJetTrackMELeading_Aj"+ CBin_strs[ibin] + "_" + CBin_strs[ibin+1] + "_" + PtBin_strs[ibin2] + "_" + PtBin_strs[ibin2+1]+"_"+AjBin_strs[ibin4]+"_"+AjBin_strs[ibin4+1]+ "_" + TrkPtBin_strs[ibin3] + "_" + TrkPtBin_strs[ibin3+1]))->Clone((TString) ("Mixed_Event_Leading_"+ CBin_strs[ibin] + "_" + CBin_strs[ibin+1] + "_" + PtBin_strs[ibin2] + "_" + PtBin_strs[ibin2+1]+"_"+AjBin_strs[ibin4]+"_"+AjBin_strs[ibin4+2]+"_"+TrkPtBin_strs[ibin3]+"_" +TrkPtBin_strs[ibin3+1]));
-
-	    hJetTrackMESubLeading_Aj[ibin][ibin2][ibin4][ibin3] = (TH2D*)fin_mb->Get((TString) (desc + "_hJetTrackMESubLeading_Aj"+  CBin_strs[ibin] + "_" + CBin_strs[ibin+1] + "_" + PtBin_strs[ibin2] + "_" + PtBin_strs[ibin2+1]+"_"+AjBin_strs[ibin4]+"_"+AjBin_strs[ibin4+1]+ "_" + TrkPtBin_strs[ibin3] + "_" + TrkPtBin_strs[ibin3+1]))->Clone((TString) ("Mixed_Event_SubLeading_"+ CBin_strs[ibin] + "_" + CBin_strs[ibin+1] + "_" + PtBin_strs[ibin2] + "_" + PtBin_strs[ibin2+1]+"_"+AjBin_strs[ibin4]+"_"+AjBin_strs[ibin4+2]+"_"+TrkPtBin_strs[ibin3]+"_" +TrkPtBin_strs[ibin3+1]));
-	  }else{
-
-	  */
-	  /*
-	if(!is_pp&&ibin3<3){
-	  hJetTrackMELeading_Aj[ibin][ibin2][ibin4][ibin3] = (TH2D*)fin_mb->Get((TString) (desc + "_hJetTrackMELeading_Aj"+ CBin_strs[ibin] + "_" + CBin_strs[ibin+1] + "_" + PtBin_strs[ibin2] + "_" + PtBin_strs[ibin2+1]+"_"+AjBin_strs[ibin4]+"_"+AjBin_strs[ibin4+1]+ "_" + TrkPtBin_strs[ibin3] + "_" + TrkPtBin_strs[ibin3+1]))->Clone((TString) ("Mixed_Event_Leading_"+ CBin_strs[ibin] + "_" + CBin_strs[ibin+1] + "_" + PtBin_strs[ibin2] + "_" + PtBin_strs[ibin2+1]+"_"+AjBin_strs[ibin4]+"_"+AjBin_strs[ibin4+2]+"_"+TrkPtBin_strs[ibin3]+"_" +TrkPtBin_strs[ibin3+1]));
-
-	  hJetTrackMESubLeading_Aj[ibin][ibin2][ibin4][ibin3] = (TH2D*)fin_mb->Get((TString) (desc + "_hJetTrackMESubLeading_Aj"+  CBin_strs[ibin] + "_" + CBin_strs[ibin+1] + "_" + PtBin_strs[ibin2] + "_" + PtBin_strs[ibin2+1]+"_"+AjBin_strs[ibin4]+"_"+AjBin_strs[ibin4+1]+ "_" + TrkPtBin_strs[ibin3] + "_" + TrkPtBin_strs[ibin3+1]))->Clone((TString) ("Mixed_Event_SubLeading_"+ CBin_strs[ibin] + "_" + CBin_strs[ibin+1] + "_" + PtBin_strs[ibin2] + "_" + PtBin_strs[ibin2+1]+"_"+AjBin_strs[ibin4]+"_"+AjBin_strs[ibin4+2]+"_"+TrkPtBin_strs[ibin3]+"_" +TrkPtBin_strs[ibin3+1]));
-
-
-
-	}else{
-	  */
+	  
 	  hJetTrackMELeading_Aj[ibin][ibin2][ibin4][ibin3] = (TH2D*)fin->Get((TString) (desc + "_hJetTrackMELeading_Aj"+ CBin_strs[ibin] + "_" + CBin_strs[ibin+1] + "_" + PtBin_strs[ibin2] + "_" + PtBin_strs[ibin2+1]+"_"+AjBin_strs[ibin4]+"_"+AjBin_strs[ibin4+1]+ "_" + TrkPtBin_strs[ibin3] + "_" + TrkPtBin_strs[ibin3+1]))->Clone((TString) ("Mixed_Event_Leading_"+ CBin_strs[ibin] + "_" + CBin_strs[ibin+1] + "_" + PtBin_strs[ibin2] + "_" + PtBin_strs[ibin2+1]+"_"+AjBin_strs[ibin4]+"_"+AjBin_strs[ibin4+2]+"_"+TrkPtBin_strs[ibin3]+"_" +TrkPtBin_strs[ibin3+1]));
 
 
 	  hJetTrackMESubLeading_Aj[ibin][ibin2][ibin4][ibin3] = (TH2D*)fin->Get((TString) (desc + "_hJetTrackMESubLeading_Aj"+  CBin_strs[ibin] + "_" + CBin_strs[ibin+1] + "_" + PtBin_strs[ibin2] + "_" + PtBin_strs[ibin2+1]+"_"+AjBin_strs[ibin4]+"_"+AjBin_strs[ibin4+1]+ "_" + TrkPtBin_strs[ibin3] + "_" + TrkPtBin_strs[ibin3+1]))->Clone((TString) ("Mixed_Event_SubLeading_"+ CBin_strs[ibin] + "_" + CBin_strs[ibin+1] + "_" + PtBin_strs[ibin2] + "_" + PtBin_strs[ibin2+1]+"_"+AjBin_strs[ibin4]+"_"+AjBin_strs[ibin4+2]+"_"+TrkPtBin_strs[ibin3]+"_" +TrkPtBin_strs[ibin3+1]));
 	
 	  
+	  if(ibin==1){
+
+	    hJetTrackSignalBackgroundLeading_Aj[ibin][ibin2][ibin4][ibin3]->Add(hJetTrackSignalBackgroundLeading_Aj[ibin-1][ibin2][ibin4][ibin3]);
+	    hJetTrackSignalBackgroundSubLeading_Aj[ibin][ibin2][ibin4][ibin3]->Add(hJetTrackSignalBackgroundSubLeading_Aj[ibin-1][ibin2][ibin4][ibin3]);
+	    hJetTrackSignalBackgroundLeading_Aj_pTweighted[ibin][ibin2][ibin4][ibin3]->Add(hJetTrackSignalBackgroundLeading_Aj_pTweighted[ibin-1][ibin2][ibin4][ibin3]);
+	
+	    hJetTrackSignalBackgroundSubLeading_Aj_pTweighted[ibin][ibin2][ibin4][ibin3]->Add(hJetTrackSignalBackgroundSubLeading_Aj_pTweighted[ibin-1][ibin2][ibin4][ibin3]);
+	    hJetTrackMELeading_Aj[ibin][ibin2][ibin4][ibin3]->Add( hJetTrackMELeading_Aj[ibin-1][ibin2][ibin4][ibin3]);
+	    hJetTrackMESubLeading_Aj[ibin][ibin2][ibin4][ibin3]->Add(hJetTrackMESubLeading_Aj[ibin-1][ibin2][ibin4][ibin3]);
+	
+
+	  }
+
+
+
 	} //ibin4
 
 
@@ -273,12 +276,13 @@ Int_t me_correct_aj(bool is_pp = kFALSE){
 
     } // ibin2
 
-    cout<<"Have input for centrality "<<ibin<<endl;
+  }//ibin
 
-    //-------------------------
-    // Normalize all!
-    //------------------------
-   
+  //-------------------------
+  // Normalize all!
+  //------------------------
+  
+  for(int ibin =0; ibin<nCBins; ibin++){ 
     for (int ibin2=0;ibin2<nPtBins;ibin2++){
 
       for(int ibin4 = 0; ibin4<nAjBins; ibin4++){
@@ -496,29 +500,21 @@ Int_t me_correct_aj(bool is_pp = kFALSE){
 
 	}
       
-	//	if(ibin3<5){
-	  if(ibin==3){
+
+	if(ibin==3){
 	    yield_lead[ibin][ibin2][ibin3]->Divide(hJetTrackMELeading[ibin-1][ibin2][ibin3]);
 	    yield_lead_pTweighted[ibin][ibin2][ibin3]->Divide(hJetTrackMELeading[ibin-1][ibin2][ibin3]);
 	    yield_sub[ibin][ibin2][ibin3]->Divide(hJetTrackMESubLeading[ibin-1][ibin2][ibin3]);
 	    yield_sub_pTweighted[ibin][ibin2][ibin3]->Divide(hJetTrackMESubLeading[ibin-1][ibin2][ibin3]);
-	    /*
-	  }else if(ibin3==5){
-	    yield_lead[ibin][ibin2][ibin3]->Divide(hJetTrackMELeading[ibin][ibin2][ibin3-1]);
-	    yield_lead_pTweighted[ibin][ibin2][ibin3]->Divide(hJetTrackMELeading[ibin][ibin2][ibin3-1]);
-	    yield_sub[ibin][ibin2][ibin3]->Divide(hJetTrackMESubLeading[ibin][ibin2][ibin3-1]);
-	    yield_sub_pTweighted[ibin][ibin2][ibin3]->Divide(hJetTrackMESubLeading[ibin][ibin2][ibin3-1]);
-	    */
-	    }else{
+	    
+
+	}else{
 
 	    yield_lead[ibin][ibin2][ibin3]->Divide(hJetTrackMELeading[ibin][ibin2][ibin3]);
 	    yield_lead_pTweighted[ibin][ibin2][ibin3]->Divide(hJetTrackMELeading[ibin][ibin2][ibin3]);
 	    yield_sub[ibin][ibin2][ibin3]->Divide(hJetTrackMESubLeading[ibin][ibin2][ibin3]);
 	    yield_sub_pTweighted[ibin][ibin2][ibin3]->Divide(hJetTrackMESubLeading[ibin][ibin2][ibin3]);
-
-
-	  }
-	  //	}	
+	}
 	hJetTrackSignalBackgroundLeading[ibin][ibin2][ibin3]->Write();
 	yield_lead[ibin][ibin2][ibin3] ->Write();
 	hJetTrackSignalBackgroundLeading_pTweighted[ibin][ibin2][ibin3]->Write();
@@ -648,13 +644,13 @@ Int_t me_correct_aj(bool is_pp = kFALSE){
 	    yield_lead_Aj_pTweighted[ibin][ibin2][ibin4][ibin3]->Divide(hJetTrackMELeading[ibin][ibin2][ibin3]);
 	    yield_sub_Aj[ibin][ibin2][ibin4][ibin3]->Divide(hJetTrackMESubLeading[ibin][ibin2][ibin3]);
 	    yield_sub_Aj_pTweighted[ibin][ibin2][ibin4][ibin3]->Divide(hJetTrackMESubLeading[ibin][ibin2][ibin3]);
-	      
+	    /*	      
 	  }else if(ibin==3){
 	    yield_lead_Aj[ibin][ibin2][ibin4][ibin3]->Divide(hJetTrackMELeading_Aj[ibin-1][ibin2][ibin4][ibin3]);
 	    yield_lead_Aj_pTweighted[ibin][ibin2][ibin4][ibin3]->Divide(hJetTrackMELeading_Aj[ibin-1][ibin2][ibin4][ibin3]);
 	    yield_sub_Aj[ibin][ibin2][ibin4][ibin3]->Divide(hJetTrackMESubLeading_Aj[ibin-1][ibin2][ibin4][ibin3]);
 	    yield_sub_Aj_pTweighted[ibin][ibin2][ibin4][ibin3]->Divide(hJetTrackMESubLeading_Aj[ibin-1][ibin2][ibin4][ibin3]);
-
+	    */
 	  }else{
 	    yield_lead_Aj[ibin][ibin2][ibin4][ibin3]->Divide(hJetTrackMELeading_Aj[ibin][ibin2][ibin4][ibin3]);
 	    yield_lead_Aj_pTweighted[ibin][ibin2][ibin4][ibin3]->Divide(hJetTrackMELeading_Aj[ibin][ibin2][ibin4][ibin3]);
@@ -757,7 +753,7 @@ Int_t me_correct_aj(bool is_pp = kFALSE){
 	float ymax = 1.1*TMath::Max(yield_lead_proj[ibin][ibin2][4][ibin3]->GetMaximum(),yield_sub_proj[ibin][ibin2][4][ibin3]->GetMaximum())+5.;
 	yield_lead_proj[ibin][ibin2][4][ibin3]->SetMaximum(ymax);
 
-	if(ibin3==5)ymax = 10.;
+	//	if(ibin3==5)ymax = 10.;
 
 	yield_lead_proj[ibin][ibin2][4][ibin3]->SetAxisRange(-2.49,2.49);
 	yield_lead_proj[ibin][ibin2][4][ibin3]->Draw();
@@ -845,7 +841,7 @@ Int_t me_correct_aj(bool is_pp = kFALSE){
 	yield_sub_proj[ibin][ibin2][0][ibin3]->SetAxisRange(-2.49,2.49);
 	ymax = 1.1*TMath::Max(yield_lead_proj[ibin][ibin2][0][ibin3]->GetMaximum(),yield_sub_proj[ibin][ibin2][0][ibin3]->GetMaximum())+5.;
 	
-	if(ibin3==5)ymax = 10.;
+	//	if(ibin3==5)ymax = 10.;
 
 	yield_lead_proj[ibin][ibin2][0][ibin3]->SetMaximum(ymax);
 
@@ -932,7 +928,7 @@ Int_t me_correct_aj(bool is_pp = kFALSE){
 	yield_lead_proj[ibin][ibin2][2][ibin3]->SetAxisRange(-2.49,2.49);
 	yield_sub_proj[ibin][ibin2][2][ibin3]->SetAxisRange(-2.49,2.49);
 	ymax = 1.1*TMath::Max(yield_lead_proj[ibin][ibin2][2][ibin3]->GetMaximum(),yield_sub_proj[ibin][ibin2][2][ibin3]->GetMaximum())+5.;
-	if(ibin3==5)ymax = 10.;
+	//	if(ibin3==5)ymax = 10.;
 
 	yield_lead_proj[ibin][ibin2][2][ibin3]->SetMaximum(ymax);
 
