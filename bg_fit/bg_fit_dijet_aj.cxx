@@ -34,17 +34,18 @@ Int_t bg_fit_dijet_aj(bool is_number = kFALSE)
   TCanvas *dummy = new TCanvas("dummy");
 
   gROOT->ForceStyle();
+  gStyle->SetNdivisions(510);
   gStyle->SetOptDate(0);
   gStyle->SetOptStat(0);
   gStyle->SetOptFit(0);
   gStyle->SetOptTitle(1);
 
   gStyle->SetPadBottomMargin(0.15);
-  gStyle->SetPadTopMargin   (0.05);
+  gStyle->SetPadTopMargin   (0.15);
   gStyle->SetPadLeftMargin  (0.15);
   gStyle->SetPadRightMargin (0.05);
     
-  gStyle->SetPadTickX       (1);
+  //  gStyle->SetPadTickX       (1);
   gStyle->SetPadTickY       (1);
 
 
@@ -190,6 +191,14 @@ Int_t bg_fit_dijet_aj(bool is_number = kFALSE)
 	  }
 
 
+	  if(i==1&&j==0){
+	    projmax = 2.3;
+	    projmin = 1.3;
+	  }
+
+
+
+
 
 	  etamin1_val = -projmax+0.001;
 	  etamax1_val = -projmin-0.001;
@@ -212,7 +221,7 @@ Int_t bg_fit_dijet_aj(bool is_number = kFALSE)
 	    yield[g][i][j][l] = (TH2D*)f_pp->Get(in_name)->Clone(in_name);
 	  }
 
-	  etalim = 1.5;
+	  etalim = 1.;
 
 	  llimiteta = yield[g][i][j][l]->GetXaxis()->FindBin(-etalim+0.001);
 	  rlimiteta = yield[g][i][j][l]->GetXaxis()->FindBin(etalim-0.001);
@@ -363,30 +372,6 @@ Int_t bg_fit_dijet_aj(bool is_number = kFALSE)
 	background_diff_rebin[0][i][j][l]->SetMarkerColor(kRed);
 	background_diff_rebin[0][i][j][l]->SetLineColor(kRed);
 
-	/*
-	switch(i){
-	case 0: 
-	  diff_max = 8.;
-	  diff_min = -3.;
-	  break;
-	case 1: 
-	  diff_max = 2.;
-	  diff_min = -1.;
-	  break;
-	case 2:
-	  diff_max = 1.;
-	  diff_min = -.5;
-	  break;
-	case 3: 
-	  diff_max = 1.;
-	  diff_min = -.5;
-	  break;
-	case 4: 
-	  diff_max = 1.;
-	  diff_min = -.5;
-	  break;
-	}
-	*/
 
 	diff_min = -3.;
 	diff_max = 8.;
@@ -565,7 +550,7 @@ Int_t bg_fit_dijet_aj(bool is_number = kFALSE)
 	fourier->SetParameter(0,bglevel);
 
 
-	error[4][i][j][l]=TMath::Sqrt(temp_error/8.);
+	error[4][i][j][l]=TMath::Sqrt(temp_error);
 
 	
 	fourier_up[4][i][j][l]->SetLineColor(kBlue);
@@ -677,7 +662,11 @@ Int_t bg_fit_dijet_aj(bool is_number = kFALSE)
 	  in_hist_rebin[4][i][j][l]->SetLineColor(kBlack);
 
 
+
+
 	  //	in_hist_rebin[4][i][j][l]->SetAxisRange(-1.5,4.8);
+	
+
 
 	  in_hist_rebin[4][i][j][l]->SetMaximum(ymax);
 	  in_hist_rebin[4][i][j][l]->SetMinimum(ymin);
@@ -730,7 +719,7 @@ Int_t bg_fit_dijet_aj(bool is_number = kFALSE)
 	  fourier_up[4][i][j][l]->Draw("same");
 	  fourier_down[4][i][j][l]->Draw("same");
 	
-	  lfit = new TLegend(0.65,0.8,0.88,0.94);
+	  lfit = new TLegend(0.65,0.85,0.88,0.99);
 	  lfit->SetFillColor(kWhite);
 	  lfit->SetLineColor(kWhite);
 	  lfit->AddEntry(yield_rebin[4][i][j][l],"Yield");
@@ -742,7 +731,7 @@ Int_t bg_fit_dijet_aj(bool is_number = kFALSE)
 	  lfit->Draw("same");
 
 
-	  pave = new TPaveText(0.18,0.75,0.45,0.9,"NDC");
+	  pave = new TPaveText(0.18,0.8,0.45,0.99,"NDC");
 
 	  pave->SetName("pave");
 	  pave->SetFillColor(0);
@@ -1006,7 +995,7 @@ Int_t bg_fit_dijet_aj(bool is_number = kFALSE)
 	yield_rebin[5][i][j][l]->Scale(1.*nbins_peak/dx_phi);
 
 
-	ymin =yield_rebin[5][i][j][l]->GetMinimum()-1.;
+	ymin = 0.1;
 	ymax =yield_rebin[5][i][j][l]->GetMaximum()+2.;
 	if((in_hist_rebin[5][i][j][l]->GetMaximum()+.004)>ymax){ymax = in_hist_rebin[5][i][j][l]->GetMaximum()+.004;}
 
@@ -1161,37 +1150,37 @@ Int_t bg_fit_dijet_aj(bool is_number = kFALSE)
   TCanvas *c_demo = new TCanvas("Decomposition Display","",10,10,1200,800);
   c_demo->Divide(3,2,0.0001,0.0001);
 
+
+
   c_demo->cd(1);
   
   yield_rebin[5][1][3][1]->SetMinimum(0.1);
-  yield_rebin[5][1][3][1]->SetMaximum(22.);
+  yield_rebin[5][1][3][1]->SetMaximum(20.);
 
-  yield_rebin[5][1][3][1]->GetYaxis()->SetTitleOffset(0.8);
+  yield_rebin[5][1][3][1]->GetYaxis()->SetTitleOffset(0.9);
+  yield_rebin[5][1][3][1]->GetYaxis()->SetNdivisions(408);
+  yield_rebin[5][1][3][1]->GetYaxis()->SetLabelSize(0.06);
   yield_rebin[5][1][3][1]->Draw();
   in_hist_rebin[5][1][3][1]->Draw("same");
-  in_hist_rebin[5][1][3][1]->Rebin(2);
-  in_hist_rebin[5][1][3][1]->Scale(1./2);
+  // in_hist_rebin[5][1][3][1]->Rebin(2);
+  //in_hist_rebin[5][1][3][1]->Scale(1./2);
   in_hist_rebin[5][1][3][1]->Draw("same");
- 
-  /* fourier_up[5][1][3][1]->Draw("same");
-  fourier_down[5][1][3][1]->Draw("same");
-  fourier_fit[5][1][3][1]->Draw("same");
-  */
+
   yield_rebin[5][1][3][1]->Draw("axis same");
 
-  TLatex *label_pp = new TLatex(0.2,0.88,"pp Reference");
+  TLatex *label_pp = new TLatex(0.2,0.78,"pp Reference");
   label_pp->SetTextSize(0.07);
   label_pp->SetLineColor(kWhite);
   label_pp->SetNDC();
   label_pp->Draw();
 
-  TLine *pi_over_2 = new TLine(TMath::Pi()/2.,0.1, TMath::Pi()/2.,22.);
+  TLine *pi_over_2 = new TLine(TMath::Pi()/2.,0.1, TMath::Pi()/2.,20.);
   pi_over_2->SetLineStyle(2);
   pi_over_2->Draw();
 
-  TLegend *legend = new TLegend(0.17,0.73,0.9,0.83);
-  legend->AddEntry(yield_rebin[5][1][3][1],"Dijet Peaks, |#Delta#eta|<1.5");
-  legend->AddEntry(in_hist_rebin[5][1][3][1],"Long Range Dist., |#Delta#eta|<2.5");
+  TLegend *legend = new TLegend(0.17,0.58,0.9,0.73);
+  legend->AddEntry(yield_rebin[5][1][3][1],"Dijet Peaks, |#Delta#eta|<1.0");
+  legend->AddEntry(in_hist_rebin[5][1][3][1],"Long Range, 1.5<|#Delta#eta|<2.5");
   //legend->AddEntry(fourier_fit[5][1][3][1],"Fit to Long Range Dist.","l");
   legend->SetTextSize(0.05);
   legend->SetLineColor(kWhite);
@@ -1200,31 +1189,29 @@ Int_t bg_fit_dijet_aj(bool is_number = kFALSE)
 
   c_demo->cd(2);
 
-  yield_rebin[4][1][0][1]->SetMinimum(7.);
-  yield_rebin[4][1][0][1]->SetMaximum(29.);
+  yield_rebin[4][1][0][1]->SetMinimum(5.);
+  yield_rebin[4][1][0][1]->SetMaximum(26.);
+  yield_rebin[4][1][0][1]->GetYaxis()->SetNdivisions(408);
+  yield_rebin[4][1][0][1]->GetYaxis()->SetLabelSize(0.06);
  
 
   yield_rebin[4][1][0][1]->Draw();
-  in_hist_rebin[4][1][0][1]->Rebin(2);
-  in_hist_rebin[4][1][0][1]->Scale(1./2);
+  //  in_hist_rebin[4][1][0][1]->Rebin(2);
+  //in_hist_rebin[4][1][0][1]->Scale(1./2);
  in_hist_rebin[4][1][0][1]->Draw("same");
- /*
-  fourier_up[4][1][0][1]->Draw("same");
-  fourier_down[4][1][0][1]->Draw("same");
-  fourier_fit[4][1][0][1]->Draw("same");
- */
-  TLatex *label_per = new TLatex(0.2,0.88,"PbPb Cent. 50-100%");
+ 
+  TLatex *label_per = new TLatex(0.2,0.78,"PbPb Cent. 50-100%");
   label_per->SetTextSize(0.07);
   label_per->SetLineColor(kWhite);
   label_per->SetNDC();
   label_per->Draw();
 
-  pi_over_2 = new TLine(TMath::Pi()/2.,7., TMath::Pi()/2.,29.);
+  pi_over_2 = new TLine(TMath::Pi()/2.,5., TMath::Pi()/2.,25.);
   pi_over_2->SetLineStyle(2);
   pi_over_2->Draw();
 
 
-  TLatex *label_pT = new TLatex(0.2,0.8,"1<p_{T}^{assoc.}<2 GeV/c");
+  TLatex *label_pT = new TLatex(0.2,0.68,"1<p_{T}^{assoc.}<2 GeV/c");
   label_pT->SetTextSize(0.07);
   label_pT->SetLineColor(kWhite);
   label_pT->SetNDC();
@@ -1234,53 +1221,60 @@ Int_t bg_fit_dijet_aj(bool is_number = kFALSE)
 
   c_demo->cd(3);
 
-  yield_rebin[4][1][3][1]->SetMinimum(140.);
-  yield_rebin[4][1][3][1]->SetMaximum(162.);
+  yield_rebin[4][1][2][1]->SetMinimum(72.);
+  yield_rebin[4][1][2][1]->SetMaximum(92.);
 
-  yield_rebin[4][1][3][1]->Draw();
-  in_hist_rebin[4][1][3][1]->Rebin(2);
-  in_hist_rebin[4][1][3][1]->Scale(1./2);
-  in_hist_rebin[4][1][3][1]->Draw("same");
-  /*
-  fourier_up[4][1][3][1]->Draw("same");
-  fourier_down[4][1][3][1]->Draw("same");
-  fourier_fit[4][1][3][1]->Draw("same");
-  */  
-  TLatex *label_cent = new TLatex(0.2,0.88,"PbPb Cent. 0-10%");
+  yield_rebin[4][1][2][1]->GetYaxis()->SetTitleOffset(1.);
+  yield_rebin[4][1][2][1]->GetYaxis()->SetLabelSize(0.06);
+  yield_rebin[4][1][2][1]->GetYaxis()->SetNdivisions(408);
+  yield_rebin[4][1][2][1]->Draw();
+  //  in_hist_rebin[4][1][2][1]->Rebin(2);
+  //in_hist_rebin[4][1][2][1]->Scale(1./2);
+  in_hist_rebin[4][1][2][1]->Draw("same");
+
+  TLatex *label_cent = new TLatex(0.2,0.78,"PbPb Cent. 0-30%");
   label_cent->SetTextSize(0.07);
   label_cent->SetLineColor(kWhite);
   label_cent->SetNDC();
   label_cent->Draw();
 
-  pi_over_2 = new TLine(TMath::Pi()/2.,140., TMath::Pi()/2.,162.);
+  pi_over_2 = new TLine(TMath::Pi()/2.,72., TMath::Pi()/2.,92.);
   pi_over_2->SetLineStyle(2);
   pi_over_2->Draw();
 
-  TLatex *label_aj = new TLatex(0.2,0.78,"A_{J}>0.22");
-  label_aj->SetTextSize(0.07);
-  label_aj->SetLineColor(kWhite);
-  label_aj->SetNDC();
-  label_aj->Draw();
+ 
+
+   TLatex *cms_tex = new TLatex(0.2,0.68,"CMS");
+   cms_tex->SetTextSize(0.08);
+   cms_tex->SetLineColor(kWhite);
+   cms_tex->SetNDC();
+   cms_tex->Draw(); 
 
 
-
+    TLatex *prelim_tex = new TLatex(0.38,0.68,"Preliminary");
+    prelim_tex->SetTextFont(53);
+    prelim_tex->SetTextSizePixels(25);
+    prelim_tex->SetLineColor(kWhite);
+    prelim_tex->SetNDC();
+    prelim_tex->Draw(); 
+  
 
   c_demo->cd(4);
+
+ gStyle->SetPadTopMargin   (0.05);
   
-  yield_rebin[5][4][3][1]->SetMinimum(0.1);
+  yield_rebin[5][4][3][1]->SetMinimum(0.01);
   yield_rebin[5][4][3][1]->SetMaximum(47.);
 
-  yield_rebin[5][4][3][1]->GetYaxis()->SetTitleOffset(0.8);
+  yield_rebin[5][4][3][1]->GetYaxis()->SetTitleOffset(0.9);
+  yield_rebin[5][4][3][1]->GetYaxis()->SetNdivisions(408);
+  yield_rebin[5][4][3][1]->GetYaxis()->SetLabelSize(0.06);
   yield_rebin[5][4][3][1]->Draw();
   in_hist_rebin[5][4][3][1]->Draw("same");
-  in_hist_rebin[5][4][3][1]->Rebin(2);
-  in_hist_rebin[5][4][3][1]->Scale(1./2);
+  // in_hist_rebin[5][4][3][1]->Rebin(2);
+  // in_hist_rebin[5][4][3][1]->Scale(1./2);
   in_hist_rebin[5][4][3][1]->Draw("same");
  
-  /* fourier_up[5][1][3][1]->Draw("same");
-  fourier_down[5][1][3][1]->Draw("same");
-  fourier_fit[5][1][3][1]->Draw("same");
-  */
   yield_rebin[5][4][3][1]->Draw("axis same");
 
   
@@ -1291,20 +1285,23 @@ Int_t bg_fit_dijet_aj(bool is_number = kFALSE)
   label_pp->Draw();
 
   c_demo->cd(5);
+    gStyle->SetPadTopMargin   (0.05);
 
   yield_rebin[4][4][0][1]->SetMinimum(0.1);
   yield_rebin[4][4][0][1]->SetMaximum(47.);
+  yield_rebin[4][4][0][1]->GetYaxis()->SetNdivisions(408);
+  yield_rebin[4][4][0][1]->GetYaxis()->SetLabelSize(0.06);
  
 
   yield_rebin[4][4][0][1]->Draw();
-  in_hist_rebin[4][4][0][1]->Rebin(2);
-  in_hist_rebin[4][4][0][1]->Scale(1./2);
- in_hist_rebin[4][4][0][1]->Draw("same");
+  //  in_hist_rebin[4][4][0][1]->Rebin(2);
+  //in_hist_rebin[4][4][0][1]->Scale(1./2);
+  in_hist_rebin[4][4][0][1]->Draw("same");
 
   pi_over_2->Draw();
   label_per->Draw();
 
-  label_pT = new TLatex(0.2,0.8,"4<p_{T}^{assoc.}<8 GeV/c");
+  label_pT = new TLatex(0.2,0.68,"4<p_{T}^{assoc.}<8 GeV/c");
   label_pT->SetTextSize(0.07);
   label_pT->SetLineColor(kWhite);
   label_pT->SetNDC();
@@ -1312,16 +1309,64 @@ Int_t bg_fit_dijet_aj(bool is_number = kFALSE)
 
   c_demo->cd(6);
 
-  yield_rebin[4][4][3][1]->SetMinimum(0.1);
-  yield_rebin[4][4][3][1]->SetMaximum(47.);
+  gStyle->SetPadTopMargin   (0.05);
+  yield_rebin[4][4][2][1]->SetMinimum(0.1);
+  yield_rebin[4][4][2][1]->SetMaximum(47.);
 
-  yield_rebin[4][4][3][1]->Draw();
-  in_hist_rebin[4][4][3][1]->Rebin(2);
-  in_hist_rebin[4][4][3][1]->Scale(1./2);
-  in_hist_rebin[4][4][3][1]->Draw("same");
+  yield_rebin[4][4][2][1]->GetYaxis()->SetNdivisions(408);
+  yield_rebin[4][4][2][1]->GetYaxis()->SetLabelSize(0.06);
+  yield_rebin[4][4][2][1]->Draw();
+  //in_hist_rebin[4][4][2][1]->Rebin(2);
+  //  in_hist_rebin[4][4][2][1]->Scale(1./2);
+  in_hist_rebin[4][4][2][1]->Draw("same");
  
   label_cent->Draw();
   pi_over_2->Draw();
+
+  c_demo->cd(0);
+
+  TLatex *aj_tex = new TLatex(0.07,0.97,"A_{J}>0.22");
+  aj_tex->SetTextFont(63);
+  aj_tex->SetTextSizePixels(25);
+  aj_tex->SetLineColor(kWhite);
+  aj_tex->SetNDC();
+  aj_tex->Draw();
+    
+  TLatex   *luminosity_tex_pp = new TLatex(0.07,0.945,"pp 53 pb^{-1} (2.76 TeV)");
+  luminosity_tex_pp->SetTextFont(43);
+  luminosity_tex_pp->SetTextSizePixels(25);
+  luminosity_tex_pp->SetLineColor(kWhite);
+  luminosity_tex_pp->SetNDC();
+  luminosity_tex_pp->Draw();
+   
+  TLatex   *luminosity_tex_PbPb = new TLatex(0.3,0.945,"PbPb 166 #mub^{-1} (2.76 TeV)");
+  luminosity_tex_PbPb->SetTextFont(43);
+  luminosity_tex_PbPb->SetTextSizePixels(25);
+  luminosity_tex_PbPb->SetLineColor(kWhite);
+  luminosity_tex_PbPb->SetNDC();
+  luminosity_tex_PbPb->Draw();
+    
+
+  TLatex   *jet_reco_tex = new TLatex(0.605,0.975,"anti-k_{T} R = 0.3,  |#eta_{jet}| < 1.6");
+  jet_reco_tex->SetTextFont(43);
+  jet_reco_tex->SetTextSizePixels(25);
+  jet_reco_tex->SetLineColor(kWhite);
+  jet_reco_tex->SetNDC();
+  jet_reco_tex->Draw();
+
+  TLatex   *jet_cut_tex = new TLatex(0.605,0.945,"120 < p_{T,1}< 300, p_{T,2}> 50 GeV/c, #Delta#phi_{1,2}> 5#pi/6");
+  jet_cut_tex->SetTextFont(43);
+  jet_cut_tex->SetTextSizePixels(25);
+  jet_cut_tex->SetLineColor(kWhite);
+  jet_cut_tex->SetNDC();
+  jet_cut_tex->Draw();
+    
+
+
+   
+
+
+
 
   c_demo->SaveAs("SideBandDemonstrationPlot.png");
   c_demo->SaveAs("SideBandDemonstrationPlot.pdf");
